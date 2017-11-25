@@ -26,8 +26,8 @@ import qualified Data.HashMap.Lazy            as Map
 import           Data.List                    (foldl1')
 import           Data.Maybe                   (catMaybes, fromMaybe)
 import           Language.C.Types             as C
-import           Language.Haskell.Exts.Pretty (prettyPrint)
-import           Language.Haskell.Exts.Syntax as HS hiding (ModuleName)
+import           Language.Haskell.Exts.Simple.Pretty (prettyPrint)
+import           Language.Haskell.Exts.Simple.Syntax as HS hiding (ModuleName)
 import           Spec.Constant
 import           Spec.Graph                   (SpecGraph, getGraphCTypes,
                                                getGraphConstants,
@@ -122,7 +122,7 @@ arraySizeToNat s = case s of
                      Unsized -> error "Unsized arrays not handled"
                      SizedByInteger i -> do
                        tellExtension "DataKinds"
-                       pure $ TyPromoted (PromotedInteger i)
+                       pure $ TyPromoted (PromotedInteger i $ show i)
                      SizedByIdentifier i -> do
                        tellExtension "DataKinds"
                        let typeName = Ident (unCIdentifier i)

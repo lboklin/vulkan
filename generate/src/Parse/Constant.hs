@@ -40,6 +40,7 @@ parseConstantValue = parseString (atom <* eof) mempty
 atom :: Parser ConstantValue
 atom = literal
    <|> (string "~" *> (bitWiseNot <$> atom))
+   <|> minus <$> (atom <* string "-") <*> atom
    <|> parens atom
 
 literal :: Parser ConstantValue
@@ -53,4 +54,8 @@ bitWiseNot (IntegralValue _) = error "can only invert explicitly sized values"
 bitWiseNot (FloatValue _)  = error "can only invert explicitly sized values"
 bitWiseNot (Word32Value x) = Word32Value (complement x)
 bitWiseNot (Word64Value x) = Word64Value (complement x)
+
+minus :: ConstantValue -> ConstantValue -> ConstantValue
+minus (Word32Value x) (IntegralValue y) = Word32Value $ x - fromIntegral y
+minus _ _ = error "lazy hack"
 

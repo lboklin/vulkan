@@ -5,8 +5,8 @@ module Write.Command
   ) where
 
 import           Language.C.Types
-import           Language.Haskell.Exts.Pretty
-import           Language.Haskell.Exts.Syntax
+import           Language.Haskell.Exts.Simple.Pretty
+import           Language.Haskell.Exts.Simple.Syntax
 import           Spec.Command
 import           Spec.Type                     (CType)
 import           Text.InterpolatedString.Perl6

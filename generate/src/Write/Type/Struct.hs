@@ -1,5 +1,5 @@
 {-# LANGUAGE QuasiQuotes #-}
-
+{-# LANGUAGE PatternSynonyms #-}
 module Write.Type.Struct
   ( writeStructType
   , writeUnionType
@@ -7,8 +7,8 @@ module Write.Type.Struct
 
 import           Data.Maybe                    (fromMaybe, maybeToList)
 import           Data.String
-import           Language.Haskell.Exts.Pretty
-import           Language.Haskell.Exts.Syntax  (ConDecl (..), Name (..))
+import           Language.Haskell.Exts.Simple.Pretty
+import           Language.Haskell.Exts.Simple.Syntax  (ConDecl (..), Name (..), pattern Ident, pattern ConDecl)
 import           Spec.Type
 import           Text.InterpolatedString.Perl6
 import           Text.PrettyPrint.Leijen.Text  hiding ((<$>))
