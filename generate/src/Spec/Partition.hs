@@ -23,7 +23,7 @@ import           Spec.Graph
 import           Spec.Section
 import           Spec.Spec
 import           Write.Utils
-
+import Debug.Trace 
 data PartitionedSpec =
   PartitionedSpec{ moduleExports :: M.HashMap ModuleName (S.HashSet String)
                  }
@@ -56,8 +56,7 @@ partitionSpec spec graph =
       inferredCoreModuleExports =
         inferModuleExports spec allEntityNames explicitCoreModuleExports
 
-      coreModuleExports = M.unionWith S.union explicitCoreModuleExports
-                                              inferredCoreModuleExports
+      coreModuleExports = M.unionWith S.union explicitCoreModuleExports inferredCoreModuleExports
 
       moduleExports = calculateModuleExports graph coreModuleExports
 
@@ -65,8 +64,10 @@ partitionSpec spec graph =
                        `S.difference` ignoredNames
       allBespokeNames = S.unions (M.elems bespokeModuleExports)
       allExportedNames = S.unions (M.elems moduleExports)
-      -- unexportedEntities = allEntityNames `S.difference` allExportedNames
-      missingBespokeNames = allBespokeNames `S.difference` allEntityNames
+
+      unexportedEntities = allEntityNames `S.difference` allExportedNames
+      
+      missingBespokeNames = trace (unlines $ map show $ S.toList unexportedEntities) $ allBespokeNames `S.difference` allEntityNames
       exportedIgnoredNames = ignoredNames `S.intersection` allExportedNames
   in -- TODO: put this is a better error handling scheme
      assertNote (unlines
@@ -140,6 +141,9 @@ bespokeModuleExports = M.fromList
                  , "VK_MAX_EXTENSION_NAME_SIZE"
                  , "VK_MAX_DESCRIPTION_SIZE"
                  , "VK_UUID_SIZE"
+                 , "VK_MAX_DEVICE_GROUP_SIZE_KHX"
+                 , "VK_QUEUE_FAMILY_EXTERNAL_KHR"
+                 , "VK_LUID_SIZE_KHR"
                  ]
     )
   , ( ModuleName ("Graphics.Vulkan.DeviceInitialization")
@@ -156,6 +160,7 @@ bespokeModuleExports = M.fromList
                  , "PFN_vkAllocationFunction"
                  , "PFN_vkInternalAllocationNotification"
                  , "PFN_vkInternalFreeNotification"
+                 , "VkMemoryRequirements"
                  ]
     )
   , ( ModuleName "Graphics.Vulkan.Pass"
@@ -174,7 +179,6 @@ bespokeModuleExports = M.fromList
                  , "VkOffset2D"
                  , "VkOffset3D"
                  , "VkRect2D"
-                 , "VkRect3D"
                  , "VkExtent2D"
                  , "VkExtent3D"
                  , "VkBool32"
@@ -200,6 +204,10 @@ bespokeModuleExports = M.fromList
     )
   , ( ModuleName "Graphics.Vulkan.DescriptorSet"
     , S.fromList [ "VkDescriptorSetLayout"
+                 , "VkWriteDescriptorSet"
+                 , "VkDescriptorImageInfo"
+                 , "VkDescriptorBufferInfo"
+                 , "VkDescriptorType"
                  ]
     )
   , ( ModuleName "Graphics.Vulkan.Query"
@@ -231,10 +239,67 @@ bespokeModuleExports = M.fromList
                  , "VkCompositeAlphaFlagBitsKHR"
                  , "VkPresentModeKHR"
                  , "VkSurfaceKHR"
+                 , "VkSurfaceCapabilitiesKHR"
+                 , "VkSurfaceFormatKHR"
                  ]
     )
   , ( ModuleName "Graphics.Vulkan.Version"
     , S.fromList [ "VK_MAKE_VERSION"
+                 ]
+    )
+  , ( ModuleName "Graphics.Vulkan.ImageView"
+    , S.fromList [ "VkComponentMapping"
+                 , "VkComponentSwizzle"
+                 ]
+    )
+  , ( ModuleName "Graphics.Vulkan.DeviceInitialization"
+    , S.fromList [ "VkImageFormatProperties"
+                 , "VkImageFormatProperties"
+                 , "VkMemoryPropertyFlags"
+                 , "VkPhysicalDeviceProperties"
+                 , "VkMemoryPropertyFlags"
+                 , "VkPhysicalDeviceMemoryProperties"
+                 , "VkPhysicalDeviceLimits"
+                 , "VkFormatFeatureFlagBits"
+                 , "VkQueueFlagBits"
+                 , "VkPhysicalDeviceSparseProperties"
+                 , "VkMemoryHeapFlagBits"
+                 , "VkMemoryType"
+                 , "VkFormatProperties"
+                 , "VkQueueFamilyProperties"
+                 , "VkMemoryHeap"
+                 , "VkFormatFeatureFlags"
+                 , "VkQueueFlags"
+                 , "VkMemoryPropertyFlagBits"
+                 , "VkMemoryHeapFlags"
+                 , "VkPhysicalDeviceType"
+                 ]
+    )
+  , ( ModuleName "Graphics.Vulkan.SparseResourceMemoryManagement"
+    , S.fromList [ "VkSparseImageFormatProperties"
+                 , "VkSparseImageFormatFlags"
+                 , "VkSparseImageFormatFlagBits"
+                 , "VkSparseImageMemoryRequirements"
+                 ]
+    )
+  , ( ModuleName "Graphics.Vulkan.KHR.Display"
+    , S.fromList [ "VkDisplayKHR"
+                 ]
+    )
+  , ( ModuleName "Graphics.Vulkan.CommandBufferBuilding"
+    , S.fromList [ "VkIndexType"
+                 ]
+    )
+  , ( ModuleName "Graphics.Vulkan.EXT.DebugReport"
+    , S.fromList [ "VkDebugReportObjectTypeEXT"
+                 ]
+    )
+  , ( ModuleName "Graphics.Vulkan.KHR.ExternalMemoryFd"
+    , S.fromList [ "VkMemoryFdPropertiesKHR"
+                 ]
+    )
+  , ( ModuleName "Graphics.Vulkan.KHR.ExternalSemaphoreFd"
+    , S.fromList [ "VkSemaphoreGetFdInfoKHR"
                  ]
     )
   ]
@@ -248,6 +313,7 @@ ignoredNames = S.fromList [ "uint64_t"
                           , "float"
                           , "int32_t"
                           , "char"
+                          , "int"
                           , "VK_DEFINE_HANDLE"
                           , "VK_DEFINE_NON_DISPATCHABLE_HANDLE"
                           , "VK_NULL_HANDLE"

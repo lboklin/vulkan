@@ -36,7 +36,7 @@ parseSpecXML = isRoot /> hasName "registry" >>> extract
           sBitmasks <- listA (deep parseBitmask) -< registry
           sCommands <- listA (deep parseCommand) <<<
                       onlyChildWithName "commands" -< registry
-          sCopyright <- getAllText <<< onlyChildWithName "comment" -< registry
+          sCopyright <- getAllText <<< arr head <<< listA (hasName "comment" <<< getChildren) -< registry
           sSections <- oneRequired "sections" (deep parseSections) -< registry
           sExtensions <- oneRequired "extensions" (deep parseExtensions) -< registry
           sTags <- oneRequired "tags" (deep parseTags) -< registry

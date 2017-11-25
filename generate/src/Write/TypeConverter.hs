@@ -27,7 +27,7 @@ import           Data.List                    (foldl1')
 import           Data.Maybe                   (catMaybes, fromMaybe)
 import           Language.C.Types             as C
 import           Language.Haskell.Exts.Simple.Pretty (prettyPrint)
-import           Language.Haskell.Exts.Simple.Syntax as HS hiding (ModuleName)
+import           Language.Haskell.Exts.Simple.Syntax as HS hiding (ModuleName, Int)
 import           Spec.Constant
 import           Spec.Graph                   (SpecGraph, getGraphCTypes,
                                                getGraphConstants,
@@ -40,6 +40,8 @@ import           Spec.TypeEnv
 import           Write.Utils
 import           Write.WriteMonad
 
+import GHC.Stack
+
 type TypeConverter = CType -> String
 
 pattern TypeDef t = TypeSpecifier (Specifiers [TYPEDEF] [] []) t
@@ -50,6 +52,7 @@ platformType s =
     "void"     -> Just <$> pure (TyCon (Special UnitCon))
     "char"     -> Just <$> conFromModule "Foreign.C.Types" "CChar"
     "float"    -> Just <$> conFromModule "Foreign.C.Types" "CFloat"
+    "int"      -> Just <$> conFromModule "Foreign.C.Types" "CInt"
     "uint8_t"  -> Just <$> conFromModule "Data.Word" "Word8"
     "uint32_t" -> Just <$> conFromModule "Data.Word" "Word32"
     "uint64_t" -> Just <$> conFromModule "Data.Word" "Word64"
@@ -79,6 +82,8 @@ cTypeToHsType cType = hsType
                  -> conFromModule "Foreign.C.Types" "CUChar"
                TypeSpecifier _ Float
                  -> conFromModule "Foreign.C.Types" "CFloat"
+               TypeSpecifier _ (Int Signed)
+                 -> conFromModule "Foreign.C.Types" "CInt"
                TypeSpecifier _ (TypeName t)
                  -> cIdToHsType t
                TypeDef (TypeName t)
@@ -138,7 +143,7 @@ makeFunctionType ret parameters =
         traverse (cTypeToHsType . parameterDeclarationType) parameters
 
 -- | cTypeNames returns the names of the C types this type depends on
-cTypeDependencyNames :: CType -> [String]
+cTypeDependencyNames :: HasCallStack => CType -> [String]
 cTypeDependencyNames cType =
   case cType of
     TypeSpecifier _ Void
@@ -149,6 +154,8 @@ cTypeDependencyNames cType =
       -> ["float"]
     TypeSpecifier _ (TypeName t)
       -> [unCIdentifier t]
+    TypeSpecifier _ (Int Signed)
+      -> ["int"]
     TypeDef (Struct t)
       -> [unCIdentifier t]
     Ptr _ t
@@ -234,6 +241,9 @@ cTypeInfo env t =
     TypeSpecifier _ Float -> TypeInfo{ tiSize = 4
                                      , tiAlignment = 4
                                      }
+    TypeSpecifier _ (Int Signed) -> TypeInfo{ tiSize = 4
+                                            , tiAlignment = 4
+                                            }
     TypeSpecifier _ (TypeName tn) ->
       case unCIdentifier tn of
         "uint8_t"  -> TypeInfo{ tiSize = 1

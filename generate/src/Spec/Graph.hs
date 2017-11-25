@@ -308,6 +308,8 @@ cTypeDependencyNames cType =
       -> ["char"]
     TypeSpecifier _ Float
       -> ["float"]
+    TypeSpecifier _ (Int Signed)
+      -> ["int"]
     TypeSpecifier _ (TypeName t)
       -> [unCIdentifier t]
     TypeSpecifier _ (Struct t)

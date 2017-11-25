@@ -63,14 +63,14 @@ failString = applyA (arr issueErr) >>> none
 traceShowA :: Show a => IOStateArrow s a a
 traceShowA = traceValue 0 show
 
-oneRequired :: String -> IOStateArrow s a c -> IOStateArrow s a c
-oneRequired e a = listA a
+oneRequired :: (Show a, Show c) => String -> IOStateArrow s a c -> IOStateArrow s a c
+oneRequired e a = listA a 
                   >>>
                   (isA (not . null) `orElse`
                     failA ("Arrow returned no results (expected one): " ++ e))
                   >>>
                   ((isA isSingleton >>> arr head) `orElse`
-                    failA ("Arrow returned more than one result: " ++ e))
+                    (traceShowA >>> failA ("Arrow returned more than one result: " ++ e)))
   where isSingleton [_] = True
         isSingleton _ = False
 
@@ -98,7 +98,7 @@ oneOf = foldr' orElse
 
 -- | 'extractFields name predicate extract' runs extract if the predicate
 -- holds and fails if extract doesn't return exactly one value
-extractFields :: String -> IOStateArrow s a b -> IOStateArrow s b c -> IOStateArrow s a c
+extractFields :: (Show a, Show b, Show c) => String -> IOStateArrow s a b -> IOStateArrow s b c -> IOStateArrow s a c
 extractFields name predicate extract =
   predicate >>>
   oneRequired name

@@ -29,11 +29,11 @@ import           Write.Utils
 
 data RequiredName = ExternalName ModuleName String
                   | InternalName WildCard String
-  deriving(Eq, Generic)
+  deriving(Show, Eq, Generic)
 
 data WildCard = WildCard
               | NoWildCard
-  deriving(Eq, Generic)
+  deriving(Show, Eq, Generic)
 
 instance Hashable WildCard
 
