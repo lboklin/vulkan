@@ -10,8 +10,8 @@ import           Control.Monad.Writer
 import qualified Data.HashSet                  as S
 import           Data.String
 import qualified Language.C.Types              as C
-import           Language.Haskell.Exts.Pretty  (prettyPrint)
-import           Language.Haskell.Exts.Syntax  hiding (Assoc (..), ModuleName)
+import           Language.Haskell.Exts.Simple.Pretty  (prettyPrint)
+import           Language.Haskell.Exts.Simple.Syntax  hiding (Assoc (..), ModuleName, AssocLeft)
 import           Prelude                       hiding (exp)
 import           Spec.Type
 import           Text.InterpolatedString.Perl6
