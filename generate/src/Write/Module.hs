@@ -19,6 +19,7 @@ import           Write.TypeConverter           (buildTypeEnvFromSpecGraph)
 import           Write.Utils
 import           Write.Vertex
 import           Write.WriteMonad
+import Debug.Trace
 
 writeModule :: SpecGraph
             -> NameLocations
@@ -84,7 +85,8 @@ getImportDeclarations importingModule nameLocations names =
                 then Nothing
                 else case M.lookup name nameLocations of
                        Nothing ->
-                         error ("Imported name not in any module: " ++ name)
+--                         error ("Imported name not in any module: " ++ name)
+                         trace ("Imported name not in any module: " ++ name) $ Just $ Import NotSource (ModuleName "nOTEXISTING") [name]
                        Just moduleName ->
                          case wildCard of
                            WildCard ->

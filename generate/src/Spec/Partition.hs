@@ -230,6 +230,7 @@ bespokeModuleExports = M.fromList
     , S.fromList [ "VkPipelineBindPoint"
                  , "VkPipelineStageFlagBits"
                  , "VkPipelineStageFlags"
+                 , "VkDynamicState"
                  ]
     )
   , ( ModuleName "Graphics.Vulkan.KHR.Surface"

@@ -6,7 +6,7 @@ module Write.Command
 
 import           Language.C.Types
 import           Language.Haskell.Exts.Simple.Pretty
-import           Language.Haskell.Exts.Simple.Syntax
+import           Language.Haskell.Exts.Simple.Syntax as Hs hiding (ModuleName)
 import           Spec.Command
 import           Spec.Type                     (CType)
 import           Text.InterpolatedString.Perl6
@@ -46,11 +46,9 @@ foreign import ccall "{symbol}" {name} ::
 convertFunction :: Hs.Type -> Write (Hs.Type, Bool, Bool)
 convertFunction t@(TyFun (TyCon (UnQual (Ident "VkInstance"))) _) = pure (t, False, False)
 convertFunction t@(TyFun (TyCon (UnQual (Ident "VkDevice"))) _) = pure (t, True, False)
-convertFunction t@(TyFun (TyCon (UnQual (Ident n))) _)
-  | n `elem` ["VkCommandBuffer"] = do
-      tellRequiredName (ExternalName (ModuleName "Graphics.Vulkan.Device") "VkDevice")
-      pure (TyFun (TyCon (UnQual (Ident "VkDevice"))) t, True, True)
-convertFunction t = error $ "Unsure how to get ProcAddr for function of type " ++ prettyPrint t
+convertFunction t = do
+      tellRequiredName (ExternalName (ModuleName "Graphics.Vulkan.DeviceInitialization") "VkInstance")
+      pure (TyFun (TyCon (UnQual (Ident "VkInstance"))) t, False, True)
 
 writeCommandType :: Command -> Write Hs.Type
 writeCommandType c = do
