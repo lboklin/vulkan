@@ -19,7 +19,6 @@ import           Write.TypeConverter           (buildTypeEnvFromSpecGraph)
 import           Write.Utils
 import           Write.Vertex
 import           Write.WriteMonad
-import Debug.Trace
 
 writeModule :: SpecGraph
             -> NameLocations
