@@ -7,11 +7,15 @@ import Graphics.Vulkan.Device( VkDevice(..)
                              )
 import Graphics.Vulkan.Buffer( VkBuffer(..)
                              )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Foreign.Storable( Storable(..)
                        )
@@ -23,6 +27,10 @@ import Graphics.Vulkan.Image( VkImage(..)
                             , VkImageAspectFlagBits(..)
                             , VkImageAspectFlags(..)
                             )
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.SparseResourceMemoryManagement( VkSparseImageFormatFlagBits(..)
                                                      , VkSparseImageFormatFlags(..)
                                                      , VkSparseImageFormatProperties(..)
@@ -53,10 +61,16 @@ instance Storable VkSparseImageMemoryRequirements2KHR where
 pattern VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2_KHR = VkStructureType 1000146000
 pattern VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR = VkStructureType 1000146003
 -- ** vkGetImageMemoryRequirements2KHR
-foreign import ccall "vkGetImageMemoryRequirements2KHR" vkGetImageMemoryRequirements2KHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkGetImageMemoryRequirements2KHR :: FunPtr (VkDevice ->
+  Ptr VkImageMemoryRequirementsInfo2KHR ->
+    Ptr VkMemoryRequirements2KHR -> IO ()) -> (VkDevice ->
+  Ptr VkImageMemoryRequirementsInfo2KHR ->
+    Ptr VkMemoryRequirements2KHR -> IO ())
+vkGetImageMemoryRequirements2KHR :: VkDevice ->
   Ptr VkImageMemoryRequirementsInfo2KHR ->
     Ptr VkMemoryRequirements2KHR -> IO ()
+vkGetImageMemoryRequirements2KHR d = (mkvkGetImageMemoryRequirements2KHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetImageMemoryRequirements2KHR" $ vkGetDeviceProcAddr d
 pattern VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME =  "VK_KHR_get_memory_requirements2"
 
 data VkMemoryRequirements2KHR =
@@ -110,10 +124,16 @@ instance Storable VkImageMemoryRequirementsInfo2KHR where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkImageMemoryRequirementsInfo2KHR))
                 *> poke (ptr `plusPtr` 16) (vkImage (poked :: VkImageMemoryRequirementsInfo2KHR))
 -- ** vkGetBufferMemoryRequirements2KHR
-foreign import ccall "vkGetBufferMemoryRequirements2KHR" vkGetBufferMemoryRequirements2KHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkGetBufferMemoryRequirements2KHR :: FunPtr (VkDevice ->
+  Ptr VkBufferMemoryRequirementsInfo2KHR ->
+    Ptr VkMemoryRequirements2KHR -> IO ()) -> (VkDevice ->
+  Ptr VkBufferMemoryRequirementsInfo2KHR ->
+    Ptr VkMemoryRequirements2KHR -> IO ())
+vkGetBufferMemoryRequirements2KHR :: VkDevice ->
   Ptr VkBufferMemoryRequirementsInfo2KHR ->
     Ptr VkMemoryRequirements2KHR -> IO ()
+vkGetBufferMemoryRequirements2KHR d = (mkvkGetBufferMemoryRequirements2KHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetBufferMemoryRequirements2KHR" $ vkGetDeviceProcAddr d
 
 data VkBufferMemoryRequirementsInfo2KHR =
   VkBufferMemoryRequirementsInfo2KHR{ vkSType :: VkStructureType 
@@ -131,8 +151,14 @@ instance Storable VkBufferMemoryRequirementsInfo2KHR where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkBufferMemoryRequirementsInfo2KHR))
                 *> poke (ptr `plusPtr` 16) (vkBuffer (poked :: VkBufferMemoryRequirementsInfo2KHR))
 -- ** vkGetImageSparseMemoryRequirements2KHR
-foreign import ccall "vkGetImageSparseMemoryRequirements2KHR" vkGetImageSparseMemoryRequirements2KHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkGetImageSparseMemoryRequirements2KHR :: FunPtr (VkDevice ->
+  Ptr VkImageSparseMemoryRequirementsInfo2KHR ->
+    Ptr Word32 -> Ptr VkSparseImageMemoryRequirements2KHR -> IO ()) -> (VkDevice ->
+  Ptr VkImageSparseMemoryRequirementsInfo2KHR ->
+    Ptr Word32 -> Ptr VkSparseImageMemoryRequirements2KHR -> IO ())
+vkGetImageSparseMemoryRequirements2KHR :: VkDevice ->
   Ptr VkImageSparseMemoryRequirementsInfo2KHR ->
     Ptr Word32 -> Ptr VkSparseImageMemoryRequirements2KHR -> IO ()
+vkGetImageSparseMemoryRequirements2KHR d = (mkvkGetImageSparseMemoryRequirements2KHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetImageSparseMemoryRequirements2KHR" $ vkGetDeviceProcAddr d
 pattern VK_STRUCTURE_TYPE_IMAGE_SPARSE_MEMORY_REQUIREMENTS_INFO_2_KHR = VkStructureType 1000146002

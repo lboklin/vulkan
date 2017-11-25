@@ -6,12 +6,16 @@ module Graphics.Vulkan.KHR.GetPhysicalDeviceProperties2 where
 import Graphics.Vulkan.Device( VkPhysicalDeviceFeatures(..)
                              , VkPhysicalDevice(..)
                              )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word8
                 , Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Data.Int( Int32
                )
@@ -43,11 +47,13 @@ import Graphics.Vulkan.DeviceInitialization( VkPhysicalDeviceType(..)
                                            , VkFormatFeatureFlags(..)
                                            , VkMemoryHeap(..)
                                            , VkQueueFamilyProperties(..)
+                                           , VkInstance
                                            , VkFormatProperties(..)
                                            , VkMemoryType(..)
                                            , VkMemoryHeapFlagBits(..)
                                            , VkPhysicalDeviceSparseProperties(..)
                                            , VkQueueFlagBits(..)
+                                           , vkGetInstanceProcAddr
                                            , VkFormatFeatureFlagBits(..)
                                            , VkPhysicalDeviceLimits(..)
                                            , VkPhysicalDeviceMemoryProperties(..)
@@ -55,6 +61,8 @@ import Graphics.Vulkan.DeviceInitialization( VkPhysicalDeviceType(..)
                                            , VkPhysicalDeviceProperties(..)
                                            , VkImageFormatProperties(..)
                                            )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.SparseResourceMemoryManagement( VkSparseImageFormatFlagBits(..)
                                                      , VkSparseImageFormatFlags(..)
                                                      , VkSparseImageFormatProperties(..)
@@ -72,9 +80,14 @@ import Foreign.C.Types( CFloat(..)
                       )
 
 -- ** vkGetPhysicalDeviceMemoryProperties2KHR
-foreign import ccall "vkGetPhysicalDeviceMemoryProperties2KHR" vkGetPhysicalDeviceMemoryProperties2KHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceMemoryProperties2KHR :: FunPtr (VkPhysicalDevice ->
+  Ptr VkPhysicalDeviceMemoryProperties2KHR -> IO ()) -> (VkPhysicalDevice ->
+  Ptr VkPhysicalDeviceMemoryProperties2KHR -> IO ())
+vkGetPhysicalDeviceMemoryProperties2KHR :: VkInstance ->
   VkPhysicalDevice ->
-  Ptr VkPhysicalDeviceMemoryProperties2KHR -> IO ()
+    Ptr VkPhysicalDeviceMemoryProperties2KHR -> IO ()
+vkGetPhysicalDeviceMemoryProperties2KHR i = (mkvkGetPhysicalDeviceMemoryProperties2KHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceMemoryProperties2KHR" $ vkGetInstanceProcAddr i
 
 data VkPhysicalDeviceFeatures2KHR =
   VkPhysicalDeviceFeatures2KHR{ vkSType :: VkStructureType 
@@ -128,11 +141,17 @@ instance Storable VkPhysicalDeviceProperties2KHR where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkPhysicalDeviceProperties2KHR))
                 *> poke (ptr `plusPtr` 16) (vkProperties (poked :: VkPhysicalDeviceProperties2KHR))
 -- ** vkGetPhysicalDeviceFeatures2KHR
-foreign import ccall "vkGetPhysicalDeviceFeatures2KHR" vkGetPhysicalDeviceFeatures2KHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceFeatures2KHR :: FunPtr (VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures2KHR -> IO ()) -> (VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures2KHR -> IO ())
+vkGetPhysicalDeviceFeatures2KHR :: VkInstance ->
   VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures2KHR -> IO ()
+vkGetPhysicalDeviceFeatures2KHR i = (mkvkGetPhysicalDeviceFeatures2KHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceFeatures2KHR" $ vkGetInstanceProcAddr i
 -- ** vkGetPhysicalDeviceProperties2KHR
-foreign import ccall "vkGetPhysicalDeviceProperties2KHR" vkGetPhysicalDeviceProperties2KHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceProperties2KHR :: FunPtr (VkPhysicalDevice -> Ptr VkPhysicalDeviceProperties2KHR -> IO ()) -> (VkPhysicalDevice -> Ptr VkPhysicalDeviceProperties2KHR -> IO ())
+vkGetPhysicalDeviceProperties2KHR :: VkInstance ->
   VkPhysicalDevice -> Ptr VkPhysicalDeviceProperties2KHR -> IO ()
+vkGetPhysicalDeviceProperties2KHR i = (mkvkGetPhysicalDeviceProperties2KHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceProperties2KHR" $ vkGetInstanceProcAddr i
 pattern VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2_KHR = VkStructureType 1000059003
 pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR = VkStructureType 1000059000
 pattern VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION =  0x1
@@ -232,22 +251,44 @@ instance Storable VkPhysicalDeviceImageFormatInfo2KHR where
 pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2_KHR = VkStructureType 1000059004
 pattern VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2_KHR = VkStructureType 1000059007
 -- ** vkGetPhysicalDeviceImageFormatProperties2KHR
-foreign import ccall "vkGetPhysicalDeviceImageFormatProperties2KHR" vkGetPhysicalDeviceImageFormatProperties2KHR ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceImageFormatProperties2KHR :: FunPtr (VkPhysicalDevice ->
   Ptr VkPhysicalDeviceImageFormatInfo2KHR ->
-    Ptr VkImageFormatProperties2KHR -> IO VkResult
+    Ptr VkImageFormatProperties2KHR -> IO VkResult) -> (VkPhysicalDevice ->
+  Ptr VkPhysicalDeviceImageFormatInfo2KHR ->
+    Ptr VkImageFormatProperties2KHR -> IO VkResult)
+vkGetPhysicalDeviceImageFormatProperties2KHR :: VkInstance ->
+  VkPhysicalDevice ->
+    Ptr VkPhysicalDeviceImageFormatInfo2KHR ->
+      Ptr VkImageFormatProperties2KHR -> IO VkResult
+vkGetPhysicalDeviceImageFormatProperties2KHR i = (mkvkGetPhysicalDeviceImageFormatProperties2KHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceImageFormatProperties2KHR" $ vkGetInstanceProcAddr i
 -- ** vkGetPhysicalDeviceQueueFamilyProperties2KHR
-foreign import ccall "vkGetPhysicalDeviceQueueFamilyProperties2KHR" vkGetPhysicalDeviceQueueFamilyProperties2KHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceQueueFamilyProperties2KHR :: FunPtr (VkPhysicalDevice ->
+  Ptr Word32 -> Ptr VkQueueFamilyProperties2KHR -> IO ()) -> (VkPhysicalDevice ->
+  Ptr Word32 -> Ptr VkQueueFamilyProperties2KHR -> IO ())
+vkGetPhysicalDeviceQueueFamilyProperties2KHR :: VkInstance ->
   VkPhysicalDevice ->
-  Ptr Word32 -> Ptr VkQueueFamilyProperties2KHR -> IO ()
+    Ptr Word32 -> Ptr VkQueueFamilyProperties2KHR -> IO ()
+vkGetPhysicalDeviceQueueFamilyProperties2KHR i = (mkvkGetPhysicalDeviceQueueFamilyProperties2KHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceQueueFamilyProperties2KHR" $ vkGetInstanceProcAddr i
 -- ** vkGetPhysicalDeviceFormatProperties2KHR
-foreign import ccall "vkGetPhysicalDeviceFormatProperties2KHR" vkGetPhysicalDeviceFormatProperties2KHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceFormatProperties2KHR :: FunPtr (VkPhysicalDevice -> VkFormat -> Ptr VkFormatProperties2KHR -> IO ()) -> (VkPhysicalDevice -> VkFormat -> Ptr VkFormatProperties2KHR -> IO ())
+vkGetPhysicalDeviceFormatProperties2KHR :: VkInstance ->
   VkPhysicalDevice -> VkFormat -> Ptr VkFormatProperties2KHR -> IO ()
+vkGetPhysicalDeviceFormatProperties2KHR i = (mkvkGetPhysicalDeviceFormatProperties2KHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceFormatProperties2KHR" $ vkGetInstanceProcAddr i
 -- ** vkGetPhysicalDeviceSparseImageFormatProperties2KHR
-foreign import ccall "vkGetPhysicalDeviceSparseImageFormatProperties2KHR" vkGetPhysicalDeviceSparseImageFormatProperties2KHR ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceSparseImageFormatProperties2KHR :: FunPtr (VkPhysicalDevice ->
   Ptr VkPhysicalDeviceSparseImageFormatInfo2KHR ->
-    Ptr Word32 -> Ptr VkSparseImageFormatProperties2KHR -> IO ()
+    Ptr Word32 -> Ptr VkSparseImageFormatProperties2KHR -> IO ()) -> (VkPhysicalDevice ->
+  Ptr VkPhysicalDeviceSparseImageFormatInfo2KHR ->
+    Ptr Word32 -> Ptr VkSparseImageFormatProperties2KHR -> IO ())
+vkGetPhysicalDeviceSparseImageFormatProperties2KHR :: VkInstance ->
+  VkPhysicalDevice ->
+    Ptr VkPhysicalDeviceSparseImageFormatInfo2KHR ->
+      Ptr Word32 -> Ptr VkSparseImageFormatProperties2KHR -> IO ()
+vkGetPhysicalDeviceSparseImageFormatProperties2KHR i = (mkvkGetPhysicalDeviceSparseImageFormatProperties2KHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceSparseImageFormatProperties2KHR" $ vkGetInstanceProcAddr i
 
 data VkPhysicalDeviceSparseImageFormatInfo2KHR =
   VkPhysicalDeviceSparseImageFormatInfo2KHR{ vkSType :: VkStructureType 

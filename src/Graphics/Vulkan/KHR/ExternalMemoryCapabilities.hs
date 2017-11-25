@@ -17,10 +17,14 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Data.Bits( Bits
                 , FiniteBits
@@ -36,6 +40,11 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
                                       , prec
                                       )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            )
@@ -212,7 +221,14 @@ pattern VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_KHR = VkExternalMemoryFeatureF
 pattern VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_KHR = VkExternalMemoryFeatureFlagBitsKHR 0x4
 pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR = VkStructureType 1000071004
 -- ** vkGetPhysicalDeviceExternalBufferPropertiesKHR
-foreign import ccall "vkGetPhysicalDeviceExternalBufferPropertiesKHR" vkGetPhysicalDeviceExternalBufferPropertiesKHR ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceExternalBufferPropertiesKHR :: FunPtr (VkPhysicalDevice ->
   Ptr VkPhysicalDeviceExternalBufferInfoKHR ->
-    Ptr VkExternalBufferPropertiesKHR -> IO ()
+    Ptr VkExternalBufferPropertiesKHR -> IO ()) -> (VkPhysicalDevice ->
+  Ptr VkPhysicalDeviceExternalBufferInfoKHR ->
+    Ptr VkExternalBufferPropertiesKHR -> IO ())
+vkGetPhysicalDeviceExternalBufferPropertiesKHR :: VkInstance ->
+  VkPhysicalDevice ->
+    Ptr VkPhysicalDeviceExternalBufferInfoKHR ->
+      Ptr VkExternalBufferPropertiesKHR -> IO ()
+vkGetPhysicalDeviceExternalBufferPropertiesKHR i = (mkvkGetPhysicalDeviceExternalBufferPropertiesKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceExternalBufferPropertiesKHR" $ vkGetInstanceProcAddr i

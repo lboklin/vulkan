@@ -12,10 +12,14 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Data.Bits( Bits
                 , FiniteBits
@@ -31,6 +35,11 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
                                       , prec
                                       )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            )
@@ -75,10 +84,17 @@ instance Storable VkExternalSemaphorePropertiesKHR where
                 *> poke (ptr `plusPtr` 20) (vkCompatibleHandleTypes (poked :: VkExternalSemaphorePropertiesKHR))
                 *> poke (ptr `plusPtr` 24) (vkExternalSemaphoreFeatures (poked :: VkExternalSemaphorePropertiesKHR))
 -- ** vkGetPhysicalDeviceExternalSemaphorePropertiesKHR
-foreign import ccall "vkGetPhysicalDeviceExternalSemaphorePropertiesKHR" vkGetPhysicalDeviceExternalSemaphorePropertiesKHR ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceExternalSemaphorePropertiesKHR :: FunPtr (VkPhysicalDevice ->
   Ptr VkPhysicalDeviceExternalSemaphoreInfoKHR ->
-    Ptr VkExternalSemaphorePropertiesKHR -> IO ()
+    Ptr VkExternalSemaphorePropertiesKHR -> IO ()) -> (VkPhysicalDevice ->
+  Ptr VkPhysicalDeviceExternalSemaphoreInfoKHR ->
+    Ptr VkExternalSemaphorePropertiesKHR -> IO ())
+vkGetPhysicalDeviceExternalSemaphorePropertiesKHR :: VkInstance ->
+  VkPhysicalDevice ->
+    Ptr VkPhysicalDeviceExternalSemaphoreInfoKHR ->
+      Ptr VkExternalSemaphorePropertiesKHR -> IO ()
+vkGetPhysicalDeviceExternalSemaphorePropertiesKHR i = (mkvkGetPhysicalDeviceExternalSemaphorePropertiesKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceExternalSemaphorePropertiesKHR" $ vkGetInstanceProcAddr i
 pattern VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_SPEC_VERSION =  0x1
 -- ** VkExternalSemaphoreHandleTypeFlagsKHR
 newtype VkExternalSemaphoreHandleTypeFlagBitsKHR = VkExternalSemaphoreHandleTypeFlagBitsKHR VkFlags

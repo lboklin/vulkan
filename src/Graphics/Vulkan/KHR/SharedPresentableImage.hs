@@ -7,11 +7,15 @@ import Graphics.Vulkan.Device( VkDevice(..)
                              )
 import Graphics.Vulkan.KHR.Swapchain( VkSwapchainKHR(..)
                                     )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.KHR.Surface( VkPresentModeKHR(..)
                                   )
@@ -23,6 +27,10 @@ import Graphics.Vulkan.Image( VkImageUsageFlagBits(..)
                             , VkImageLayout(..)
                             , VkImageUsageFlags(..)
                             )
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            , VkResult(..)
@@ -32,8 +40,10 @@ pattern VK_KHR_SHARED_PRESENTABLE_IMAGE_SPEC_VERSION =  0x1
 pattern VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR = VkPresentModeKHR 1000111000
 pattern VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR = VkPresentModeKHR 1000111001
 -- ** vkGetSwapchainStatusKHR
-foreign import ccall "vkGetSwapchainStatusKHR" vkGetSwapchainStatusKHR ::
-  VkDevice -> VkSwapchainKHR -> IO VkResult
+foreign import ccall "dynamic" mkvkGetSwapchainStatusKHR :: FunPtr (VkDevice -> VkSwapchainKHR -> IO VkResult) -> (VkDevice -> VkSwapchainKHR -> IO VkResult)
+vkGetSwapchainStatusKHR :: VkDevice -> VkSwapchainKHR -> IO VkResult
+vkGetSwapchainStatusKHR d = (mkvkGetSwapchainStatusKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetSwapchainStatusKHR" $ vkGetDeviceProcAddr d
 pattern VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR = VkStructureType 1000111000
 
 data VkSharedPresentSurfaceCapabilitiesKHR =

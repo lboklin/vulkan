@@ -5,9 +5,14 @@ module Graphics.Vulkan.KHR.Maintenance1 where
 
 import Graphics.Vulkan.Device( VkDevice(..)
                              )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
+import Foreign.Ptr( FunPtr
+                  , castFunPtr
+                  )
 import Data.Bits( Bits
                 , FiniteBits
                 )
@@ -19,8 +24,11 @@ import Data.Void( Void
                 )
 import Graphics.Vulkan.Image( VkImageCreateFlagBits(..)
                             )
-import Graphics.Vulkan.DeviceInitialization( VkFormatFeatureFlagBits(..)
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           , VkFormatFeatureFlagBits(..)
                                            )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkResult(..)
                            )
@@ -34,6 +42,8 @@ pattern VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT_KHR = VkImageCreateFlagBits 0x20
 newtype VkCommandPoolTrimFlagsKHR = VkCommandPoolTrimFlagsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits, Show)
 -- ** vkTrimCommandPoolKHR
-foreign import ccall "vkTrimCommandPoolKHR" vkTrimCommandPoolKHR ::
-  VkDevice -> VkCommandPool -> VkCommandPoolTrimFlagsKHR -> IO ()
+foreign import ccall "dynamic" mkvkTrimCommandPoolKHR :: FunPtr (VkDevice -> VkCommandPool -> VkCommandPoolTrimFlagsKHR -> IO ()) -> (VkDevice -> VkCommandPool -> VkCommandPoolTrimFlagsKHR -> IO ())
+vkTrimCommandPoolKHR :: VkDevice -> VkCommandPool -> VkCommandPoolTrimFlagsKHR -> IO ()
+vkTrimCommandPoolKHR d = (mkvkTrimCommandPoolKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkTrimCommandPoolKHR" $ vkGetDeviceProcAddr d
 pattern VK_ERROR_OUT_OF_POOL_MEMORY_KHR = VkResult (-1000069000)

@@ -12,11 +12,15 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Data.Int( Int32
                )
@@ -48,8 +52,12 @@ import Graphics.Vulkan.Image( VkImageUsageFlagBits(..)
                             )
 import Graphics.Vulkan.OtherTypes( VkObjectType(..)
                                  )
-import Graphics.Vulkan.DeviceInitialization( VkInstance(..)
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetInstanceProcAddr
+                                           , VkInstance(..)
                                            )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkExtent2D(..)
                            , VkFormat(..)
                            , VkBool32(..)
@@ -62,14 +70,24 @@ import Foreign.C.Types( CSize(..)
 pattern VK_KHR_SURFACE_EXTENSION_NAME =  "VK_KHR_surface"
 pattern VK_COLORSPACE_SRGB_NONLINEAR_KHR =  0x0
 -- ** vkGetPhysicalDeviceSurfaceFormatsKHR
-foreign import ccall "vkGetPhysicalDeviceSurfaceFormatsKHR" vkGetPhysicalDeviceSurfaceFormatsKHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceSurfaceFormatsKHR :: FunPtr (VkPhysicalDevice ->
+  VkSurfaceKHR -> Ptr Word32 -> Ptr VkSurfaceFormatKHR -> IO VkResult) -> (VkPhysicalDevice ->
+  VkSurfaceKHR -> Ptr Word32 -> Ptr VkSurfaceFormatKHR -> IO VkResult)
+vkGetPhysicalDeviceSurfaceFormatsKHR :: VkInstance ->
   VkPhysicalDevice ->
-  VkSurfaceKHR -> Ptr Word32 -> Ptr VkSurfaceFormatKHR -> IO VkResult
+    VkSurfaceKHR -> Ptr Word32 -> Ptr VkSurfaceFormatKHR -> IO VkResult
+vkGetPhysicalDeviceSurfaceFormatsKHR i = (mkvkGetPhysicalDeviceSurfaceFormatsKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceSurfaceFormatsKHR" $ vkGetInstanceProcAddr i
 pattern VK_KHR_SURFACE_SPEC_VERSION =  0x19
 -- ** vkGetPhysicalDeviceSurfaceCapabilitiesKHR
-foreign import ccall "vkGetPhysicalDeviceSurfaceCapabilitiesKHR" vkGetPhysicalDeviceSurfaceCapabilitiesKHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceSurfaceCapabilitiesKHR :: FunPtr (VkPhysicalDevice ->
+  VkSurfaceKHR -> Ptr VkSurfaceCapabilitiesKHR -> IO VkResult) -> (VkPhysicalDevice ->
+  VkSurfaceKHR -> Ptr VkSurfaceCapabilitiesKHR -> IO VkResult)
+vkGetPhysicalDeviceSurfaceCapabilitiesKHR :: VkInstance ->
   VkPhysicalDevice ->
-  VkSurfaceKHR -> Ptr VkSurfaceCapabilitiesKHR -> IO VkResult
+    VkSurfaceKHR -> Ptr VkSurfaceCapabilitiesKHR -> IO VkResult
+vkGetPhysicalDeviceSurfaceCapabilitiesKHR i = (mkvkGetPhysicalDeviceSurfaceCapabilitiesKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceSurfaceCapabilitiesKHR" $ vkGetInstanceProcAddr i
 -- ** VkCompositeAlphaFlagsKHR
 newtype VkCompositeAlphaFlagBitsKHR = VkCompositeAlphaFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
@@ -140,9 +158,14 @@ pattern VK_ERROR_NATIVE_WINDOW_IN_USE_KHR = VkResult (-1000000001)
 newtype VkSurfaceKHR = VkSurfaceKHR Word64
   deriving (Eq, Ord, Storable, Show)
 -- ** vkGetPhysicalDeviceSurfaceSupportKHR
-foreign import ccall "vkGetPhysicalDeviceSurfaceSupportKHR" vkGetPhysicalDeviceSurfaceSupportKHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceSurfaceSupportKHR :: FunPtr (VkPhysicalDevice ->
+  Word32 -> VkSurfaceKHR -> Ptr VkBool32 -> IO VkResult) -> (VkPhysicalDevice ->
+  Word32 -> VkSurfaceKHR -> Ptr VkBool32 -> IO VkResult)
+vkGetPhysicalDeviceSurfaceSupportKHR :: VkInstance ->
   VkPhysicalDevice ->
-  Word32 -> VkSurfaceKHR -> Ptr VkBool32 -> IO VkResult
+    Word32 -> VkSurfaceKHR -> Ptr VkBool32 -> IO VkResult
+vkGetPhysicalDeviceSurfaceSupportKHR i = (mkvkGetPhysicalDeviceSurfaceSupportKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceSurfaceSupportKHR" $ vkGetInstanceProcAddr i
 pattern VK_ERROR_SURFACE_LOST_KHR = VkResult (-1000000000)
 
 data VkSurfaceFormatKHR =
@@ -158,8 +181,10 @@ instance Storable VkSurfaceFormatKHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkFormat (poked :: VkSurfaceFormatKHR))
                 *> poke (ptr `plusPtr` 4) (vkColorSpace (poked :: VkSurfaceFormatKHR))
 -- ** vkDestroySurfaceKHR
-foreign import ccall "vkDestroySurfaceKHR" vkDestroySurfaceKHR ::
-  VkInstance -> VkSurfaceKHR -> Ptr VkAllocationCallbacks -> IO ()
+foreign import ccall "dynamic" mkvkDestroySurfaceKHR :: FunPtr (VkInstance -> VkSurfaceKHR -> Ptr VkAllocationCallbacks -> IO ()) -> (VkInstance -> VkSurfaceKHR -> Ptr VkAllocationCallbacks -> IO ())
+vkDestroySurfaceKHR :: VkInstance -> VkSurfaceKHR -> Ptr VkAllocationCallbacks -> IO ()
+vkDestroySurfaceKHR i = (mkvkDestroySurfaceKHR $ castFunPtr $ procAddr) i
+  where procAddr = unsafePerformIO $ withCString "vkDestroySurfaceKHR" $ vkGetInstanceProcAddr i
 pattern VK_OBJECT_TYPE_SURFACE_KHR = VkObjectType 1000000000
 -- ** VkColorSpaceKHR
 newtype VkColorSpaceKHR = VkColorSpaceKHR Int32
@@ -181,9 +206,14 @@ instance Read VkColorSpaceKHR where
 
 pattern VK_COLOR_SPACE_SRGB_NONLINEAR_KHR = VkColorSpaceKHR 0
 -- ** vkGetPhysicalDeviceSurfacePresentModesKHR
-foreign import ccall "vkGetPhysicalDeviceSurfacePresentModesKHR" vkGetPhysicalDeviceSurfacePresentModesKHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceSurfacePresentModesKHR :: FunPtr (VkPhysicalDevice ->
+  VkSurfaceKHR -> Ptr Word32 -> Ptr VkPresentModeKHR -> IO VkResult) -> (VkPhysicalDevice ->
+  VkSurfaceKHR -> Ptr Word32 -> Ptr VkPresentModeKHR -> IO VkResult)
+vkGetPhysicalDeviceSurfacePresentModesKHR :: VkInstance ->
   VkPhysicalDevice ->
-  VkSurfaceKHR -> Ptr Word32 -> Ptr VkPresentModeKHR -> IO VkResult
+    VkSurfaceKHR -> Ptr Word32 -> Ptr VkPresentModeKHR -> IO VkResult
+vkGetPhysicalDeviceSurfacePresentModesKHR i = (mkvkGetPhysicalDeviceSurfacePresentModesKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceSurfacePresentModesKHR" $ vkGetInstanceProcAddr i
 -- ** VkSurfaceTransformFlagsKHR
 newtype VkSurfaceTransformFlagBitsKHR = VkSurfaceTransformFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)

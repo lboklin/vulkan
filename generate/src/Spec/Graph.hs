@@ -74,10 +74,7 @@ allReachable vs = go (S.fromList (vName <$> vs)) (concatMap vDependencies vs)
 builtinCommandNames :: Spec -> HashSet String
 builtinCommandNames spec =
   let sectionCommands = concatMap sCommandNames $ sSections spec
-      khrExtensions = Prelude.filter (("VK_KHR_" `isPrefixOf`) . Extension.eName) $ sExtensions spec
-      khrCommands = concatMap eCommandNames khrExtensions
-      builtinCommands = sectionCommands ++ khrCommands
-  in S.fromList builtinCommands
+  in S.fromList sectionCommands
 
 --------------------------------------------------------------------------------
 -- Converting a spec

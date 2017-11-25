@@ -8,11 +8,15 @@ import Graphics.Vulkan.Buffer( VkBuffer(..)
                              )
 import Graphics.Vulkan.Pipeline( VkPipelineBindPoint(..)
                                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.DescriptorSet( VkDescriptorType(..)
                                     , VkDescriptorSet(..)
@@ -37,6 +41,11 @@ import Graphics.Vulkan.ImageView( VkImageView(..)
                                 )
 import Graphics.Vulkan.BufferView( VkBufferView(..)
                                  )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkDeviceSize(..)
                            , VkStructureType(..)
                            )
@@ -59,11 +68,20 @@ instance Storable VkPhysicalDevicePushDescriptorPropertiesKHR where
                 *> poke (ptr `plusPtr` 16) (vkMaxPushDescriptors (poked :: VkPhysicalDevicePushDescriptorPropertiesKHR))
 pattern VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME =  "VK_KHR_push_descriptor"
 -- ** vkCmdPushDescriptorSetKHR
-foreign import ccall "vkCmdPushDescriptorSetKHR" vkCmdPushDescriptorSetKHR ::
-  VkCommandBuffer ->
+foreign import ccall "dynamic" mkvkCmdPushDescriptorSetKHR :: FunPtr (VkCommandBuffer ->
   VkPipelineBindPoint ->
     VkPipelineLayout ->
-      Word32 -> Word32 -> Ptr VkWriteDescriptorSet -> IO ()
+      Word32 -> Word32 -> Ptr VkWriteDescriptorSet -> IO ()) -> (VkCommandBuffer ->
+  VkPipelineBindPoint ->
+    VkPipelineLayout ->
+      Word32 -> Word32 -> Ptr VkWriteDescriptorSet -> IO ())
+vkCmdPushDescriptorSetKHR :: VkInstance ->
+  VkCommandBuffer ->
+    VkPipelineBindPoint ->
+      VkPipelineLayout ->
+        Word32 -> Word32 -> Ptr VkWriteDescriptorSet -> IO ()
+vkCmdPushDescriptorSetKHR i = (mkvkCmdPushDescriptorSetKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkCmdPushDescriptorSetKHR" $ vkGetInstanceProcAddr i
 pattern VK_KHR_PUSH_DESCRIPTOR_SPEC_VERSION =  0x1
 pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR = VkStructureType 1000080000
 pattern VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR = VkDescriptorSetLayoutCreateFlagBits 0x1

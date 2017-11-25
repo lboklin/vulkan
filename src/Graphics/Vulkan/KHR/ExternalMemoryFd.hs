@@ -5,11 +5,15 @@ module Graphics.Vulkan.KHR.ExternalMemoryFd where
 
 import Graphics.Vulkan.Device( VkDevice(..)
                              )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Foreign.Storable( Storable(..)
                        )
@@ -17,6 +21,10 @@ import Data.Void( Void
                 )
 import Graphics.Vulkan.Memory( VkDeviceMemory(..)
                              )
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkStructureType(..)
                            , VkResult(..)
                            )
@@ -27,8 +35,10 @@ import Graphics.Vulkan.KHR.ExternalMemoryCapabilities( VkExternalMemoryHandleTyp
                                                      )
 
 -- ** vkGetMemoryFdKHR
-foreign import ccall "vkGetMemoryFdKHR" vkGetMemoryFdKHR ::
-  VkDevice -> Ptr VkMemoryGetFdInfoKHR -> Ptr CInt -> IO VkResult
+foreign import ccall "dynamic" mkvkGetMemoryFdKHR :: FunPtr (VkDevice -> Ptr VkMemoryGetFdInfoKHR -> Ptr CInt -> IO VkResult) -> (VkDevice -> Ptr VkMemoryGetFdInfoKHR -> Ptr CInt -> IO VkResult)
+vkGetMemoryFdKHR :: VkDevice -> Ptr VkMemoryGetFdInfoKHR -> Ptr CInt -> IO VkResult
+vkGetMemoryFdKHR d = (mkvkGetMemoryFdKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetMemoryFdKHR" $ vkGetDeviceProcAddr d
 pattern VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR = VkStructureType 1000074001
 
 data VkMemoryFdPropertiesKHR =
@@ -89,7 +99,13 @@ instance Storable VkImportMemoryFdInfoKHR where
                 *> poke (ptr `plusPtr` 16) (vkHandleType (poked :: VkImportMemoryFdInfoKHR))
                 *> poke (ptr `plusPtr` 20) (vkFd (poked :: VkImportMemoryFdInfoKHR))
 -- ** vkGetMemoryFdPropertiesKHR
-foreign import ccall "vkGetMemoryFdPropertiesKHR" vkGetMemoryFdPropertiesKHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkGetMemoryFdPropertiesKHR :: FunPtr (VkDevice ->
+  VkExternalMemoryHandleTypeFlagBitsKHR ->
+    CInt -> Ptr VkMemoryFdPropertiesKHR -> IO VkResult) -> (VkDevice ->
+  VkExternalMemoryHandleTypeFlagBitsKHR ->
+    CInt -> Ptr VkMemoryFdPropertiesKHR -> IO VkResult)
+vkGetMemoryFdPropertiesKHR :: VkDevice ->
   VkExternalMemoryHandleTypeFlagBitsKHR ->
     CInt -> Ptr VkMemoryFdPropertiesKHR -> IO VkResult
+vkGetMemoryFdPropertiesKHR d = (mkvkGetMemoryFdPropertiesKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetMemoryFdPropertiesKHR" $ vkGetDeviceProcAddr d

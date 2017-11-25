@@ -8,11 +8,15 @@ import Graphics.Vulkan.Device( VkDevice(..)
                              )
 import Graphics.Vulkan.Buffer( VkBuffer(..)
                              )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Foreign.Storable( Storable(..)
                        )
@@ -23,6 +27,10 @@ import Graphics.Vulkan.Memory( VkDeviceMemory(..)
 import Graphics.Vulkan.Image( VkImage(..)
                             , VkImageCreateFlagBits(..)
                             )
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkDeviceSize(..)
                            , VkStructureType(..)
                            , VkResult(..)
@@ -30,11 +38,15 @@ import Graphics.Vulkan.Core( VkDeviceSize(..)
 
 pattern VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO_KHR = VkStructureType 1000157000
 -- ** vkBindBufferMemory2KHR
-foreign import ccall "vkBindBufferMemory2KHR" vkBindBufferMemory2KHR ::
-  VkDevice -> Word32 -> Ptr VkBindBufferMemoryInfoKHR -> IO VkResult
+foreign import ccall "dynamic" mkvkBindBufferMemory2KHR :: FunPtr (VkDevice -> Word32 -> Ptr VkBindBufferMemoryInfoKHR -> IO VkResult) -> (VkDevice -> Word32 -> Ptr VkBindBufferMemoryInfoKHR -> IO VkResult)
+vkBindBufferMemory2KHR :: VkDevice -> Word32 -> Ptr VkBindBufferMemoryInfoKHR -> IO VkResult
+vkBindBufferMemory2KHR d = (mkvkBindBufferMemory2KHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkBindBufferMemory2KHR" $ vkGetDeviceProcAddr d
 -- ** vkBindImageMemory2KHR
-foreign import ccall "vkBindImageMemory2KHR" vkBindImageMemory2KHR ::
-  VkDevice -> Word32 -> Ptr VkBindImageMemoryInfoKHR -> IO VkResult
+foreign import ccall "dynamic" mkvkBindImageMemory2KHR :: FunPtr (VkDevice -> Word32 -> Ptr VkBindImageMemoryInfoKHR -> IO VkResult) -> (VkDevice -> Word32 -> Ptr VkBindImageMemoryInfoKHR -> IO VkResult)
+vkBindImageMemory2KHR :: VkDevice -> Word32 -> Ptr VkBindImageMemoryInfoKHR -> IO VkResult
+vkBindImageMemory2KHR d = (mkvkBindImageMemory2KHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkBindImageMemory2KHR" $ vkGetDeviceProcAddr d
 pattern VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO_KHR = VkStructureType 1000157001
 pattern VK_IMAGE_CREATE_ALIAS_BIT_KHR = VkImageCreateFlagBits 0x400
 pattern VK_KHR_BIND_MEMORY_2_EXTENSION_NAME =  "VK_KHR_bind_memory2"

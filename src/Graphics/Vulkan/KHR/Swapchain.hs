@@ -12,11 +12,15 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.KHR.Surface( VkCompositeAlphaFlagBitsKHR(..)
                                   , VkColorSpaceKHR(..)
@@ -60,6 +64,12 @@ import Graphics.Vulkan.QueueSemaphore( VkSemaphore(..)
                                      )
 import Graphics.Vulkan.OtherTypes( VkObjectType(..)
                                  )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetDeviceProcAddr
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkExtent2D(..)
                            , VkFormat(..)
                            , VkBool32(..)
@@ -135,16 +145,24 @@ instance Storable VkSwapchainCreateInfoKHR where
                 *> poke (ptr `plusPtr` 96) (vkOldSwapchain (poked :: VkSwapchainCreateInfoKHR))
 pattern VK_IMAGE_LAYOUT_PRESENT_SRC_KHR = VkImageLayout 1000001002
 -- ** vkGetSwapchainImagesKHR
-foreign import ccall "vkGetSwapchainImagesKHR" vkGetSwapchainImagesKHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkGetSwapchainImagesKHR :: FunPtr (VkDevice ->
+  VkSwapchainKHR -> Ptr Word32 -> Ptr VkImage -> IO VkResult) -> (VkDevice ->
+  VkSwapchainKHR -> Ptr Word32 -> Ptr VkImage -> IO VkResult)
+vkGetSwapchainImagesKHR :: VkDevice ->
   VkSwapchainKHR -> Ptr Word32 -> Ptr VkImage -> IO VkResult
+vkGetSwapchainImagesKHR d = (mkvkGetSwapchainImagesKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetSwapchainImagesKHR" $ vkGetDeviceProcAddr d
 -- ** vkDestroySwapchainKHR
-foreign import ccall "vkDestroySwapchainKHR" vkDestroySwapchainKHR ::
-  VkDevice -> VkSwapchainKHR -> Ptr VkAllocationCallbacks -> IO ()
+foreign import ccall "dynamic" mkvkDestroySwapchainKHR :: FunPtr (VkDevice -> VkSwapchainKHR -> Ptr VkAllocationCallbacks -> IO ()) -> (VkDevice -> VkSwapchainKHR -> Ptr VkAllocationCallbacks -> IO ())
+vkDestroySwapchainKHR :: VkDevice -> VkSwapchainKHR -> Ptr VkAllocationCallbacks -> IO ()
+vkDestroySwapchainKHR d = (mkvkDestroySwapchainKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkDestroySwapchainKHR" $ vkGetDeviceProcAddr d
 pattern VK_STRUCTURE_TYPE_PRESENT_INFO_KHR = VkStructureType 1000001001
 -- ** vkQueuePresentKHR
-foreign import ccall "vkQueuePresentKHR" vkQueuePresentKHR ::
-  VkQueue -> Ptr VkPresentInfoKHR -> IO VkResult
+foreign import ccall "dynamic" mkvkQueuePresentKHR :: FunPtr (VkQueue -> Ptr VkPresentInfoKHR -> IO VkResult) -> (VkQueue -> Ptr VkPresentInfoKHR -> IO VkResult)
+vkQueuePresentKHR :: VkInstance -> VkQueue -> Ptr VkPresentInfoKHR -> IO VkResult
+vkQueuePresentKHR i = (mkvkQueuePresentKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkQueuePresentKHR" $ vkGetInstanceProcAddr i
 pattern VK_SUBOPTIMAL_KHR = VkResult 1000001003
 -- ** VkSwapchainCreateFlagsKHR
 newtype VkSwapchainCreateFlagBitsKHR = VkSwapchainCreateFlagBitsKHR VkFlags
@@ -171,16 +189,28 @@ instance Read VkSwapchainCreateFlagBitsKHR where
 pattern VK_OBJECT_TYPE_SWAPCHAIN_KHR = VkObjectType 1000001000
 pattern VK_KHR_SWAPCHAIN_SPEC_VERSION =  0x44
 -- ** vkCreateSwapchainKHR
-foreign import ccall "vkCreateSwapchainKHR" vkCreateSwapchainKHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkCreateSwapchainKHR :: FunPtr (VkDevice ->
+  Ptr VkSwapchainCreateInfoKHR ->
+    Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR -> IO VkResult) -> (VkDevice ->
+  Ptr VkSwapchainCreateInfoKHR ->
+    Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR -> IO VkResult)
+vkCreateSwapchainKHR :: VkDevice ->
   Ptr VkSwapchainCreateInfoKHR ->
     Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR -> IO VkResult
+vkCreateSwapchainKHR d = (mkvkCreateSwapchainKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkCreateSwapchainKHR" $ vkGetDeviceProcAddr d
 pattern VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR = VkStructureType 1000001000
 -- ** vkAcquireNextImageKHR
-foreign import ccall "vkAcquireNextImageKHR" vkAcquireNextImageKHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkAcquireNextImageKHR :: FunPtr (VkDevice ->
+  VkSwapchainKHR ->
+    Word64 -> VkSemaphore -> VkFence -> Ptr Word32 -> IO VkResult) -> (VkDevice ->
+  VkSwapchainKHR ->
+    Word64 -> VkSemaphore -> VkFence -> Ptr Word32 -> IO VkResult)
+vkAcquireNextImageKHR :: VkDevice ->
   VkSwapchainKHR ->
     Word64 -> VkSemaphore -> VkFence -> Ptr Word32 -> IO VkResult
+vkAcquireNextImageKHR d = (mkvkAcquireNextImageKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkAcquireNextImageKHR" $ vkGetDeviceProcAddr d
 
 data VkPresentInfoKHR =
   VkPresentInfoKHR{ vkSType :: VkStructureType 

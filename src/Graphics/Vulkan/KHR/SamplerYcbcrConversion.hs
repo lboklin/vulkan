@@ -12,11 +12,15 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Data.Int( Int32
                )
@@ -52,8 +56,11 @@ import Graphics.Vulkan.ImageView( VkComponentSwizzle(..)
                                 )
 import Graphics.Vulkan.OtherTypes( VkObjectType(..)
                                  )
-import Graphics.Vulkan.DeviceInitialization( VkFormatFeatureFlagBits(..)
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           , VkFormatFeatureFlagBits(..)
                                            )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFormat(..)
                            , VkBool32(..)
                            , VkStructureType(..)
@@ -111,11 +118,19 @@ pattern VK_SAMPLER_YCBCR_RANGE_ITU_FULL_KHR = VkSamplerYcbcrRangeKHR 0
 -- | Luma 0..1 maps to 16..235, chroma -0.5..0.5 to 16..240
 pattern VK_SAMPLER_YCBCR_RANGE_ITU_NARROW_KHR = VkSamplerYcbcrRangeKHR 1
 -- ** vkCreateSamplerYcbcrConversionKHR
-foreign import ccall "vkCreateSamplerYcbcrConversionKHR" vkCreateSamplerYcbcrConversionKHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkCreateSamplerYcbcrConversionKHR :: FunPtr (VkDevice ->
+  Ptr VkSamplerYcbcrConversionCreateInfoKHR ->
+    Ptr VkAllocationCallbacks ->
+      Ptr VkSamplerYcbcrConversionKHR -> IO VkResult) -> (VkDevice ->
+  Ptr VkSamplerYcbcrConversionCreateInfoKHR ->
+    Ptr VkAllocationCallbacks ->
+      Ptr VkSamplerYcbcrConversionKHR -> IO VkResult)
+vkCreateSamplerYcbcrConversionKHR :: VkDevice ->
   Ptr VkSamplerYcbcrConversionCreateInfoKHR ->
     Ptr VkAllocationCallbacks ->
       Ptr VkSamplerYcbcrConversionKHR -> IO VkResult
+vkCreateSamplerYcbcrConversionKHR d = (mkvkCreateSamplerYcbcrConversionKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkCreateSamplerYcbcrConversionKHR" $ vkGetDeviceProcAddr d
 
 data VkSamplerYcbcrConversionImageFormatPropertiesKHR =
   VkSamplerYcbcrConversionImageFormatPropertiesKHR{ vkSType :: VkStructureType 
@@ -227,9 +242,13 @@ pattern VK_FORMAT_R12X4G12X4B12X4A12X4_UNORM_4PACK16_KHR = VkFormat 1000156019
 pattern VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT_KHR = VkFormatFeatureFlagBits 0x800000
 pattern VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16_KHR = VkFormat 1000156009
 -- ** vkDestroySamplerYcbcrConversionKHR
-foreign import ccall "vkDestroySamplerYcbcrConversionKHR" vkDestroySamplerYcbcrConversionKHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkDestroySamplerYcbcrConversionKHR :: FunPtr (VkDevice ->
+  VkSamplerYcbcrConversionKHR -> Ptr VkAllocationCallbacks -> IO ()) -> (VkDevice ->
+  VkSamplerYcbcrConversionKHR -> Ptr VkAllocationCallbacks -> IO ())
+vkDestroySamplerYcbcrConversionKHR :: VkDevice ->
   VkSamplerYcbcrConversionKHR -> Ptr VkAllocationCallbacks -> IO ()
+vkDestroySamplerYcbcrConversionKHR d = (mkvkDestroySamplerYcbcrConversionKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkDestroySamplerYcbcrConversionKHR" $ vkGetDeviceProcAddr d
 
 data VkImagePlaneMemoryRequirementsInfoKHR =
   VkImagePlaneMemoryRequirementsInfoKHR{ vkSType :: VkStructureType 

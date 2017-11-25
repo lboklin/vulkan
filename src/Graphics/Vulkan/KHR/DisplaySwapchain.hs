@@ -10,11 +10,15 @@ import Graphics.Vulkan.KHR.Swapchain( VkSwapchainKHR(..)
                                     , VkSwapchainCreateFlagsKHR(..)
                                     , VkSwapchainCreateFlagBitsKHR(..)
                                     )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.KHR.Surface( VkCompositeAlphaFlagBitsKHR(..)
                                   , VkColorSpaceKHR(..)
@@ -40,6 +44,10 @@ import Graphics.Vulkan.Memory( VkSystemAllocationScope(..)
 import Graphics.Vulkan.Image( VkImageUsageFlagBits(..)
                             , VkImageUsageFlags(..)
                             )
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkOffset2D(..)
                            , VkExtent2D(..)
                            , VkFormat(..)
@@ -76,11 +84,19 @@ instance Storable VkDisplayPresentInfoKHR where
                 *> poke (ptr `plusPtr` 32) (vkDstRect (poked :: VkDisplayPresentInfoKHR))
                 *> poke (ptr `plusPtr` 48) (vkPersistent (poked :: VkDisplayPresentInfoKHR))
 -- ** vkCreateSharedSwapchainsKHR
-foreign import ccall "vkCreateSharedSwapchainsKHR" vkCreateSharedSwapchainsKHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkCreateSharedSwapchainsKHR :: FunPtr (VkDevice ->
+  Word32 ->
+    Ptr VkSwapchainCreateInfoKHR ->
+      Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR -> IO VkResult) -> (VkDevice ->
+  Word32 ->
+    Ptr VkSwapchainCreateInfoKHR ->
+      Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR -> IO VkResult)
+vkCreateSharedSwapchainsKHR :: VkDevice ->
   Word32 ->
     Ptr VkSwapchainCreateInfoKHR ->
       Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR -> IO VkResult
+vkCreateSharedSwapchainsKHR d = (mkvkCreateSharedSwapchainsKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkCreateSharedSwapchainsKHR" $ vkGetDeviceProcAddr d
 pattern VK_KHR_DISPLAY_SWAPCHAIN_SPEC_VERSION =  0x9
 pattern VK_KHR_DISPLAY_SWAPCHAIN_EXTENSION_NAME =  "VK_KHR_display_swapchain"
 pattern VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR = VkStructureType 1000003000

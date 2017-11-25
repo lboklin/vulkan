@@ -5,11 +5,15 @@ module Graphics.Vulkan.KHR.ExternalSemaphoreFd where
 
 import Graphics.Vulkan.Device( VkDevice(..)
                              )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.KHR.ExternalSemaphoreCapabilities( VkExternalSemaphoreHandleTypeFlagBitsKHR(..)
                                                         )
@@ -19,6 +23,10 @@ import Data.Void( Void
                 )
 import Graphics.Vulkan.QueueSemaphore( VkSemaphore(..)
                                      )
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            , VkResult(..)
@@ -78,9 +86,13 @@ instance Storable VkSemaphoreGetFdInfoKHR where
                 *> poke (ptr `plusPtr` 16) (vkSemaphore (poked :: VkSemaphoreGetFdInfoKHR))
                 *> poke (ptr `plusPtr` 24) (vkHandleType (poked :: VkSemaphoreGetFdInfoKHR))
 -- ** vkImportSemaphoreFdKHR
-foreign import ccall "vkImportSemaphoreFdKHR" vkImportSemaphoreFdKHR ::
-  VkDevice -> Ptr VkImportSemaphoreFdInfoKHR -> IO VkResult
+foreign import ccall "dynamic" mkvkImportSemaphoreFdKHR :: FunPtr (VkDevice -> Ptr VkImportSemaphoreFdInfoKHR -> IO VkResult) -> (VkDevice -> Ptr VkImportSemaphoreFdInfoKHR -> IO VkResult)
+vkImportSemaphoreFdKHR :: VkDevice -> Ptr VkImportSemaphoreFdInfoKHR -> IO VkResult
+vkImportSemaphoreFdKHR d = (mkvkImportSemaphoreFdKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkImportSemaphoreFdKHR" $ vkGetDeviceProcAddr d
 pattern VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME =  "VK_KHR_external_semaphore_fd"
 -- ** vkGetSemaphoreFdKHR
-foreign import ccall "vkGetSemaphoreFdKHR" vkGetSemaphoreFdKHR ::
-  VkDevice -> Ptr VkSemaphoreGetFdInfoKHR -> Ptr CInt -> IO VkResult
+foreign import ccall "dynamic" mkvkGetSemaphoreFdKHR :: FunPtr (VkDevice -> Ptr VkSemaphoreGetFdInfoKHR -> Ptr CInt -> IO VkResult) -> (VkDevice -> Ptr VkSemaphoreGetFdInfoKHR -> Ptr CInt -> IO VkResult)
+vkGetSemaphoreFdKHR :: VkDevice -> Ptr VkSemaphoreGetFdInfoKHR -> Ptr CInt -> IO VkResult
+vkGetSemaphoreFdKHR d = (mkvkGetSemaphoreFdKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetSemaphoreFdKHR" $ vkGetDeviceProcAddr d

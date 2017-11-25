@@ -12,11 +12,15 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.KHR.Surface( VkSurfaceTransformFlagsKHR(..)
                                   , VkSurfaceTransformFlagBitsKHR(..)
@@ -49,8 +53,12 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       )
 import Graphics.Vulkan.OtherTypes( VkObjectType(..)
                                  )
-import Graphics.Vulkan.DeviceInitialization( VkInstance(..)
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetInstanceProcAddr
+                                           , VkInstance(..)
                                            )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkOffset2D(..)
                            , VkExtent2D(..)
                            , VkBool32(..)
@@ -139,10 +147,17 @@ instance Storable VkDisplayPlaneCapabilitiesKHR where
 pattern VK_OBJECT_TYPE_DISPLAY_MODE_KHR = VkObjectType 1000002001
 pattern VK_KHR_DISPLAY_EXTENSION_NAME =  "VK_KHR_display"
 -- ** vkGetDisplayModePropertiesKHR
-foreign import ccall "vkGetDisplayModePropertiesKHR" vkGetDisplayModePropertiesKHR ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetDisplayModePropertiesKHR :: FunPtr (VkPhysicalDevice ->
   VkDisplayKHR ->
-    Ptr Word32 -> Ptr VkDisplayModePropertiesKHR -> IO VkResult
+    Ptr Word32 -> Ptr VkDisplayModePropertiesKHR -> IO VkResult) -> (VkPhysicalDevice ->
+  VkDisplayKHR ->
+    Ptr Word32 -> Ptr VkDisplayModePropertiesKHR -> IO VkResult)
+vkGetDisplayModePropertiesKHR :: VkInstance ->
+  VkPhysicalDevice ->
+    VkDisplayKHR ->
+      Ptr Word32 -> Ptr VkDisplayModePropertiesKHR -> IO VkResult
+vkGetDisplayModePropertiesKHR i = (mkvkGetDisplayModePropertiesKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetDisplayModePropertiesKHR" $ vkGetInstanceProcAddr i
 
 data VkDisplayPropertiesKHR =
   VkDisplayPropertiesKHR{ vkDisplay :: VkDisplayKHR 
@@ -172,16 +187,30 @@ instance Storable VkDisplayPropertiesKHR where
                 *> poke (ptr `plusPtr` 36) (vkPlaneReorderPossible (poked :: VkDisplayPropertiesKHR))
                 *> poke (ptr `plusPtr` 40) (vkPersistentContent (poked :: VkDisplayPropertiesKHR))
 -- ** vkGetDisplayPlaneSupportedDisplaysKHR
-foreign import ccall "vkGetDisplayPlaneSupportedDisplaysKHR" vkGetDisplayPlaneSupportedDisplaysKHR ::
+foreign import ccall "dynamic" mkvkGetDisplayPlaneSupportedDisplaysKHR :: FunPtr (VkPhysicalDevice ->
+  Word32 -> Ptr Word32 -> Ptr VkDisplayKHR -> IO VkResult) -> (VkPhysicalDevice ->
+  Word32 -> Ptr Word32 -> Ptr VkDisplayKHR -> IO VkResult)
+vkGetDisplayPlaneSupportedDisplaysKHR :: VkInstance ->
   VkPhysicalDevice ->
-  Word32 -> Ptr Word32 -> Ptr VkDisplayKHR -> IO VkResult
+    Word32 -> Ptr Word32 -> Ptr VkDisplayKHR -> IO VkResult
+vkGetDisplayPlaneSupportedDisplaysKHR i = (mkvkGetDisplayPlaneSupportedDisplaysKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetDisplayPlaneSupportedDisplaysKHR" $ vkGetInstanceProcAddr i
 pattern VK_KHR_DISPLAY_SPEC_VERSION =  0x15
 -- ** vkCreateDisplayModeKHR
-foreign import ccall "vkCreateDisplayModeKHR" vkCreateDisplayModeKHR ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkCreateDisplayModeKHR :: FunPtr (VkPhysicalDevice ->
   VkDisplayKHR ->
     Ptr VkDisplayModeCreateInfoKHR ->
-      Ptr VkAllocationCallbacks -> Ptr VkDisplayModeKHR -> IO VkResult
+      Ptr VkAllocationCallbacks -> Ptr VkDisplayModeKHR -> IO VkResult) -> (VkPhysicalDevice ->
+  VkDisplayKHR ->
+    Ptr VkDisplayModeCreateInfoKHR ->
+      Ptr VkAllocationCallbacks -> Ptr VkDisplayModeKHR -> IO VkResult)
+vkCreateDisplayModeKHR :: VkInstance ->
+  VkPhysicalDevice ->
+    VkDisplayKHR ->
+      Ptr VkDisplayModeCreateInfoKHR ->
+        Ptr VkAllocationCallbacks -> Ptr VkDisplayModeKHR -> IO VkResult
+vkCreateDisplayModeKHR i = (mkvkCreateDisplayModeKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkCreateDisplayModeKHR" $ vkGetInstanceProcAddr i
 
 data VkDisplayPlanePropertiesKHR =
   VkDisplayPlanePropertiesKHR{ vkCurrentDisplay :: VkDisplayKHR 
@@ -196,10 +225,17 @@ instance Storable VkDisplayPlanePropertiesKHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkCurrentDisplay (poked :: VkDisplayPlanePropertiesKHR))
                 *> poke (ptr `plusPtr` 8) (vkCurrentStackIndex (poked :: VkDisplayPlanePropertiesKHR))
 -- ** vkGetDisplayPlaneCapabilitiesKHR
-foreign import ccall "vkGetDisplayPlaneCapabilitiesKHR" vkGetDisplayPlaneCapabilitiesKHR ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetDisplayPlaneCapabilitiesKHR :: FunPtr (VkPhysicalDevice ->
   VkDisplayModeKHR ->
-    Word32 -> Ptr VkDisplayPlaneCapabilitiesKHR -> IO VkResult
+    Word32 -> Ptr VkDisplayPlaneCapabilitiesKHR -> IO VkResult) -> (VkPhysicalDevice ->
+  VkDisplayModeKHR ->
+    Word32 -> Ptr VkDisplayPlaneCapabilitiesKHR -> IO VkResult)
+vkGetDisplayPlaneCapabilitiesKHR :: VkInstance ->
+  VkPhysicalDevice ->
+    VkDisplayModeKHR ->
+      Word32 -> Ptr VkDisplayPlaneCapabilitiesKHR -> IO VkResult
+vkGetDisplayPlaneCapabilitiesKHR i = (mkvkGetDisplayPlaneCapabilitiesKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetDisplayPlaneCapabilitiesKHR" $ vkGetInstanceProcAddr i
 
 data VkDisplayModePropertiesKHR =
   VkDisplayModePropertiesKHR{ vkDisplayMode :: VkDisplayModeKHR 
@@ -273,9 +309,14 @@ instance Storable VkDisplayModeCreateInfoKHR where
                 *> poke (ptr `plusPtr` 16) (vkFlags (poked :: VkDisplayModeCreateInfoKHR))
                 *> poke (ptr `plusPtr` 20) (vkParameters (poked :: VkDisplayModeCreateInfoKHR))
 -- ** vkGetPhysicalDeviceDisplayPlanePropertiesKHR
-foreign import ccall "vkGetPhysicalDeviceDisplayPlanePropertiesKHR" vkGetPhysicalDeviceDisplayPlanePropertiesKHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceDisplayPlanePropertiesKHR :: FunPtr (VkPhysicalDevice ->
+  Ptr Word32 -> Ptr VkDisplayPlanePropertiesKHR -> IO VkResult) -> (VkPhysicalDevice ->
+  Ptr Word32 -> Ptr VkDisplayPlanePropertiesKHR -> IO VkResult)
+vkGetPhysicalDeviceDisplayPlanePropertiesKHR :: VkInstance ->
   VkPhysicalDevice ->
-  Ptr Word32 -> Ptr VkDisplayPlanePropertiesKHR -> IO VkResult
+    Ptr Word32 -> Ptr VkDisplayPlanePropertiesKHR -> IO VkResult
+vkGetPhysicalDeviceDisplayPlanePropertiesKHR i = (mkvkGetPhysicalDeviceDisplayPlanePropertiesKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceDisplayPlanePropertiesKHR" $ vkGetInstanceProcAddr i
 newtype VkDisplayModeKHR = VkDisplayModeKHR Word64
   deriving (Eq, Ord, Storable, Show)
 
@@ -297,11 +338,22 @@ newtype VkDisplaySurfaceCreateFlagsKHR = VkDisplaySurfaceCreateFlagsKHR VkFlags
 newtype VkDisplayKHR = VkDisplayKHR Word64
   deriving (Eq, Ord, Storable, Show)
 -- ** vkGetPhysicalDeviceDisplayPropertiesKHR
-foreign import ccall "vkGetPhysicalDeviceDisplayPropertiesKHR" vkGetPhysicalDeviceDisplayPropertiesKHR ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceDisplayPropertiesKHR :: FunPtr (VkPhysicalDevice ->
+  Ptr Word32 -> Ptr VkDisplayPropertiesKHR -> IO VkResult) -> (VkPhysicalDevice ->
+  Ptr Word32 -> Ptr VkDisplayPropertiesKHR -> IO VkResult)
+vkGetPhysicalDeviceDisplayPropertiesKHR :: VkInstance ->
   VkPhysicalDevice ->
-  Ptr Word32 -> Ptr VkDisplayPropertiesKHR -> IO VkResult
+    Ptr Word32 -> Ptr VkDisplayPropertiesKHR -> IO VkResult
+vkGetPhysicalDeviceDisplayPropertiesKHR i = (mkvkGetPhysicalDeviceDisplayPropertiesKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceDisplayPropertiesKHR" $ vkGetInstanceProcAddr i
 -- ** vkCreateDisplayPlaneSurfaceKHR
-foreign import ccall "vkCreateDisplayPlaneSurfaceKHR" vkCreateDisplayPlaneSurfaceKHR ::
-  VkInstance ->
+foreign import ccall "dynamic" mkvkCreateDisplayPlaneSurfaceKHR :: FunPtr (VkInstance ->
+  Ptr VkDisplaySurfaceCreateInfoKHR ->
+    Ptr VkAllocationCallbacks -> Ptr VkSurfaceKHR -> IO VkResult) -> (VkInstance ->
+  Ptr VkDisplaySurfaceCreateInfoKHR ->
+    Ptr VkAllocationCallbacks -> Ptr VkSurfaceKHR -> IO VkResult)
+vkCreateDisplayPlaneSurfaceKHR :: VkInstance ->
   Ptr VkDisplaySurfaceCreateInfoKHR ->
     Ptr VkAllocationCallbacks -> Ptr VkSurfaceKHR -> IO VkResult
+vkCreateDisplayPlaneSurfaceKHR i = (mkvkCreateDisplayPlaneSurfaceKHR $ castFunPtr $ procAddr) i
+  where procAddr = unsafePerformIO $ withCString "vkCreateDisplayPlaneSurfaceKHR" $ vkGetInstanceProcAddr i

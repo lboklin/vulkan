@@ -5,11 +5,15 @@ module Graphics.Vulkan.KHR.ExternalFenceFd where
 
 import Graphics.Vulkan.Device( VkDevice(..)
                              )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.KHR.ExternalFenceCapabilities( VkExternalFenceHandleTypeFlagBitsKHR(..)
                                                     )
@@ -22,6 +26,10 @@ import Graphics.Vulkan.KHR.ExternalFence( VkFenceImportFlagsKHR(..)
                                         )
 import Data.Void( Void
                 )
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            , VkResult(..)
@@ -59,8 +67,10 @@ instance Storable VkImportFenceFdInfoKHR where
                 *> poke (ptr `plusPtr` 28) (vkHandleType (poked :: VkImportFenceFdInfoKHR))
                 *> poke (ptr `plusPtr` 32) (vkFd (poked :: VkImportFenceFdInfoKHR))
 -- ** vkGetFenceFdKHR
-foreign import ccall "vkGetFenceFdKHR" vkGetFenceFdKHR ::
-  VkDevice -> Ptr VkFenceGetFdInfoKHR -> Ptr CInt -> IO VkResult
+foreign import ccall "dynamic" mkvkGetFenceFdKHR :: FunPtr (VkDevice -> Ptr VkFenceGetFdInfoKHR -> Ptr CInt -> IO VkResult) -> (VkDevice -> Ptr VkFenceGetFdInfoKHR -> Ptr CInt -> IO VkResult)
+vkGetFenceFdKHR :: VkDevice -> Ptr VkFenceGetFdInfoKHR -> Ptr CInt -> IO VkResult
+vkGetFenceFdKHR d = (mkvkGetFenceFdKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetFenceFdKHR" $ vkGetDeviceProcAddr d
 pattern VK_STRUCTURE_TYPE_FENCE_GET_FD_INFO_KHR = VkStructureType 1000115001
 
 data VkFenceGetFdInfoKHR =
@@ -82,5 +92,7 @@ instance Storable VkFenceGetFdInfoKHR where
                 *> poke (ptr `plusPtr` 16) (vkFence (poked :: VkFenceGetFdInfoKHR))
                 *> poke (ptr `plusPtr` 24) (vkHandleType (poked :: VkFenceGetFdInfoKHR))
 -- ** vkImportFenceFdKHR
-foreign import ccall "vkImportFenceFdKHR" vkImportFenceFdKHR ::
-  VkDevice -> Ptr VkImportFenceFdInfoKHR -> IO VkResult
+foreign import ccall "dynamic" mkvkImportFenceFdKHR :: FunPtr (VkDevice -> Ptr VkImportFenceFdInfoKHR -> IO VkResult) -> (VkDevice -> Ptr VkImportFenceFdInfoKHR -> IO VkResult)
+vkImportFenceFdKHR :: VkDevice -> Ptr VkImportFenceFdInfoKHR -> IO VkResult
+vkImportFenceFdKHR d = (mkvkImportFenceFdKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkImportFenceFdKHR" $ vkGetDeviceProcAddr d

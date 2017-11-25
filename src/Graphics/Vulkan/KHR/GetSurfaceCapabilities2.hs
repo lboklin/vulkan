@@ -5,11 +5,15 @@ module Graphics.Vulkan.KHR.GetSurfaceCapabilities2 where
 
 import Graphics.Vulkan.Device( VkPhysicalDevice(..)
                              )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.KHR.Surface( VkSurfaceTransformFlagsKHR(..)
                                   , VkCompositeAlphaFlagBitsKHR(..)
@@ -27,6 +31,11 @@ import Data.Void( Void
 import Graphics.Vulkan.Image( VkImageUsageFlagBits(..)
                             , VkImageUsageFlags(..)
                             )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkExtent2D(..)
                            , VkFormat(..)
                            , VkFlags(..)
@@ -36,10 +45,17 @@ import Graphics.Vulkan.Core( VkExtent2D(..)
 
 pattern VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_KHR = VkStructureType 1000119001
 -- ** vkGetPhysicalDeviceSurfaceFormats2KHR
-foreign import ccall "vkGetPhysicalDeviceSurfaceFormats2KHR" vkGetPhysicalDeviceSurfaceFormats2KHR ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceSurfaceFormats2KHR :: FunPtr (VkPhysicalDevice ->
   Ptr VkPhysicalDeviceSurfaceInfo2KHR ->
-    Ptr Word32 -> Ptr VkSurfaceFormat2KHR -> IO VkResult
+    Ptr Word32 -> Ptr VkSurfaceFormat2KHR -> IO VkResult) -> (VkPhysicalDevice ->
+  Ptr VkPhysicalDeviceSurfaceInfo2KHR ->
+    Ptr Word32 -> Ptr VkSurfaceFormat2KHR -> IO VkResult)
+vkGetPhysicalDeviceSurfaceFormats2KHR :: VkInstance ->
+  VkPhysicalDevice ->
+    Ptr VkPhysicalDeviceSurfaceInfo2KHR ->
+      Ptr Word32 -> Ptr VkSurfaceFormat2KHR -> IO VkResult
+vkGetPhysicalDeviceSurfaceFormats2KHR i = (mkvkGetPhysicalDeviceSurfaceFormats2KHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceSurfaceFormats2KHR" $ vkGetInstanceProcAddr i
 
 data VkSurfaceFormat2KHR =
   VkSurfaceFormat2KHR{ vkSType :: VkStructureType 
@@ -75,10 +91,17 @@ instance Storable VkSurfaceCapabilities2KHR where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkSurfaceCapabilities2KHR))
                 *> poke (ptr `plusPtr` 16) (vkSurfaceCapabilities (poked :: VkSurfaceCapabilities2KHR))
 -- ** vkGetPhysicalDeviceSurfaceCapabilities2KHR
-foreign import ccall "vkGetPhysicalDeviceSurfaceCapabilities2KHR" vkGetPhysicalDeviceSurfaceCapabilities2KHR ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceSurfaceCapabilities2KHR :: FunPtr (VkPhysicalDevice ->
   Ptr VkPhysicalDeviceSurfaceInfo2KHR ->
-    Ptr VkSurfaceCapabilities2KHR -> IO VkResult
+    Ptr VkSurfaceCapabilities2KHR -> IO VkResult) -> (VkPhysicalDevice ->
+  Ptr VkPhysicalDeviceSurfaceInfo2KHR ->
+    Ptr VkSurfaceCapabilities2KHR -> IO VkResult)
+vkGetPhysicalDeviceSurfaceCapabilities2KHR :: VkInstance ->
+  VkPhysicalDevice ->
+    Ptr VkPhysicalDeviceSurfaceInfo2KHR ->
+      Ptr VkSurfaceCapabilities2KHR -> IO VkResult
+vkGetPhysicalDeviceSurfaceCapabilities2KHR i = (mkvkGetPhysicalDeviceSurfaceCapabilities2KHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceSurfaceCapabilities2KHR" $ vkGetInstanceProcAddr i
 
 data VkPhysicalDeviceSurfaceInfo2KHR =
   VkPhysicalDeviceSurfaceInfo2KHR{ vkSType :: VkStructureType 

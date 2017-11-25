@@ -12,10 +12,14 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Data.Bits( Bits
                 , FiniteBits
@@ -31,6 +35,11 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
                                       , prec
                                       )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            )
@@ -122,10 +131,17 @@ pattern VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT_KHR = VkExternalFenceFeatureFla
 
 pattern VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT_KHR = VkExternalFenceFeatureFlagBitsKHR 0x2
 -- ** vkGetPhysicalDeviceExternalFencePropertiesKHR
-foreign import ccall "vkGetPhysicalDeviceExternalFencePropertiesKHR" vkGetPhysicalDeviceExternalFencePropertiesKHR ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceExternalFencePropertiesKHR :: FunPtr (VkPhysicalDevice ->
   Ptr VkPhysicalDeviceExternalFenceInfoKHR ->
-    Ptr VkExternalFencePropertiesKHR -> IO ()
+    Ptr VkExternalFencePropertiesKHR -> IO ()) -> (VkPhysicalDevice ->
+  Ptr VkPhysicalDeviceExternalFenceInfoKHR ->
+    Ptr VkExternalFencePropertiesKHR -> IO ())
+vkGetPhysicalDeviceExternalFencePropertiesKHR :: VkInstance ->
+  VkPhysicalDevice ->
+    Ptr VkPhysicalDeviceExternalFenceInfoKHR ->
+      Ptr VkExternalFencePropertiesKHR -> IO ()
+vkGetPhysicalDeviceExternalFencePropertiesKHR i = (mkvkGetPhysicalDeviceExternalFencePropertiesKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceExternalFencePropertiesKHR" $ vkGetInstanceProcAddr i
 pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FENCE_INFO_KHR = VkStructureType 1000112000
 pattern VK_KHR_EXTERNAL_FENCE_CAPABILITIES_EXTENSION_NAME =  "VK_KHR_external_fence_capabilities"
 

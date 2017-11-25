@@ -13,11 +13,15 @@ import GHC.Read( expectP
                )
 import Graphics.Vulkan.Pipeline( VkPipelineBindPoint(..)
                                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.DescriptorSet( VkDescriptorType(..)
                                     , VkDescriptorSet(..)
@@ -56,6 +60,12 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       )
 import Graphics.Vulkan.OtherTypes( VkObjectType(..)
                                  )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetDeviceProcAddr
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            , VkResult(..)
@@ -105,10 +115,17 @@ instance Storable VkDescriptorUpdateTemplateCreateInfoKHR where
                 *> poke (ptr `plusPtr` 56) (vkPipelineLayout (poked :: VkDescriptorUpdateTemplateCreateInfoKHR))
                 *> poke (ptr `plusPtr` 64) (vkSet (poked :: VkDescriptorUpdateTemplateCreateInfoKHR))
 -- ** vkCmdPushDescriptorSetWithTemplateKHR
-foreign import ccall "vkCmdPushDescriptorSetWithTemplateKHR" vkCmdPushDescriptorSetWithTemplateKHR ::
-  VkCommandBuffer ->
+foreign import ccall "dynamic" mkvkCmdPushDescriptorSetWithTemplateKHR :: FunPtr (VkCommandBuffer ->
   VkDescriptorUpdateTemplateKHR ->
-    VkPipelineLayout -> Word32 -> Ptr Void -> IO ()
+    VkPipelineLayout -> Word32 -> Ptr Void -> IO ()) -> (VkCommandBuffer ->
+  VkDescriptorUpdateTemplateKHR ->
+    VkPipelineLayout -> Word32 -> Ptr Void -> IO ())
+vkCmdPushDescriptorSetWithTemplateKHR :: VkInstance ->
+  VkCommandBuffer ->
+    VkDescriptorUpdateTemplateKHR ->
+      VkPipelineLayout -> Word32 -> Ptr Void -> IO ()
+vkCmdPushDescriptorSetWithTemplateKHR i = (mkvkCmdPushDescriptorSetWithTemplateKHR $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkCmdPushDescriptorSetWithTemplateKHR" $ vkGetInstanceProcAddr i
 
 data VkDescriptorUpdateTemplateEntryKHR =
   VkDescriptorUpdateTemplateEntryKHR{ vkDstBinding :: Word32 
@@ -160,21 +177,39 @@ pattern VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHR = VkDescriptorUp
 pattern VK_KHR_DESCRIPTOR_UPDATE_TEMPLATE_EXTENSION_NAME =  "VK_KHR_descriptor_update_template"
 pattern VK_STRUCTURE_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_CREATE_INFO_KHR = VkStructureType 1000085000
 -- ** vkCreateDescriptorUpdateTemplateKHR
-foreign import ccall "vkCreateDescriptorUpdateTemplateKHR" vkCreateDescriptorUpdateTemplateKHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkCreateDescriptorUpdateTemplateKHR :: FunPtr (VkDevice ->
+  Ptr VkDescriptorUpdateTemplateCreateInfoKHR ->
+    Ptr VkAllocationCallbacks ->
+      Ptr VkDescriptorUpdateTemplateKHR -> IO VkResult) -> (VkDevice ->
+  Ptr VkDescriptorUpdateTemplateCreateInfoKHR ->
+    Ptr VkAllocationCallbacks ->
+      Ptr VkDescriptorUpdateTemplateKHR -> IO VkResult)
+vkCreateDescriptorUpdateTemplateKHR :: VkDevice ->
   Ptr VkDescriptorUpdateTemplateCreateInfoKHR ->
     Ptr VkAllocationCallbacks ->
       Ptr VkDescriptorUpdateTemplateKHR -> IO VkResult
+vkCreateDescriptorUpdateTemplateKHR d = (mkvkCreateDescriptorUpdateTemplateKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkCreateDescriptorUpdateTemplateKHR" $ vkGetDeviceProcAddr d
 -- ** vkDestroyDescriptorUpdateTemplateKHR
-foreign import ccall "vkDestroyDescriptorUpdateTemplateKHR" vkDestroyDescriptorUpdateTemplateKHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkDestroyDescriptorUpdateTemplateKHR :: FunPtr (VkDevice ->
+  VkDescriptorUpdateTemplateKHR -> Ptr VkAllocationCallbacks -> IO ()) -> (VkDevice ->
+  VkDescriptorUpdateTemplateKHR -> Ptr VkAllocationCallbacks -> IO ())
+vkDestroyDescriptorUpdateTemplateKHR :: VkDevice ->
   VkDescriptorUpdateTemplateKHR -> Ptr VkAllocationCallbacks -> IO ()
+vkDestroyDescriptorUpdateTemplateKHR d = (mkvkDestroyDescriptorUpdateTemplateKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkDestroyDescriptorUpdateTemplateKHR" $ vkGetDeviceProcAddr d
 pattern VK_KHR_DESCRIPTOR_UPDATE_TEMPLATE_SPEC_VERSION =  0x1
 -- ** vkUpdateDescriptorSetWithTemplateKHR
-foreign import ccall "vkUpdateDescriptorSetWithTemplateKHR" vkUpdateDescriptorSetWithTemplateKHR ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkUpdateDescriptorSetWithTemplateKHR :: FunPtr (VkDevice ->
+  VkDescriptorSet ->
+    VkDescriptorUpdateTemplateKHR -> Ptr Void -> IO ()) -> (VkDevice ->
+  VkDescriptorSet ->
+    VkDescriptorUpdateTemplateKHR -> Ptr Void -> IO ())
+vkUpdateDescriptorSetWithTemplateKHR :: VkDevice ->
   VkDescriptorSet ->
     VkDescriptorUpdateTemplateKHR -> Ptr Void -> IO ()
+vkUpdateDescriptorSetWithTemplateKHR d = (mkvkUpdateDescriptorSetWithTemplateKHR $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkUpdateDescriptorSetWithTemplateKHR" $ vkGetDeviceProcAddr d
 pattern VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_KHR = VkObjectType 1000085000
 -- ** VkDescriptorUpdateTemplateCreateFlagsKHR-- | Opaque flag
 newtype VkDescriptorUpdateTemplateCreateFlagsKHR = VkDescriptorUpdateTemplateCreateFlagsKHR VkFlags
