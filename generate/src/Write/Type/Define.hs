@@ -40,6 +40,7 @@ writeDefine d =
                                     (C.TypeName uint32_t))
         let hsType = foldr TyFun hsElemType (hsElemType <$ boundNames)
         pure [qc|{hsName} :: {prettyPrint hsType}
+
 {hsName} {hsep (fromString <$> boundNames)} = {prettyPrint expression}
 |]
 
