@@ -30,6 +30,8 @@ import Data.Int( Int32
 import Data.Bits( Bits
                 , FiniteBits
                 )
+import Graphics.Vulkan.EXT.DebugReport( VkDebugReportObjectTypeEXT(..)
+                                      )
 import Foreign.Storable( Storable(..)
                        )
 import Data.Void( Void
@@ -52,6 +54,8 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
                                       , prec
                                       )
+import Graphics.Vulkan.OtherTypes( VkObjectType(..)
+                                 )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            , VkResult(..)
@@ -62,6 +66,7 @@ import Foreign.C.Types( CSize
 
 newtype VkDescriptorUpdateTemplateKHR = VkDescriptorUpdateTemplateKHR Word64
   deriving (Eq, Ord, Storable, Show)
+pattern VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_KHR_EXT = VkDebugReportObjectTypeEXT 1000085000
 
 data VkDescriptorUpdateTemplateCreateInfoKHR =
   VkDescriptorUpdateTemplateCreateInfoKHR{ vkSType :: VkStructureType 
@@ -152,6 +157,8 @@ instance Read VkDescriptorUpdateTemplateTypeKHR where
 pattern VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SET_KHR = VkDescriptorUpdateTemplateTypeKHR 0
 -- | Create descriptor update template for pushed descriptor updates
 pattern VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHR = VkDescriptorUpdateTemplateTypeKHR 1
+pattern VK_KHR_DESCRIPTOR_UPDATE_TEMPLATE_EXTENSION_NAME =  "VK_KHR_descriptor_update_template"
+pattern VK_STRUCTURE_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_CREATE_INFO_KHR = VkStructureType 1000085000
 -- ** vkCreateDescriptorUpdateTemplateKHR
 foreign import ccall "vkCreateDescriptorUpdateTemplateKHR" vkCreateDescriptorUpdateTemplateKHR ::
   VkDevice ->
@@ -162,11 +169,13 @@ foreign import ccall "vkCreateDescriptorUpdateTemplateKHR" vkCreateDescriptorUpd
 foreign import ccall "vkDestroyDescriptorUpdateTemplateKHR" vkDestroyDescriptorUpdateTemplateKHR ::
   VkDevice ->
   VkDescriptorUpdateTemplateKHR -> Ptr VkAllocationCallbacks -> IO ()
+pattern VK_KHR_DESCRIPTOR_UPDATE_TEMPLATE_SPEC_VERSION =  0x1
 -- ** vkUpdateDescriptorSetWithTemplateKHR
 foreign import ccall "vkUpdateDescriptorSetWithTemplateKHR" vkUpdateDescriptorSetWithTemplateKHR ::
   VkDevice ->
   VkDescriptorSet ->
     VkDescriptorUpdateTemplateKHR -> Ptr Void -> IO ()
+pattern VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_KHR = VkObjectType 1000085000
 -- ** VkDescriptorUpdateTemplateCreateFlagsKHR-- | Opaque flag
 newtype VkDescriptorUpdateTemplateCreateFlagsKHR = VkDescriptorUpdateTemplateCreateFlagsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits, Show)

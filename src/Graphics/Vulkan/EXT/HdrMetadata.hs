@@ -1,27 +1,39 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.EXT.HdrMetadata where
 
 import Graphics.Vulkan.Device( VkDevice(..)
                              )
 import Graphics.Vulkan.KHR.Swapchain( VkSwapchainKHR(..)
                                     )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Foreign.Storable( Storable(..)
                        )
 import Data.Void( Void
                 )
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkStructureType(..)
                            )
 import Foreign.C.Types( CFloat(..)
                       , CFloat
                       )
 
+pattern VK_EXT_HDR_METADATA_EXTENSION_NAME =  "VK_EXT_hdr_metadata"
+pattern VK_EXT_HDR_METADATA_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_HDR_METADATA_EXT = VkStructureType 1000105000
 -- | Chromaticity coordinate
 data VkXYColorEXT =
   VkXYColorEXT{ vkX :: CFloat 
@@ -36,9 +48,13 @@ instance Storable VkXYColorEXT where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkX (poked :: VkXYColorEXT))
                 *> poke (ptr `plusPtr` 4) (vkY (poked :: VkXYColorEXT))
 -- ** vkSetHdrMetadataEXT
-foreign import ccall "vkSetHdrMetadataEXT" vkSetHdrMetadataEXT ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkSetHdrMetadataEXT :: FunPtr (VkDevice ->
+  Word32 -> Ptr VkSwapchainKHR -> Ptr VkHdrMetadataEXT -> IO ()) -> (VkDevice ->
+  Word32 -> Ptr VkSwapchainKHR -> Ptr VkHdrMetadataEXT -> IO ())
+vkSetHdrMetadataEXT :: VkDevice ->
   Word32 -> Ptr VkSwapchainKHR -> Ptr VkHdrMetadataEXT -> IO ()
+vkSetHdrMetadataEXT d = (mkvkSetHdrMetadataEXT $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkSetHdrMetadataEXT" $ vkGetDeviceProcAddr d
 
 data VkHdrMetadataEXT =
   VkHdrMetadataEXT{ vkSType :: VkStructureType 

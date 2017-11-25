@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.ExternalSemaphoreFd where
 
 import Graphics.Vulkan.Device( VkDevice(..)
@@ -29,6 +30,8 @@ import Foreign.C.Types( CInt
                       , CInt(..)
                       )
 
+pattern VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR = VkStructureType 1000079000
+pattern VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR = VkStructureType 1000079001
 
 data VkImportSemaphoreFdInfoKHR =
   VkImportSemaphoreFdInfoKHR{ vkSType :: VkStructureType 
@@ -54,6 +57,7 @@ instance Storable VkImportSemaphoreFdInfoKHR where
                 *> poke (ptr `plusPtr` 24) (vkFlags (poked :: VkImportSemaphoreFdInfoKHR))
                 *> poke (ptr `plusPtr` 28) (vkHandleType (poked :: VkImportSemaphoreFdInfoKHR))
                 *> poke (ptr `plusPtr` 32) (vkFd (poked :: VkImportSemaphoreFdInfoKHR))
+pattern VK_KHR_EXTERNAL_SEMAPHORE_FD_SPEC_VERSION =  0x1
 
 data VkSemaphoreGetFdInfoKHR =
   VkSemaphoreGetFdInfoKHR{ vkSType :: VkStructureType 
@@ -76,6 +80,7 @@ instance Storable VkSemaphoreGetFdInfoKHR where
 -- ** vkImportSemaphoreFdKHR
 foreign import ccall "vkImportSemaphoreFdKHR" vkImportSemaphoreFdKHR ::
   VkDevice -> Ptr VkImportSemaphoreFdInfoKHR -> IO VkResult
+pattern VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME =  "VK_KHR_external_semaphore_fd"
 -- ** vkGetSemaphoreFdKHR
 foreign import ccall "vkGetSemaphoreFdKHR" vkGetSemaphoreFdKHR ::
   VkDevice -> Ptr VkSemaphoreGetFdInfoKHR -> Ptr CInt -> IO VkResult

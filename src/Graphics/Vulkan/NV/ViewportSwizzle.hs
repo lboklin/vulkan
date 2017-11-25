@@ -34,6 +34,7 @@ import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            )
 
+pattern VK_NV_VIEWPORT_SWIZZLE_SPEC_VERSION =  0x1
 
 data VkViewportSwizzleNV =
   VkViewportSwizzleNV{ vkX :: VkViewportCoordinateSwizzleNV 
@@ -122,6 +123,8 @@ pattern VK_VIEWPORT_COORDINATE_SWIZZLE_NEGATIVE_Z_NV = VkViewportCoordinateSwizz
 pattern VK_VIEWPORT_COORDINATE_SWIZZLE_POSITIVE_W_NV = VkViewportCoordinateSwizzleNV 6
 
 pattern VK_VIEWPORT_COORDINATE_SWIZZLE_NEGATIVE_W_NV = VkViewportCoordinateSwizzleNV 7
+pattern VK_NV_VIEWPORT_SWIZZLE_EXTENSION_NAME =  "VK_NV_viewport_swizzle"
 -- ** VkPipelineViewportSwizzleStateCreateFlagsNV-- | Opaque flag
 newtype VkPipelineViewportSwizzleStateCreateFlagsNV = VkPipelineViewportSwizzleStateCreateFlagsNV VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits, Show)
+pattern VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SWIZZLE_STATE_CREATE_INFO_NV = VkStructureType 1000098000

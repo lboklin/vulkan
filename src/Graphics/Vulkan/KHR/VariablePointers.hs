@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.VariablePointers where
 
 import Data.Word( Word32
@@ -15,6 +16,8 @@ import Graphics.Vulkan.Core( VkBool32(..)
                            , VkStructureType(..)
                            )
 
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR = VkStructureType 1000120000
+pattern VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME =  "VK_KHR_variable_pointers"
 
 data VkPhysicalDeviceVariablePointerFeaturesKHR =
   VkPhysicalDeviceVariablePointerFeaturesKHR{ vkSType :: VkStructureType 
@@ -34,3 +37,4 @@ instance Storable VkPhysicalDeviceVariablePointerFeaturesKHR where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkPhysicalDeviceVariablePointerFeaturesKHR))
                 *> poke (ptr `plusPtr` 16) (vkVariablePointersStorageBuffer (poked :: VkPhysicalDeviceVariablePointerFeaturesKHR))
                 *> poke (ptr `plusPtr` 20) (vkVariablePointers (poked :: VkPhysicalDeviceVariablePointerFeaturesKHR))
+pattern VK_KHR_VARIABLE_POINTERS_SPEC_VERSION =  0x1

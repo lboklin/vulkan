@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Graphics.Vulkan.NV.FragmentCoverageToColor where
 
@@ -45,3 +46,6 @@ instance Storable VkPipelineCoverageToColorStateCreateInfoNV where
 -- ** VkPipelineCoverageToColorStateCreateFlagsNV-- | Opaque flag
 newtype VkPipelineCoverageToColorStateCreateFlagsNV = VkPipelineCoverageToColorStateCreateFlagsNV VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits, Show)
+pattern VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_TO_COLOR_STATE_CREATE_INFO_NV = VkStructureType 1000149000
+pattern VK_NV_FRAGMENT_COVERAGE_TO_COLOR_SPEC_VERSION =  0x1
+pattern VK_NV_FRAGMENT_COVERAGE_TO_COLOR_EXTENSION_NAME =  "VK_NV_fragment_coverage_to_color"

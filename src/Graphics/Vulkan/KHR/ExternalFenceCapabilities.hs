@@ -70,6 +70,7 @@ pattern VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR = VkExternalFenceHand
 pattern VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_KHR = VkExternalFenceHandleTypeFlagBitsKHR 0x4
 
 pattern VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT_KHR = VkExternalFenceHandleTypeFlagBitsKHR 0x8
+pattern VK_KHR_EXTERNAL_FENCE_CAPABILITIES_SPEC_VERSION =  0x1
 
 data VkExternalFencePropertiesKHR =
   VkExternalFencePropertiesKHR{ vkSType :: VkStructureType 
@@ -92,6 +93,7 @@ instance Storable VkExternalFencePropertiesKHR where
                 *> poke (ptr `plusPtr` 16) (vkExportFromImportedHandleTypes (poked :: VkExternalFencePropertiesKHR))
                 *> poke (ptr `plusPtr` 20) (vkCompatibleHandleTypes (poked :: VkExternalFencePropertiesKHR))
                 *> poke (ptr `plusPtr` 24) (vkExternalFenceFeatures (poked :: VkExternalFencePropertiesKHR))
+pattern VK_STRUCTURE_TYPE_EXTERNAL_FENCE_PROPERTIES_KHR = VkStructureType 1000112001
 -- ** VkExternalFenceFeatureFlagsKHR
 newtype VkExternalFenceFeatureFlagBitsKHR = VkExternalFenceFeatureFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
@@ -124,6 +126,8 @@ foreign import ccall "vkGetPhysicalDeviceExternalFencePropertiesKHR" vkGetPhysic
   VkPhysicalDevice ->
   Ptr VkPhysicalDeviceExternalFenceInfoKHR ->
     Ptr VkExternalFencePropertiesKHR -> IO ()
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FENCE_INFO_KHR = VkStructureType 1000112000
+pattern VK_KHR_EXTERNAL_FENCE_CAPABILITIES_EXTENSION_NAME =  "VK_KHR_external_fence_capabilities"
 
 data VkPhysicalDeviceExternalFenceInfoKHR =
   VkPhysicalDeviceExternalFenceInfoKHR{ vkSType :: VkStructureType 

@@ -1,5 +1,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.BindMemory2 where
 
 import Graphics.Vulkan.Device( VkDevice(..)
@@ -19,18 +21,24 @@ import Data.Void( Void
 import Graphics.Vulkan.Memory( VkDeviceMemory(..)
                              )
 import Graphics.Vulkan.Image( VkImage(..)
+                            , VkImageCreateFlagBits(..)
                             )
 import Graphics.Vulkan.Core( VkDeviceSize(..)
                            , VkStructureType(..)
                            , VkResult(..)
                            )
 
+pattern VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO_KHR = VkStructureType 1000157000
 -- ** vkBindBufferMemory2KHR
 foreign import ccall "vkBindBufferMemory2KHR" vkBindBufferMemory2KHR ::
   VkDevice -> Word32 -> Ptr VkBindBufferMemoryInfoKHR -> IO VkResult
 -- ** vkBindImageMemory2KHR
 foreign import ccall "vkBindImageMemory2KHR" vkBindImageMemory2KHR ::
   VkDevice -> Word32 -> Ptr VkBindImageMemoryInfoKHR -> IO VkResult
+pattern VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO_KHR = VkStructureType 1000157001
+pattern VK_IMAGE_CREATE_ALIAS_BIT_KHR = VkImageCreateFlagBits 0x400
+pattern VK_KHR_BIND_MEMORY_2_EXTENSION_NAME =  "VK_KHR_bind_memory2"
+pattern VK_KHR_BIND_MEMORY_2_SPEC_VERSION =  0x1
 
 data VkBindBufferMemoryInfoKHR =
   VkBindBufferMemoryInfoKHR{ vkSType :: VkStructureType 

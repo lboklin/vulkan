@@ -40,6 +40,7 @@ import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            )
 
+pattern VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME =  "VK_KHR_external_memory_capabilities"
 -- ** VkExternalMemoryHandleTypeFlagsKHR
 newtype VkExternalMemoryHandleTypeFlagBitsKHR = VkExternalMemoryHandleTypeFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
@@ -87,6 +88,8 @@ pattern VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT_KHR = VkExternalMem
 pattern VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT_KHR = VkExternalMemoryHandleTypeFlagBitsKHR 0x20
 
 pattern VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT_KHR = VkExternalMemoryHandleTypeFlagBitsKHR 0x40
+pattern VK_STRUCTURE_TYPE_EXTERNAL_BUFFER_PROPERTIES_KHR = VkStructureType 1000071003
+pattern VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_SPEC_VERSION =  0x1
 
 data VkExternalBufferPropertiesKHR =
   VkExternalBufferPropertiesKHR{ vkSType :: VkStructureType 
@@ -103,6 +106,7 @@ instance Storable VkExternalBufferPropertiesKHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkExternalBufferPropertiesKHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkExternalBufferPropertiesKHR))
                 *> poke (ptr `plusPtr` 16) (vkExternalMemoryProperties (poked :: VkExternalBufferPropertiesKHR))
+pattern VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES_KHR = VkStructureType 1000071001
 
 data VkPhysicalDeviceExternalImageFormatInfoKHR =
   VkPhysicalDeviceExternalImageFormatInfoKHR{ vkSType :: VkStructureType 
@@ -135,6 +139,8 @@ instance Storable VkExternalMemoryPropertiesKHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkExternalMemoryFeatures (poked :: VkExternalMemoryPropertiesKHR))
                 *> poke (ptr `plusPtr` 4) (vkExportFromImportedHandleTypes (poked :: VkExternalMemoryPropertiesKHR))
                 *> poke (ptr `plusPtr` 8) (vkCompatibleHandleTypes (poked :: VkExternalMemoryPropertiesKHR))
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_BUFFER_INFO_KHR = VkStructureType 1000071002
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO_KHR = VkStructureType 1000071000
 
 data VkExternalImageFormatPropertiesKHR =
   VkExternalImageFormatPropertiesKHR{ vkSType :: VkStructureType 
@@ -204,6 +210,7 @@ pattern VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_KHR = VkExternalMemoryFeat
 pattern VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_KHR = VkExternalMemoryFeatureFlagBitsKHR 0x2
 
 pattern VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_KHR = VkExternalMemoryFeatureFlagBitsKHR 0x4
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR = VkStructureType 1000071004
 -- ** vkGetPhysicalDeviceExternalBufferPropertiesKHR
 foreign import ccall "vkGetPhysicalDeviceExternalBufferPropertiesKHR" vkGetPhysicalDeviceExternalBufferPropertiesKHR ::
   VkPhysicalDevice ->

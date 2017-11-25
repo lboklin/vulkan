@@ -1,13 +1,18 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Graphics.Vulkan.NN.ViSurface where
 
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.KHR.Surface( VkSurfaceKHR(..)
                                   )
@@ -27,8 +32,11 @@ import Graphics.Vulkan.Memory( VkSystemAllocationScope(..)
                              , VkInternalAllocationType(..)
                              , PFN_vkInternalFreeNotification
                              )
-import Graphics.Vulkan.DeviceInitialization( VkInstance(..)
+import Graphics.Vulkan.DeviceInitialization( vkGetInstanceProcAddr
+                                           , VkInstance(..)
                                            )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            , VkResult(..)
@@ -56,10 +64,19 @@ instance Storable VkViSurfaceCreateInfoNN where
                 *> poke (ptr `plusPtr` 16) (vkFlags (poked :: VkViSurfaceCreateInfoNN))
                 *> poke (ptr `plusPtr` 24) (vkWindow (poked :: VkViSurfaceCreateInfoNN))
 -- ** vkCreateViSurfaceNN
-foreign import ccall "vkCreateViSurfaceNN" vkCreateViSurfaceNN ::
-  VkInstance ->
+foreign import ccall "dynamic" mkvkCreateViSurfaceNN :: FunPtr (VkInstance ->
+  Ptr VkViSurfaceCreateInfoNN ->
+    Ptr VkAllocationCallbacks -> Ptr VkSurfaceKHR -> IO VkResult) -> (VkInstance ->
+  Ptr VkViSurfaceCreateInfoNN ->
+    Ptr VkAllocationCallbacks -> Ptr VkSurfaceKHR -> IO VkResult)
+vkCreateViSurfaceNN :: VkInstance ->
   Ptr VkViSurfaceCreateInfoNN ->
     Ptr VkAllocationCallbacks -> Ptr VkSurfaceKHR -> IO VkResult
+vkCreateViSurfaceNN i = (mkvkCreateViSurfaceNN $ castFunPtr $ procAddr) i
+  where procAddr = unsafePerformIO $ withCString "vkCreateViSurfaceNN" $ vkGetInstanceProcAddr i
 -- ** VkViSurfaceCreateFlagsNN-- | Opaque flag
 newtype VkViSurfaceCreateFlagsNN = VkViSurfaceCreateFlagsNN VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits, Show)
+pattern VK_NN_VI_SURFACE_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN = VkStructureType 1000062000
+pattern VK_NN_VI_SURFACE_EXTENSION_NAME =  "VK_NN_vi_surface"

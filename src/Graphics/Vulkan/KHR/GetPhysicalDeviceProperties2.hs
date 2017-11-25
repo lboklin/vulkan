@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.GetPhysicalDeviceProperties2 where
 
 import Graphics.Vulkan.Device( VkPhysicalDeviceFeatures(..)
@@ -106,6 +107,10 @@ instance Storable VkFormatProperties2KHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkFormatProperties2KHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkFormatProperties2KHR))
                 *> poke (ptr `plusPtr` 16) (vkFormatProperties (poked :: VkFormatProperties2KHR))
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SPARSE_IMAGE_FORMAT_INFO_2_KHR = VkStructureType 1000059008
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2_KHR = VkStructureType 1000059006
+pattern VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR = VkStructureType 1000059002
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR = VkStructureType 1000059001
 
 data VkPhysicalDeviceProperties2KHR =
   VkPhysicalDeviceProperties2KHR{ vkSType :: VkStructureType 
@@ -128,6 +133,9 @@ foreign import ccall "vkGetPhysicalDeviceFeatures2KHR" vkGetPhysicalDeviceFeatur
 -- ** vkGetPhysicalDeviceProperties2KHR
 foreign import ccall "vkGetPhysicalDeviceProperties2KHR" vkGetPhysicalDeviceProperties2KHR ::
   VkPhysicalDevice -> Ptr VkPhysicalDeviceProperties2KHR -> IO ()
+pattern VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2_KHR = VkStructureType 1000059003
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR = VkStructureType 1000059000
+pattern VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION =  0x1
 
 data VkQueueFamilyProperties2KHR =
   VkQueueFamilyProperties2KHR{ vkSType :: VkStructureType 
@@ -160,6 +168,7 @@ instance Storable VkSparseImageFormatProperties2KHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkSparseImageFormatProperties2KHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkSparseImageFormatProperties2KHR))
                 *> poke (ptr `plusPtr` 16) (vkProperties (poked :: VkSparseImageFormatProperties2KHR))
+pattern VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME =  "VK_KHR_get_physical_device_properties2"
 
 data VkPhysicalDeviceMemoryProperties2KHR =
   VkPhysicalDeviceMemoryProperties2KHR{ vkSType :: VkStructureType 
@@ -220,6 +229,8 @@ instance Storable VkPhysicalDeviceImageFormatInfo2KHR where
                 *> poke (ptr `plusPtr` 24) (vkTiling (poked :: VkPhysicalDeviceImageFormatInfo2KHR))
                 *> poke (ptr `plusPtr` 28) (vkUsage (poked :: VkPhysicalDeviceImageFormatInfo2KHR))
                 *> poke (ptr `plusPtr` 32) (vkFlags (poked :: VkPhysicalDeviceImageFormatInfo2KHR))
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2_KHR = VkStructureType 1000059004
+pattern VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2_KHR = VkStructureType 1000059007
 -- ** vkGetPhysicalDeviceImageFormatProperties2KHR
 foreign import ccall "vkGetPhysicalDeviceImageFormatProperties2KHR" vkGetPhysicalDeviceImageFormatProperties2KHR ::
   VkPhysicalDevice ->
@@ -265,3 +276,4 @@ instance Storable VkPhysicalDeviceSparseImageFormatInfo2KHR where
                 *> poke (ptr `plusPtr` 24) (vkSamples (poked :: VkPhysicalDeviceSparseImageFormatInfo2KHR))
                 *> poke (ptr `plusPtr` 28) (vkUsage (poked :: VkPhysicalDeviceSparseImageFormatInfo2KHR))
                 *> poke (ptr `plusPtr` 32) (vkTiling (poked :: VkPhysicalDeviceSparseImageFormatInfo2KHR))
+pattern VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR = VkStructureType 1000059005

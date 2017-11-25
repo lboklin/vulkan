@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.AMD.TextureGatherBiasLod where
 
 import Data.Word( Word32
@@ -31,3 +32,6 @@ instance Storable VkTextureLODGatherFormatPropertiesAMD where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkTextureLODGatherFormatPropertiesAMD))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkTextureLODGatherFormatPropertiesAMD))
                 *> poke (ptr `plusPtr` 16) (vkSupportsTextureGatherLODBiasAMD (poked :: VkTextureLODGatherFormatPropertiesAMD))
+pattern VK_STRUCTURE_TYPE_TEXTURE_LOD_GATHER_FORMAT_PROPERTIES_AMD = VkStructureType 1000041000
+pattern VK_AMD_TEXTURE_GATHER_BIAS_LOD_SPEC_VERSION =  0x1
+pattern VK_AMD_TEXTURE_GATHER_BIAS_LOD_EXTENSION_NAME =  "VK_AMD_texture_gather_bias_lod"

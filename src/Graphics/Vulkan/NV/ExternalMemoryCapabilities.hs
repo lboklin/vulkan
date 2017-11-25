@@ -12,11 +12,15 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Data.Bits( Bits
                 , FiniteBits
@@ -40,8 +44,12 @@ import Graphics.Vulkan.Image( VkImageTiling(..)
                             , VkImageCreateFlagBits(..)
                             , VkImageUsageFlags(..)
                             )
-import Graphics.Vulkan.DeviceInitialization( VkImageFormatProperties(..)
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetInstanceProcAddr
+                                           , VkImageFormatProperties(..)
                                            )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkDeviceSize(..)
                            , VkExtent3D(..)
                            , VkFormat(..)
@@ -49,16 +57,35 @@ import Graphics.Vulkan.Core( VkDeviceSize(..)
                            , VkResult(..)
                            )
 
+pattern VK_NV_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME =  "VK_NV_external_memory_capabilities"
+pattern VK_NV_EXTERNAL_MEMORY_CAPABILITIES_SPEC_VERSION =  0x1
 -- ** vkGetPhysicalDeviceExternalImageFormatPropertiesNV
-foreign import ccall "vkGetPhysicalDeviceExternalImageFormatPropertiesNV" vkGetPhysicalDeviceExternalImageFormatPropertiesNV ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceExternalImageFormatPropertiesNV :: FunPtr (VkPhysicalDevice ->
   VkFormat ->
     VkImageType ->
       VkImageTiling ->
         VkImageUsageFlags ->
           VkImageCreateFlags ->
             VkExternalMemoryHandleTypeFlagsNV ->
-              Ptr VkExternalImageFormatPropertiesNV -> IO VkResult
+              Ptr VkExternalImageFormatPropertiesNV -> IO VkResult) -> (VkPhysicalDevice ->
+  VkFormat ->
+    VkImageType ->
+      VkImageTiling ->
+        VkImageUsageFlags ->
+          VkImageCreateFlags ->
+            VkExternalMemoryHandleTypeFlagsNV ->
+              Ptr VkExternalImageFormatPropertiesNV -> IO VkResult)
+vkGetPhysicalDeviceExternalImageFormatPropertiesNV :: VkInstance ->
+  VkPhysicalDevice ->
+    VkFormat ->
+      VkImageType ->
+        VkImageTiling ->
+          VkImageUsageFlags ->
+            VkImageCreateFlags ->
+              VkExternalMemoryHandleTypeFlagsNV ->
+                Ptr VkExternalImageFormatPropertiesNV -> IO VkResult
+vkGetPhysicalDeviceExternalImageFormatPropertiesNV i = (mkvkGetPhysicalDeviceExternalImageFormatPropertiesNV $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceExternalImageFormatPropertiesNV" $ vkGetInstanceProcAddr i
 -- ** VkExternalMemoryFeatureFlagsNV
 newtype VkExternalMemoryFeatureFlagBitsNV = VkExternalMemoryFeatureFlagBitsNV VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)

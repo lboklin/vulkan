@@ -1,2 +1,3 @@
 .stack-work/
 vulkan.cabal
+generate/out/

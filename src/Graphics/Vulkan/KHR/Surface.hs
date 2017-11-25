@@ -46,6 +46,8 @@ import Text.ParserCombinators.ReadPrec( (+++)
 import Graphics.Vulkan.Image( VkImageUsageFlagBits(..)
                             , VkImageUsageFlags(..)
                             )
+import Graphics.Vulkan.OtherTypes( VkObjectType(..)
+                                 )
 import Graphics.Vulkan.DeviceInitialization( VkInstance(..)
                                            )
 import Graphics.Vulkan.Core( VkExtent2D(..)
@@ -57,10 +59,13 @@ import Graphics.Vulkan.Core( VkExtent2D(..)
 import Foreign.C.Types( CSize(..)
                       )
 
+pattern VK_KHR_SURFACE_EXTENSION_NAME =  "VK_KHR_surface"
+pattern VK_COLORSPACE_SRGB_NONLINEAR_KHR =  0x0
 -- ** vkGetPhysicalDeviceSurfaceFormatsKHR
 foreign import ccall "vkGetPhysicalDeviceSurfaceFormatsKHR" vkGetPhysicalDeviceSurfaceFormatsKHR ::
   VkPhysicalDevice ->
   VkSurfaceKHR -> Ptr Word32 -> Ptr VkSurfaceFormatKHR -> IO VkResult
+pattern VK_KHR_SURFACE_SPEC_VERSION =  0x19
 -- ** vkGetPhysicalDeviceSurfaceCapabilitiesKHR
 foreign import ccall "vkGetPhysicalDeviceSurfaceCapabilitiesKHR" vkGetPhysicalDeviceSurfaceCapabilitiesKHR ::
   VkPhysicalDevice ->
@@ -131,12 +136,14 @@ pattern VK_PRESENT_MODE_MAILBOX_KHR = VkPresentModeKHR 1
 pattern VK_PRESENT_MODE_FIFO_KHR = VkPresentModeKHR 2
 
 pattern VK_PRESENT_MODE_FIFO_RELAXED_KHR = VkPresentModeKHR 3
+pattern VK_ERROR_NATIVE_WINDOW_IN_USE_KHR = VkResult (-1000000001)
 newtype VkSurfaceKHR = VkSurfaceKHR Word64
   deriving (Eq, Ord, Storable, Show)
 -- ** vkGetPhysicalDeviceSurfaceSupportKHR
 foreign import ccall "vkGetPhysicalDeviceSurfaceSupportKHR" vkGetPhysicalDeviceSurfaceSupportKHR ::
   VkPhysicalDevice ->
   Word32 -> VkSurfaceKHR -> Ptr VkBool32 -> IO VkResult
+pattern VK_ERROR_SURFACE_LOST_KHR = VkResult (-1000000000)
 
 data VkSurfaceFormatKHR =
   VkSurfaceFormatKHR{ vkFormat :: VkFormat 
@@ -153,6 +160,7 @@ instance Storable VkSurfaceFormatKHR where
 -- ** vkDestroySurfaceKHR
 foreign import ccall "vkDestroySurfaceKHR" vkDestroySurfaceKHR ::
   VkInstance -> VkSurfaceKHR -> Ptr VkAllocationCallbacks -> IO ()
+pattern VK_OBJECT_TYPE_SURFACE_KHR = VkObjectType 1000000000
 -- ** VkColorSpaceKHR
 newtype VkColorSpaceKHR = VkColorSpaceKHR Int32
   deriving (Eq, Ord, Storable)

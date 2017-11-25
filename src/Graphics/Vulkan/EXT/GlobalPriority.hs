@@ -26,8 +26,12 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , prec
                                       )
 import Graphics.Vulkan.Core( VkStructureType(..)
+                           , VkResult(..)
                            )
 
+pattern VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT = VkStructureType 1000174000
+pattern VK_ERROR_NOT_PERMITTED_EXT = VkResult (-1000174001)
+pattern VK_EXT_GLOBAL_PRIORITY_SPEC_VERSION =  0x1
 -- ** VkQueueGlobalPriorityEXT
 newtype VkQueueGlobalPriorityEXT = VkQueueGlobalPriorityEXT Int32
   deriving (Eq, Ord, Storable)
@@ -59,6 +63,7 @@ pattern VK_QUEUE_GLOBAL_PRIORITY_MEDIUM = VkQueueGlobalPriorityEXT 256
 pattern VK_QUEUE_GLOBAL_PRIORITY_HIGH = VkQueueGlobalPriorityEXT 512
 
 pattern VK_QUEUE_GLOBAL_PRIORITY_REALTIME = VkQueueGlobalPriorityEXT 1024
+pattern VK_EXT_GLOBAL_PRIORITY_EXTENSION_NAME =  "VK_EXT_global_priority"
 
 data VkDeviceQueueGlobalPriorityCreateInfoEXT =
   VkDeviceQueueGlobalPriorityCreateInfoEXT{ vkSType :: VkStructureType 

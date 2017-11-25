@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.ImageFormatList where
 
 import Data.Word( Word32
@@ -15,6 +16,9 @@ import Graphics.Vulkan.Core( VkFormat(..)
                            , VkStructureType(..)
                            )
 
+pattern VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO_KHR = VkStructureType 1000147000
+pattern VK_KHR_IMAGE_FORMAT_LIST_EXTENSION_NAME =  "VK_KHR_image_format_list"
+pattern VK_KHR_IMAGE_FORMAT_LIST_SPEC_VERSION =  0x1
 
 data VkImageFormatListCreateInfoKHR =
   VkImageFormatListCreateInfoKHR{ vkSType :: VkStructureType 

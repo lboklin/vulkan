@@ -169,6 +169,7 @@ bespokeModuleExports = M.fromList
                  , "VkRenderPass"
                  , "VkFramebuffer"
                  , "VkAccessFlags"
+                 , "VkSubpassDescriptionFlagBits"
                  ]
     )
   , ( ModuleName "Graphics.Vulkan.Core"
@@ -231,6 +232,9 @@ bespokeModuleExports = M.fromList
                  , "VkPipelineStageFlagBits"
                  , "VkPipelineStageFlags"
                  , "VkDynamicState"
+                 , "VkPipelineCreateFlagBits"
+                 , "VkBlendOp"
+                 , "VkPolygonMode"
                  ]
     )
   , ( ModuleName "Graphics.Vulkan.KHR.Surface"

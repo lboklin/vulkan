@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.GetSurfaceCapabilities2 where
 
 import Graphics.Vulkan.Device( VkPhysicalDevice(..)
@@ -33,6 +34,7 @@ import Graphics.Vulkan.Core( VkExtent2D(..)
                            , VkResult(..)
                            )
 
+pattern VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_KHR = VkStructureType 1000119001
 -- ** vkGetPhysicalDeviceSurfaceFormats2KHR
 foreign import ccall "vkGetPhysicalDeviceSurfaceFormats2KHR" vkGetPhysicalDeviceSurfaceFormats2KHR ::
   VkPhysicalDevice ->
@@ -54,6 +56,8 @@ instance Storable VkSurfaceFormat2KHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkSurfaceFormat2KHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkSurfaceFormat2KHR))
                 *> poke (ptr `plusPtr` 16) (vkSurfaceFormat (poked :: VkSurfaceFormat2KHR))
+pattern VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME =  "VK_KHR_get_surface_capabilities2"
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR = VkStructureType 1000119000
 
 data VkSurfaceCapabilities2KHR =
   VkSurfaceCapabilities2KHR{ vkSType :: VkStructureType 
@@ -91,3 +95,5 @@ instance Storable VkPhysicalDeviceSurfaceInfo2KHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkPhysicalDeviceSurfaceInfo2KHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkPhysicalDeviceSurfaceInfo2KHR))
                 *> poke (ptr `plusPtr` 16) (vkSurface (poked :: VkPhysicalDeviceSurfaceInfo2KHR))
+pattern VK_KHR_GET_SURFACE_CAPABILITIES_2_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_SURFACE_FORMAT_2_KHR = VkStructureType 1000119002

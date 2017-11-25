@@ -30,6 +30,9 @@ import Text.ParserCombinators.ReadPrec( (+++)
 import Graphics.Vulkan.Core( VkStructureType(..)
                            )
 
+pattern VK_STRUCTURE_TYPE_VALIDATION_FLAGS_EXT = VkStructureType 1000061000
+pattern VK_EXT_VALIDATION_FLAGS_EXTENSION_NAME =  "VK_EXT_validation_flags"
+pattern VK_EXT_VALIDATION_FLAGS_SPEC_VERSION =  0x1
 
 data VkValidationFlagsEXT =
   VkValidationFlagsEXT{ vkSType :: VkStructureType 

@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.NV.DedicatedAllocation where
 
 import Graphics.Vulkan.Buffer( VkBuffer(..)
@@ -20,6 +21,8 @@ import Graphics.Vulkan.Core( VkBool32(..)
                            , VkStructureType(..)
                            )
 
+pattern VK_NV_DEDICATED_ALLOCATION_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV = VkStructureType 1000026002
 
 data VkDedicatedAllocationImageCreateInfoNV =
   VkDedicatedAllocationImageCreateInfoNV{ vkSType :: VkStructureType 
@@ -36,6 +39,7 @@ instance Storable VkDedicatedAllocationImageCreateInfoNV where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkDedicatedAllocationImageCreateInfoNV))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkDedicatedAllocationImageCreateInfoNV))
                 *> poke (ptr `plusPtr` 16) (vkDedicatedAllocation (poked :: VkDedicatedAllocationImageCreateInfoNV))
+pattern VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV = VkStructureType 1000026001
 
 data VkDedicatedAllocationMemoryAllocateInfoNV =
   VkDedicatedAllocationMemoryAllocateInfoNV{ vkSType :: VkStructureType 
@@ -71,3 +75,5 @@ instance Storable VkDedicatedAllocationBufferCreateInfoNV where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkDedicatedAllocationBufferCreateInfoNV))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkDedicatedAllocationBufferCreateInfoNV))
                 *> poke (ptr `plusPtr` 16) (vkDedicatedAllocation (poked :: VkDedicatedAllocationBufferCreateInfoNV))
+pattern VK_NV_DEDICATED_ALLOCATION_EXTENSION_NAME =  "VK_NV_dedicated_allocation"
+pattern VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV = VkStructureType 1000026000

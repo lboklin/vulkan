@@ -16,11 +16,15 @@ import GHC.Read( expectP
                )
 import Graphics.Vulkan.Pipeline( VkPipeline(..)
                                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Data.Int( Int32
                )
@@ -38,6 +42,10 @@ import Text.ParserCombinators.ReadPrec( (+++)
 import Graphics.Vulkan.Shader( VkShaderStageFlags(..)
                              , VkShaderStageFlagBits(..)
                              )
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkResult(..)
                            )
@@ -45,6 +53,8 @@ import Foreign.C.Types( CSize
                       , CSize(..)
                       )
 
+pattern VK_AMD_SHADER_INFO_EXTENSION_NAME =  "VK_AMD_shader_info"
+pattern VK_AMD_SHADER_INFO_SPEC_VERSION =  0x1
 
 data VkShaderStatisticsInfoAMD =
   VkShaderStatisticsInfoAMD{ vkShaderStageMask :: VkShaderStageFlags 
@@ -96,11 +106,19 @@ instance Storable VkShaderResourceUsageAMD where
                 *> poke (ptr `plusPtr` 16) (vkLdsUsageSizeInBytes (poked :: VkShaderResourceUsageAMD))
                 *> poke (ptr `plusPtr` 24) (vkScratchMemUsageInBytes (poked :: VkShaderResourceUsageAMD))
 -- ** vkGetShaderInfoAMD
-foreign import ccall "vkGetShaderInfoAMD" vkGetShaderInfoAMD ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkGetShaderInfoAMD :: FunPtr (VkDevice ->
+  VkPipeline ->
+    VkShaderStageFlagBits ->
+      VkShaderInfoTypeAMD -> Ptr CSize -> Ptr Void -> IO VkResult) -> (VkDevice ->
+  VkPipeline ->
+    VkShaderStageFlagBits ->
+      VkShaderInfoTypeAMD -> Ptr CSize -> Ptr Void -> IO VkResult)
+vkGetShaderInfoAMD :: VkDevice ->
   VkPipeline ->
     VkShaderStageFlagBits ->
       VkShaderInfoTypeAMD -> Ptr CSize -> Ptr Void -> IO VkResult
+vkGetShaderInfoAMD d = (mkvkGetShaderInfoAMD $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetShaderInfoAMD" $ vkGetDeviceProcAddr d
 -- ** VkShaderInfoTypeAMD
 newtype VkShaderInfoTypeAMD = VkShaderInfoTypeAMD Int32
   deriving (Eq, Ord, Storable)

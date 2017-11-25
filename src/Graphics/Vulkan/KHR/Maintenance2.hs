@@ -1,4 +1,5 @@
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE Strict #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -28,6 +29,8 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , prec
                                       )
 import Graphics.Vulkan.Image( VkImageUsageFlagBits(..)
+                            , VkImageLayout(..)
+                            , VkImageCreateFlagBits(..)
                             , VkImageAspectFlagBits(..)
                             , VkImageAspectFlags(..)
                             , VkImageUsageFlags(..)
@@ -36,6 +39,8 @@ import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            )
 
+pattern VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO_KHR = VkStructureType 1000117003
+pattern VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR = VkImageLayout 1000117001
 -- ** VkTessellationDomainOriginKHR
 newtype VkTessellationDomainOriginKHR = VkTessellationDomainOriginKHR Int32
   deriving (Eq, Ord, Storable)
@@ -59,6 +64,11 @@ instance Read VkTessellationDomainOriginKHR where
 pattern VK_TESSELLATION_DOMAIN_ORIGIN_UPPER_LEFT_KHR = VkTessellationDomainOriginKHR 0
 
 pattern VK_TESSELLATION_DOMAIN_ORIGIN_LOWER_LEFT_KHR = VkTessellationDomainOriginKHR 1
+pattern VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT_KHR = VkImageCreateFlagBits 0x80
+pattern VK_KHR_MAINTENANCE2_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_RENDER_PASS_INPUT_ATTACHMENT_ASPECT_CREATE_INFO_KHR = VkStructureType 1000117001
+pattern VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL_KHR = VkImageLayout 1000117000
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES_KHR = VkStructureType 1000117000
 
 data VkPipelineTessellationDomainOriginStateCreateInfoKHR =
   VkPipelineTessellationDomainOriginStateCreateInfoKHR{ vkSType :: VkStructureType 
@@ -130,6 +140,7 @@ instance Storable VkPhysicalDevicePointClippingPropertiesKHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkPhysicalDevicePointClippingPropertiesKHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkPhysicalDevicePointClippingPropertiesKHR))
                 *> poke (ptr `plusPtr` 16) (vkPointClippingBehavior (poked :: VkPhysicalDevicePointClippingPropertiesKHR))
+pattern VK_KHR_MAINTENANCE2_EXTENSION_NAME =  "VK_KHR_maintenance2"
 
 data VkRenderPassInputAttachmentAspectCreateInfoKHR =
   VkRenderPassInputAttachmentAspectCreateInfoKHR{ vkSType :: VkStructureType 
@@ -149,6 +160,8 @@ instance Storable VkRenderPassInputAttachmentAspectCreateInfoKHR where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkRenderPassInputAttachmentAspectCreateInfoKHR))
                 *> poke (ptr `plusPtr` 16) (vkAspectReferenceCount (poked :: VkRenderPassInputAttachmentAspectCreateInfoKHR))
                 *> poke (ptr `plusPtr` 24) (vkPAspectReferences (poked :: VkRenderPassInputAttachmentAspectCreateInfoKHR))
+pattern VK_IMAGE_CREATE_EXTENDED_USAGE_BIT_KHR = VkImageCreateFlagBits 0x100
+pattern VK_STRUCTURE_TYPE_IMAGE_VIEW_USAGE_CREATE_INFO_KHR = VkStructureType 1000117002
 
 data VkImageViewUsageCreateInfoKHR =
   VkImageViewUsageCreateInfoKHR{ vkSType :: VkStructureType 

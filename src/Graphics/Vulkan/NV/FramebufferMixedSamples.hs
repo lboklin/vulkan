@@ -38,6 +38,7 @@ import Foreign.C.Types( CFloat(..)
                       , CFloat
                       )
 
+pattern VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_MODULATION_STATE_CREATE_INFO_NV = VkStructureType 1000152000
 -- ** VkCoverageModulationModeNV
 newtype VkCoverageModulationModeNV = VkCoverageModulationModeNV Int32
   deriving (Eq, Ord, Storable)
@@ -97,6 +98,8 @@ instance Storable VkPipelineCoverageModulationStateCreateInfoNV where
                 *> poke (ptr `plusPtr` 24) (vkCoverageModulationTableEnable (poked :: VkPipelineCoverageModulationStateCreateInfoNV))
                 *> poke (ptr `plusPtr` 28) (vkCoverageModulationTableCount (poked :: VkPipelineCoverageModulationStateCreateInfoNV))
                 *> poke (ptr `plusPtr` 32) (vkPCoverageModulationTable (poked :: VkPipelineCoverageModulationStateCreateInfoNV))
+pattern VK_NV_FRAMEBUFFER_MIXED_SAMPLES_SPEC_VERSION =  0x1
+pattern VK_NV_FRAMEBUFFER_MIXED_SAMPLES_EXTENSION_NAME =  "VK_NV_framebuffer_mixed_samples"
 -- ** VkPipelineCoverageModulationStateCreateFlagsNV-- | Opaque flag
 newtype VkPipelineCoverageModulationStateCreateFlagsNV = VkPipelineCoverageModulationStateCreateFlagsNV VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits, Show)

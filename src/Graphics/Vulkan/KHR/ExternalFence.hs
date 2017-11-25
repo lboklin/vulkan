@@ -36,6 +36,9 @@ import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            )
 
+pattern VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO_KHR = VkStructureType 1000113000
+pattern VK_KHR_EXTERNAL_FENCE_SPEC_VERSION =  0x1
+pattern VK_KHR_EXTERNAL_FENCE_EXTENSION_NAME =  "VK_KHR_external_fence"
 -- ** VkFenceImportFlagsKHR
 newtype VkFenceImportFlagBitsKHR = VkFenceImportFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)

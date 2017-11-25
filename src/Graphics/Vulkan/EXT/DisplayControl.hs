@@ -13,11 +13,15 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Data.Int( Int32
                )
@@ -45,6 +49,10 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
                                       , prec
                                       )
+import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            , VkResult(..)
@@ -87,6 +95,7 @@ instance Storable VkDisplayEventInfoEXT where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkDisplayEventInfoEXT))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkDisplayEventInfoEXT))
                 *> poke (ptr `plusPtr` 16) (vkDisplayEvent (poked :: VkDisplayEventInfoEXT))
+pattern VK_EXT_DISPLAY_CONTROL_EXTENSION_NAME =  "VK_EXT_display_control"
 
 data VkDeviceEventInfoEXT =
   VkDeviceEventInfoEXT{ vkSType :: VkStructureType 
@@ -104,14 +113,26 @@ instance Storable VkDeviceEventInfoEXT where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkDeviceEventInfoEXT))
                 *> poke (ptr `plusPtr` 16) (vkDeviceEvent (poked :: VkDeviceEventInfoEXT))
 -- ** vkDisplayPowerControlEXT
-foreign import ccall "vkDisplayPowerControlEXT" vkDisplayPowerControlEXT ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkDisplayPowerControlEXT :: FunPtr (VkDevice ->
+  VkDisplayKHR -> Ptr VkDisplayPowerInfoEXT -> IO VkResult) -> (VkDevice ->
+  VkDisplayKHR -> Ptr VkDisplayPowerInfoEXT -> IO VkResult)
+vkDisplayPowerControlEXT :: VkDevice ->
   VkDisplayKHR -> Ptr VkDisplayPowerInfoEXT -> IO VkResult
+vkDisplayPowerControlEXT d = (mkvkDisplayPowerControlEXT $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkDisplayPowerControlEXT" $ vkGetDeviceProcAddr d
+pattern VK_EXT_DISPLAY_CONTROL_SPEC_VERSION =  0x1
 -- ** vkGetSwapchainCounterEXT
-foreign import ccall "vkGetSwapchainCounterEXT" vkGetSwapchainCounterEXT ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkGetSwapchainCounterEXT :: FunPtr (VkDevice ->
+  VkSwapchainKHR ->
+    VkSurfaceCounterFlagBitsEXT -> Ptr Word64 -> IO VkResult) -> (VkDevice ->
+  VkSwapchainKHR ->
+    VkSurfaceCounterFlagBitsEXT -> Ptr Word64 -> IO VkResult)
+vkGetSwapchainCounterEXT :: VkDevice ->
   VkSwapchainKHR ->
     VkSurfaceCounterFlagBitsEXT -> Ptr Word64 -> IO VkResult
+vkGetSwapchainCounterEXT d = (mkvkGetSwapchainCounterEXT $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetSwapchainCounterEXT" $ vkGetDeviceProcAddr d
+pattern VK_STRUCTURE_TYPE_DISPLAY_EVENT_INFO_EXT = VkStructureType 1000091002
 -- ** VkDisplayEventTypeEXT
 newtype VkDisplayEventTypeEXT = VkDisplayEventTypeEXT Int32
   deriving (Eq, Ord, Storable)
@@ -132,11 +153,19 @@ instance Read VkDisplayEventTypeEXT where
 
 pattern VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT = VkDisplayEventTypeEXT 0
 -- ** vkRegisterDisplayEventEXT
-foreign import ccall "vkRegisterDisplayEventEXT" vkRegisterDisplayEventEXT ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkRegisterDisplayEventEXT :: FunPtr (VkDevice ->
+  VkDisplayKHR ->
+    Ptr VkDisplayEventInfoEXT ->
+      Ptr VkAllocationCallbacks -> Ptr VkFence -> IO VkResult) -> (VkDevice ->
+  VkDisplayKHR ->
+    Ptr VkDisplayEventInfoEXT ->
+      Ptr VkAllocationCallbacks -> Ptr VkFence -> IO VkResult)
+vkRegisterDisplayEventEXT :: VkDevice ->
   VkDisplayKHR ->
     Ptr VkDisplayEventInfoEXT ->
       Ptr VkAllocationCallbacks -> Ptr VkFence -> IO VkResult
+vkRegisterDisplayEventEXT d = (mkvkRegisterDisplayEventEXT $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkRegisterDisplayEventEXT" $ vkGetDeviceProcAddr d
 -- ** VkDisplayPowerStateEXT
 newtype VkDisplayPowerStateEXT = VkDisplayPowerStateEXT Int32
   deriving (Eq, Ord, Storable)
@@ -180,6 +209,7 @@ instance Storable VkDisplayPowerInfoEXT where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkDisplayPowerInfoEXT))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkDisplayPowerInfoEXT))
                 *> poke (ptr `plusPtr` 16) (vkPowerState (poked :: VkDisplayPowerInfoEXT))
+pattern VK_STRUCTURE_TYPE_DEVICE_EVENT_INFO_EXT = VkStructureType 1000091001
 -- ** VkDeviceEventTypeEXT
 newtype VkDeviceEventTypeEXT = VkDeviceEventTypeEXT Int32
   deriving (Eq, Ord, Storable)
@@ -199,8 +229,16 @@ instance Read VkDeviceEventTypeEXT where
                     )
 
 pattern VK_DEVICE_EVENT_TYPE_DISPLAY_HOTPLUG_EXT = VkDeviceEventTypeEXT 0
+pattern VK_STRUCTURE_TYPE_DISPLAY_POWER_INFO_EXT = VkStructureType 1000091000
 -- ** vkRegisterDeviceEventEXT
-foreign import ccall "vkRegisterDeviceEventEXT" vkRegisterDeviceEventEXT ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkRegisterDeviceEventEXT :: FunPtr (VkDevice ->
+  Ptr VkDeviceEventInfoEXT ->
+    Ptr VkAllocationCallbacks -> Ptr VkFence -> IO VkResult) -> (VkDevice ->
+  Ptr VkDeviceEventInfoEXT ->
+    Ptr VkAllocationCallbacks -> Ptr VkFence -> IO VkResult)
+vkRegisterDeviceEventEXT :: VkDevice ->
   Ptr VkDeviceEventInfoEXT ->
     Ptr VkAllocationCallbacks -> Ptr VkFence -> IO VkResult
+vkRegisterDeviceEventEXT d = (mkvkRegisterDeviceEventEXT $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkRegisterDeviceEventEXT" $ vkGetDeviceProcAddr d
+pattern VK_STRUCTURE_TYPE_SWAPCHAIN_COUNTER_CREATE_INFO_EXT = VkStructureType 1000091003

@@ -1,4 +1,5 @@
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE Strict #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -27,6 +28,8 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
                                       , prec
                                       )
+import Graphics.Vulkan.DeviceInitialization( VkFormatFeatureFlagBits(..)
+                                           )
 import Graphics.Vulkan.Core( VkBool32(..)
                            , VkStructureType(..)
                            )
@@ -74,6 +77,8 @@ instance Storable VkSamplerReductionModeCreateInfoEXT where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkSamplerReductionModeCreateInfoEXT))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkSamplerReductionModeCreateInfoEXT))
                 *> poke (ptr `plusPtr` 16) (vkReductionMode (poked :: VkSamplerReductionModeCreateInfoEXT))
+pattern VK_STRUCTURE_TYPE_SAMPLER_REDUCTION_MODE_CREATE_INFO_EXT = VkStructureType 1000130001
+pattern VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT = VkFormatFeatureFlagBits 0x10000
 
 data VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT =
   VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT{ vkSType :: VkStructureType 
@@ -93,3 +98,6 @@ instance Storable VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT))
                 *> poke (ptr `plusPtr` 16) (vkFilterMinmaxSingleComponentFormats (poked :: VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT))
                 *> poke (ptr `plusPtr` 20) (vkFilterMinmaxImageComponentMapping (poked :: VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT))
+pattern VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME =  "VK_EXT_sampler_filter_minmax"
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT = VkStructureType 1000130000
+pattern VK_EXT_SAMPLER_FILTER_MINMAX_SPEC_VERSION =  0x1

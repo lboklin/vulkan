@@ -36,6 +36,8 @@ import Graphics.Vulkan.Core( VkFlags(..)
                            , VkStructureType(..)
                            )
 
+pattern VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME =  "VK_KHR_external_semaphore"
+pattern VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO_KHR = VkStructureType 1000077000
 -- ** VkSemaphoreImportFlagsKHR
 newtype VkSemaphoreImportFlagBitsKHR = VkSemaphoreImportFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
@@ -75,3 +77,4 @@ instance Storable VkExportSemaphoreCreateInfoKHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkExportSemaphoreCreateInfoKHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkExportSemaphoreCreateInfoKHR))
                 *> poke (ptr `plusPtr` 16) (vkHandleTypes (poked :: VkExportSemaphoreCreateInfoKHR))
+pattern VK_KHR_EXTERNAL_SEMAPHORE_SPEC_VERSION =  0x1

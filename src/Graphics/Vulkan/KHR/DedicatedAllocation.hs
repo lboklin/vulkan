@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.DedicatedAllocation where
 
 import Graphics.Vulkan.Buffer( VkBuffer(..)
@@ -20,6 +21,10 @@ import Graphics.Vulkan.Core( VkBool32(..)
                            , VkStructureType(..)
                            )
 
+pattern VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS_KHR = VkStructureType 1000127000
+pattern VK_KHR_DEDICATED_ALLOCATION_SPEC_VERSION =  0x3
+pattern VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO_KHR = VkStructureType 1000127001
+pattern VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME =  "VK_KHR_dedicated_allocation"
 
 data VkMemoryDedicatedRequirementsKHR =
   VkMemoryDedicatedRequirementsKHR{ vkSType :: VkStructureType 

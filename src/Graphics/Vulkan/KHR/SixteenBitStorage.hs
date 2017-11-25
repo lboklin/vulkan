@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.SixteenBitStorage where
 
 import Data.Word( Word32
@@ -40,3 +41,6 @@ instance Storable VkPhysicalDevice16BitStorageFeaturesKHR where
                 *> poke (ptr `plusPtr` 20) (vkUniformAndStorageBuffer16BitAccess (poked :: VkPhysicalDevice16BitStorageFeaturesKHR))
                 *> poke (ptr `plusPtr` 24) (vkStoragePushConstant16 (poked :: VkPhysicalDevice16BitStorageFeaturesKHR))
                 *> poke (ptr `plusPtr` 28) (vkStorageInputOutput16 (poked :: VkPhysicalDevice16BitStorageFeaturesKHR))
+pattern VK_KHR_16BIT_STORAGE_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR = VkStructureType 1000083000
+pattern VK_KHR_16BIT_STORAGE_EXTENSION_NAME =  "VK_KHR_16bit_storage"

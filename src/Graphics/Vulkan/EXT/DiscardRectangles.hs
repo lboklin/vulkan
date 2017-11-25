@@ -9,10 +9,16 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import Graphics.Vulkan.Pipeline( VkDynamicState(..)
+                               )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.CommandBuffer( VkCommandBuffer(..)
                                     )
@@ -32,6 +38,11 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
                                       , prec
                                       )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkOffset2D(..)
                            , VkExtent2D(..)
                            , VkRect2D(..)
@@ -39,6 +50,7 @@ import Graphics.Vulkan.Core( VkOffset2D(..)
                            , VkStructureType(..)
                            )
 
+pattern VK_STRUCTURE_TYPE_PIPELINE_DISCARD_RECTANGLE_STATE_CREATE_INFO_EXT = VkStructureType 1000099001
 
 data VkPhysicalDeviceDiscardRectanglePropertiesEXT =
   VkPhysicalDeviceDiscardRectanglePropertiesEXT{ vkSType :: VkStructureType 
@@ -58,9 +70,16 @@ instance Storable VkPhysicalDeviceDiscardRectanglePropertiesEXT where
 -- ** VkPipelineDiscardRectangleStateCreateFlagsEXT-- | Opaque flag
 newtype VkPipelineDiscardRectangleStateCreateFlagsEXT = VkPipelineDiscardRectangleStateCreateFlagsEXT VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits, Show)
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT = VkStructureType 1000099000
 -- ** vkCmdSetDiscardRectangleEXT
-foreign import ccall "vkCmdSetDiscardRectangleEXT" vkCmdSetDiscardRectangleEXT ::
+foreign import ccall "dynamic" mkvkCmdSetDiscardRectangleEXT :: FunPtr (VkCommandBuffer -> Word32 -> Word32 -> Ptr VkRect2D -> IO ()) -> (VkCommandBuffer -> Word32 -> Word32 -> Ptr VkRect2D -> IO ())
+vkCmdSetDiscardRectangleEXT :: VkInstance ->
   VkCommandBuffer -> Word32 -> Word32 -> Ptr VkRect2D -> IO ()
+vkCmdSetDiscardRectangleEXT i = (mkvkCmdSetDiscardRectangleEXT $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkCmdSetDiscardRectangleEXT" $ vkGetInstanceProcAddr i
+pattern VK_EXT_DISCARD_RECTANGLES_SPEC_VERSION =  0x1
+pattern VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT = VkDynamicState 1000099000
+pattern VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME =  "VK_EXT_discard_rectangles"
 
 data VkPipelineDiscardRectangleStateCreateInfoEXT =
   VkPipelineDiscardRectangleStateCreateInfoEXT{ vkSType :: VkStructureType 

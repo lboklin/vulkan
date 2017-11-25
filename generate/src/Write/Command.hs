@@ -34,7 +34,9 @@ writeCommand c builtin = do
     -- TODO: look for instance/device/other commands and fetch appropriately
     pure [qc|-- ** {name}
 foreign import ccall "dynamic" mk{symbol} :: FunPtr ({typeString}) -> ({typeString})
+
 {name} :: {wrappedTypeString}
+
 {name} {parentObjParam} = (mk{symbol} $ castFunPtr $ procAddr) {if hasExtraParam then mempty else parentObjParam}
   where procAddr = unsafePerformIO $ withCString "{symbol}" $ {getProcAddr} {parentObjParam}
 |]

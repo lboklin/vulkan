@@ -12,11 +12,15 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.KHR.Surface( VkSurfaceTransformFlagsKHR(..)
                                   , VkCompositeAlphaFlagBitsKHR(..)
@@ -41,6 +45,11 @@ import Text.ParserCombinators.ReadPrec( (+++)
 import Graphics.Vulkan.Image( VkImageUsageFlagBits(..)
                             , VkImageUsageFlags(..)
                             )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkExtent2D(..)
                            , VkFlags(..)
                            , VkStructureType(..)
@@ -94,9 +103,18 @@ instance Storable VkSurfaceCapabilities2EXT where
                 *> poke (ptr `plusPtr` 64) (vkSupportedUsageFlags (poked :: VkSurfaceCapabilities2EXT))
                 *> poke (ptr `plusPtr` 68) (vkSupportedSurfaceCounters (poked :: VkSurfaceCapabilities2EXT))
 -- ** vkGetPhysicalDeviceSurfaceCapabilities2EXT
-foreign import ccall "vkGetPhysicalDeviceSurfaceCapabilities2EXT" vkGetPhysicalDeviceSurfaceCapabilities2EXT ::
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceSurfaceCapabilities2EXT :: FunPtr (VkPhysicalDevice ->
+  VkSurfaceKHR -> Ptr VkSurfaceCapabilities2EXT -> IO VkResult) -> (VkPhysicalDevice ->
+  VkSurfaceKHR -> Ptr VkSurfaceCapabilities2EXT -> IO VkResult)
+vkGetPhysicalDeviceSurfaceCapabilities2EXT :: VkInstance ->
   VkPhysicalDevice ->
-  VkSurfaceKHR -> Ptr VkSurfaceCapabilities2EXT -> IO VkResult
+    VkSurfaceKHR -> Ptr VkSurfaceCapabilities2EXT -> IO VkResult
+vkGetPhysicalDeviceSurfaceCapabilities2EXT i = (mkvkGetPhysicalDeviceSurfaceCapabilities2EXT $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceSurfaceCapabilities2EXT" $ vkGetInstanceProcAddr i
+pattern VK_EXT_DISPLAY_SURFACE_COUNTER_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES2_EXT =  0x3b9c2990
+pattern VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT = VkStructureType 1000090000
+pattern VK_EXT_DISPLAY_SURFACE_COUNTER_EXTENSION_NAME =  "VK_EXT_display_surface_counter"
 -- ** VkSurfaceCounterFlagsEXT
 newtype VkSurfaceCounterFlagBitsEXT = VkSurfaceCounterFlagBitsEXT VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)

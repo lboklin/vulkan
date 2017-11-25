@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.ExternalMemoryFd where
 
 import Graphics.Vulkan.Device( VkDevice(..)
@@ -28,6 +29,7 @@ import Graphics.Vulkan.KHR.ExternalMemoryCapabilities( VkExternalMemoryHandleTyp
 -- ** vkGetMemoryFdKHR
 foreign import ccall "vkGetMemoryFdKHR" vkGetMemoryFdKHR ::
   VkDevice -> Ptr VkMemoryGetFdInfoKHR -> Ptr CInt -> IO VkResult
+pattern VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR = VkStructureType 1000074001
 
 data VkMemoryFdPropertiesKHR =
   VkMemoryFdPropertiesKHR{ vkSType :: VkStructureType 
@@ -44,6 +46,8 @@ instance Storable VkMemoryFdPropertiesKHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkMemoryFdPropertiesKHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkMemoryFdPropertiesKHR))
                 *> poke (ptr `plusPtr` 16) (vkMemoryTypeBits (poked :: VkMemoryFdPropertiesKHR))
+pattern VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME =  "VK_KHR_external_memory_fd"
+pattern VK_KHR_EXTERNAL_MEMORY_FD_SPEC_VERSION =  0x1
 
 data VkMemoryGetFdInfoKHR =
   VkMemoryGetFdInfoKHR{ vkSType :: VkStructureType 
@@ -63,6 +67,8 @@ instance Storable VkMemoryGetFdInfoKHR where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkMemoryGetFdInfoKHR))
                 *> poke (ptr `plusPtr` 16) (vkMemory (poked :: VkMemoryGetFdInfoKHR))
                 *> poke (ptr `plusPtr` 24) (vkHandleType (poked :: VkMemoryGetFdInfoKHR))
+pattern VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR = VkStructureType 1000074002
+pattern VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR = VkStructureType 1000074000
 
 data VkImportMemoryFdInfoKHR =
   VkImportMemoryFdInfoKHR{ vkSType :: VkStructureType 

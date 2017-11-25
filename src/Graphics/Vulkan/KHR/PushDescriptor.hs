@@ -1,5 +1,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.PushDescriptor where
 
 import Graphics.Vulkan.Buffer( VkBuffer(..)
@@ -17,6 +19,7 @@ import Graphics.Vulkan.DescriptorSet( VkDescriptorType(..)
                                     , VkDescriptorBufferInfo(..)
                                     , VkDescriptorImageInfo(..)
                                     , VkWriteDescriptorSet(..)
+                                    , VkDescriptorSetLayoutCreateFlagBits(..)
                                     )
 import Graphics.Vulkan.CommandBuffer( VkCommandBuffer(..)
                                     )
@@ -54,9 +57,13 @@ instance Storable VkPhysicalDevicePushDescriptorPropertiesKHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkPhysicalDevicePushDescriptorPropertiesKHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkPhysicalDevicePushDescriptorPropertiesKHR))
                 *> poke (ptr `plusPtr` 16) (vkMaxPushDescriptors (poked :: VkPhysicalDevicePushDescriptorPropertiesKHR))
+pattern VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME =  "VK_KHR_push_descriptor"
 -- ** vkCmdPushDescriptorSetKHR
 foreign import ccall "vkCmdPushDescriptorSetKHR" vkCmdPushDescriptorSetKHR ::
   VkCommandBuffer ->
   VkPipelineBindPoint ->
     VkPipelineLayout ->
       Word32 -> Word32 -> Ptr VkWriteDescriptorSet -> IO ()
+pattern VK_KHR_PUSH_DESCRIPTOR_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR = VkStructureType 1000080000
+pattern VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR = VkDescriptorSetLayoutCreateFlagBits 0x1

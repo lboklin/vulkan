@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.ExternalFenceFd where
 
 import Graphics.Vulkan.Device( VkDevice(..)
@@ -29,6 +30,9 @@ import Foreign.C.Types( CInt
                       , CInt(..)
                       )
 
+pattern VK_KHR_EXTERNAL_FENCE_FD_SPEC_VERSION =  0x1
+pattern VK_KHR_EXTERNAL_FENCE_FD_EXTENSION_NAME =  "VK_KHR_external_fence_fd"
+pattern VK_STRUCTURE_TYPE_IMPORT_FENCE_FD_INFO_KHR = VkStructureType 1000115000
 
 data VkImportFenceFdInfoKHR =
   VkImportFenceFdInfoKHR{ vkSType :: VkStructureType 
@@ -57,6 +61,7 @@ instance Storable VkImportFenceFdInfoKHR where
 -- ** vkGetFenceFdKHR
 foreign import ccall "vkGetFenceFdKHR" vkGetFenceFdKHR ::
   VkDevice -> Ptr VkFenceGetFdInfoKHR -> Ptr CInt -> IO VkResult
+pattern VK_STRUCTURE_TYPE_FENCE_GET_FD_INFO_KHR = VkStructureType 1000115001
 
 data VkFenceGetFdInfoKHR =
   VkFenceGetFdInfoKHR{ vkSType :: VkStructureType 

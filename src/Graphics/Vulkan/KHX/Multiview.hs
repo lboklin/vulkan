@@ -1,7 +1,11 @@
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHX.Multiview where
 
+import Graphics.Vulkan.Pass( VkDependencyFlagBits(..)
+                           )
 import Data.Word( Word32
                 )
 import Foreign.Ptr( Ptr
@@ -67,6 +71,7 @@ instance Storable VkRenderPassMultiviewCreateInfoKHX where
                 *> poke (ptr `plusPtr` 40) (vkPViewOffsets (poked :: VkRenderPassMultiviewCreateInfoKHX))
                 *> poke (ptr `plusPtr` 48) (vkCorrelationMaskCount (poked :: VkRenderPassMultiviewCreateInfoKHX))
                 *> poke (ptr `plusPtr` 56) (vkPCorrelationMasks (poked :: VkRenderPassMultiviewCreateInfoKHX))
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHX = VkStructureType 1000053002
 
 data VkPhysicalDeviceMultiviewFeaturesKHX =
   VkPhysicalDeviceMultiviewFeaturesKHX{ vkSType :: VkStructureType 
@@ -89,3 +94,8 @@ instance Storable VkPhysicalDeviceMultiviewFeaturesKHX where
                 *> poke (ptr `plusPtr` 16) (vkMultiview (poked :: VkPhysicalDeviceMultiviewFeaturesKHX))
                 *> poke (ptr `plusPtr` 20) (vkMultiviewGeometryShader (poked :: VkPhysicalDeviceMultiviewFeaturesKHX))
                 *> poke (ptr `plusPtr` 24) (vkMultiviewTessellationShader (poked :: VkPhysicalDeviceMultiviewFeaturesKHX))
+pattern VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO_KHX = VkStructureType 1000053000
+pattern VK_KHX_MULTIVIEW_EXTENSION_NAME =  "VK_KHX_multiview"
+pattern VK_DEPENDENCY_VIEW_LOCAL_BIT_KHX = VkDependencyFlagBits 0x2
+pattern VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHX = VkStructureType 1000053001
+pattern VK_KHX_MULTIVIEW_SPEC_VERSION =  0x1

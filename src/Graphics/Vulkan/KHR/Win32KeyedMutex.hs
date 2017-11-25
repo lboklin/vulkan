@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.Win32KeyedMutex where
 
 import Data.Word( Word32
@@ -51,3 +52,6 @@ instance Storable VkWin32KeyedMutexAcquireReleaseInfoKHR where
                 *> poke (ptr `plusPtr` 48) (vkReleaseCount (poked :: VkWin32KeyedMutexAcquireReleaseInfoKHR))
                 *> poke (ptr `plusPtr` 56) (vkPReleaseSyncs (poked :: VkWin32KeyedMutexAcquireReleaseInfoKHR))
                 *> poke (ptr `plusPtr` 64) (vkPReleaseKeys (poked :: VkWin32KeyedMutexAcquireReleaseInfoKHR))
+pattern VK_KHR_WIN32_KEYED_MUTEX_EXTENSION_NAME =  "VK_KHR_win32_keyed_mutex"
+pattern VK_KHR_WIN32_KEYED_MUTEX_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_KHR = VkStructureType 1000075000

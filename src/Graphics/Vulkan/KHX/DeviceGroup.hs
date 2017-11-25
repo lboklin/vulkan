@@ -12,17 +12,26 @@ import Graphics.Vulkan.Device( VkPhysicalDevice(..)
                              , VkDevice(..)
                              )
 import Graphics.Vulkan.KHR.Swapchain( VkSwapchainKHR(..)
+                                    , VkSwapchainCreateFlagBitsKHR(..)
                                     )
+import Graphics.Vulkan.Pass( VkDependencyFlagBits(..)
+                           )
 import Text.Read.Lex( Lexeme(Ident)
                     )
 import GHC.Read( expectP
                , choose
                )
+import Graphics.Vulkan.Pipeline( VkPipelineCreateFlagBits(..)
+                               )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.KHR.Surface( VkSurfaceKHR(..)
                                   )
@@ -48,8 +57,16 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
                                       , prec
                                       )
+import Graphics.Vulkan.Image( VkImageCreateFlagBits(..)
+                            )
 import Graphics.Vulkan.QueueSemaphore( VkSemaphore(..)
                                      )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetDeviceProcAddr
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkOffset2D(..)
                            , VkExtent2D(..)
                            , VkRect2D(..)
@@ -109,6 +126,7 @@ instance Storable VkImageSwapchainCreateInfoKHX where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkImageSwapchainCreateInfoKHX))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkImageSwapchainCreateInfoKHX))
                 *> poke (ptr `plusPtr` 16) (vkSwapchain (poked :: VkImageSwapchainCreateInfoKHX))
+pattern VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHX = VkStructureType 1000060010
 
 data VkBindImageMemorySwapchainInfoKHX =
   VkBindImageMemorySwapchainInfoKHX{ vkSType :: VkStructureType 
@@ -148,9 +166,15 @@ instance Storable VkMemoryAllocateFlagsInfoKHX where
                 *> poke (ptr `plusPtr` 16) (vkFlags (poked :: VkMemoryAllocateFlagsInfoKHX))
                 *> poke (ptr `plusPtr` 20) (vkDeviceMask (poked :: VkMemoryAllocateFlagsInfoKHX))
 -- ** vkCmdDispatchBaseKHX
-foreign import ccall "vkCmdDispatchBaseKHX" vkCmdDispatchBaseKHX ::
+foreign import ccall "dynamic" mkvkCmdDispatchBaseKHX :: FunPtr (VkCommandBuffer ->
+  Word32 -> Word32 -> Word32 -> Word32 -> Word32 -> Word32 -> IO ()) -> (VkCommandBuffer ->
+  Word32 -> Word32 -> Word32 -> Word32 -> Word32 -> Word32 -> IO ())
+vkCmdDispatchBaseKHX :: VkInstance ->
   VkCommandBuffer ->
-  Word32 -> Word32 -> Word32 -> Word32 -> Word32 -> Word32 -> IO ()
+    Word32 -> Word32 -> Word32 -> Word32 -> Word32 -> Word32 -> IO ()
+vkCmdDispatchBaseKHX i = (mkvkCmdDispatchBaseKHX $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkCmdDispatchBaseKHX" $ vkGetInstanceProcAddr i
+pattern VK_STRUCTURE_TYPE_DEVICE_GROUP_COMMAND_BUFFER_BEGIN_INFO_KHX = VkStructureType 1000060004
 
 data VkDeviceGroupSubmitInfoKHX =
   VkDeviceGroupSubmitInfoKHX{ vkSType :: VkStructureType 
@@ -182,6 +206,7 @@ instance Storable VkDeviceGroupSubmitInfoKHX where
                 *> poke (ptr `plusPtr` 40) (vkPCommandBufferDeviceMasks (poked :: VkDeviceGroupSubmitInfoKHX))
                 *> poke (ptr `plusPtr` 48) (vkSignalSemaphoreCount (poked :: VkDeviceGroupSubmitInfoKHX))
                 *> poke (ptr `plusPtr` 56) (vkPSignalSemaphoreDeviceIndices (poked :: VkDeviceGroupSubmitInfoKHX))
+pattern VK_IMAGE_CREATE_BIND_SFR_BIT_KHX = VkImageCreateFlagBits 0x40
 
 data VkDeviceGroupRenderPassBeginInfoKHX =
   VkDeviceGroupRenderPassBeginInfoKHX{ vkSType :: VkStructureType 
@@ -204,6 +229,7 @@ instance Storable VkDeviceGroupRenderPassBeginInfoKHX where
                 *> poke (ptr `plusPtr` 16) (vkDeviceMask (poked :: VkDeviceGroupRenderPassBeginInfoKHX))
                 *> poke (ptr `plusPtr` 20) (vkDeviceRenderAreaCount (poked :: VkDeviceGroupRenderPassBeginInfoKHX))
                 *> poke (ptr `plusPtr` 24) (vkPDeviceRenderAreas (poked :: VkDeviceGroupRenderPassBeginInfoKHX))
+pattern VK_PIPELINE_CREATE_DISPATCH_BASE_KHX = VkPipelineCreateFlagBits 0x10
 -- ** VkPeerMemoryFeatureFlagsKHX
 newtype VkPeerMemoryFeatureFlagBitsKHX = VkPeerMemoryFeatureFlagBitsKHX VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
@@ -239,6 +265,8 @@ pattern VK_PEER_MEMORY_FEATURE_COPY_DST_BIT_KHX = VkPeerMemoryFeatureFlagBitsKHX
 pattern VK_PEER_MEMORY_FEATURE_GENERIC_SRC_BIT_KHX = VkPeerMemoryFeatureFlagBitsKHX 0x4
 -- | Can write with and access type/command
 pattern VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT_KHX = VkPeerMemoryFeatureFlagBitsKHX 0x8
+pattern VK_STRUCTURE_TYPE_DEVICE_GROUP_BIND_SPARSE_INFO_KHX = VkStructureType 1000060006
+pattern VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO_KHX = VkStructureType 1000060003
 
 data VkDeviceGroupSwapchainCreateInfoKHX =
   VkDeviceGroupSwapchainCreateInfoKHX{ vkSType :: VkStructureType 
@@ -255,6 +283,8 @@ instance Storable VkDeviceGroupSwapchainCreateInfoKHX where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkDeviceGroupSwapchainCreateInfoKHX))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkDeviceGroupSwapchainCreateInfoKHX))
                 *> poke (ptr `plusPtr` 16) (vkModes (poked :: VkDeviceGroupSwapchainCreateInfoKHX))
+pattern VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHX = VkStructureType 1000060012
+pattern VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHX = VkStructureType 1000060008
 -- ** VkMemoryAllocateFlagsKHX
 newtype VkMemoryAllocateFlagBitsKHX = VkMemoryAllocateFlagBitsKHX VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
@@ -279,9 +309,14 @@ instance Read VkMemoryAllocateFlagBitsKHX where
 -- | Force allocation on specific devices
 pattern VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT_KHX = VkMemoryAllocateFlagBitsKHX 0x1
 -- ** vkGetPhysicalDevicePresentRectanglesKHX
-foreign import ccall "vkGetPhysicalDevicePresentRectanglesKHX" vkGetPhysicalDevicePresentRectanglesKHX ::
+foreign import ccall "dynamic" mkvkGetPhysicalDevicePresentRectanglesKHX :: FunPtr (VkPhysicalDevice ->
+  VkSurfaceKHR -> Ptr Word32 -> Ptr VkRect2D -> IO VkResult) -> (VkPhysicalDevice ->
+  VkSurfaceKHR -> Ptr Word32 -> Ptr VkRect2D -> IO VkResult)
+vkGetPhysicalDevicePresentRectanglesKHX :: VkInstance ->
   VkPhysicalDevice ->
-  VkSurfaceKHR -> Ptr Word32 -> Ptr VkRect2D -> IO VkResult
+    VkSurfaceKHR -> Ptr Word32 -> Ptr VkRect2D -> IO VkResult
+vkGetPhysicalDevicePresentRectanglesKHX i = (mkvkGetPhysicalDevicePresentRectanglesKHX $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDevicePresentRectanglesKHX" $ vkGetInstanceProcAddr i
 
 data VkAcquireNextImageInfoKHX =
   VkAcquireNextImageInfoKHX{ vkSType :: VkStructureType 
@@ -310,9 +345,12 @@ instance Storable VkAcquireNextImageInfoKHX where
                 *> poke (ptr `plusPtr` 32) (vkSemaphore (poked :: VkAcquireNextImageInfoKHX))
                 *> poke (ptr `plusPtr` 40) (vkFence (poked :: VkAcquireNextImageInfoKHX))
                 *> poke (ptr `plusPtr` 48) (vkDeviceMask (poked :: VkAcquireNextImageInfoKHX))
+pattern VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_DEVICE_GROUP_INFO_KHX = VkStructureType 1000060013
 -- ** vkCmdSetDeviceMaskKHX
-foreign import ccall "vkCmdSetDeviceMaskKHX" vkCmdSetDeviceMaskKHX ::
-  VkCommandBuffer -> Word32 -> IO ()
+foreign import ccall "dynamic" mkvkCmdSetDeviceMaskKHX :: FunPtr (VkCommandBuffer -> Word32 -> IO ()) -> (VkCommandBuffer -> Word32 -> IO ())
+vkCmdSetDeviceMaskKHX :: VkInstance -> VkCommandBuffer -> Word32 -> IO ()
+vkCmdSetDeviceMaskKHX i = (mkvkCmdSetDeviceMaskKHX $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkCmdSetDeviceMaskKHX" $ vkGetInstanceProcAddr i
 
 data VkBindImageMemoryDeviceGroupInfoKHX =
   VkBindImageMemoryDeviceGroupInfoKHX{ vkSType :: VkStructureType 
@@ -338,10 +376,18 @@ instance Storable VkBindImageMemoryDeviceGroupInfoKHX where
                 *> poke (ptr `plusPtr` 24) (vkPDeviceIndices (poked :: VkBindImageMemoryDeviceGroupInfoKHX))
                 *> poke (ptr `plusPtr` 32) (vkSFRRectCount (poked :: VkBindImageMemoryDeviceGroupInfoKHX))
                 *> poke (ptr `plusPtr` 40) (vkPSFRRects (poked :: VkBindImageMemoryDeviceGroupInfoKHX))
+pattern VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT_KHX = VkPipelineCreateFlagBits 0x8
+pattern VK_DEPENDENCY_DEVICE_GROUP_BIT_KHX = VkDependencyFlagBits 0x4
 -- ** vkAcquireNextImage2KHX
-foreign import ccall "vkAcquireNextImage2KHX" vkAcquireNextImage2KHX ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkAcquireNextImage2KHX :: FunPtr (VkDevice ->
+  Ptr VkAcquireNextImageInfoKHX -> Ptr Word32 -> IO VkResult) -> (VkDevice ->
+  Ptr VkAcquireNextImageInfoKHX -> Ptr Word32 -> IO VkResult)
+vkAcquireNextImage2KHX :: VkDevice ->
   Ptr VkAcquireNextImageInfoKHX -> Ptr Word32 -> IO VkResult
+vkAcquireNextImage2KHX d = (mkvkAcquireNextImage2KHX $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkAcquireNextImage2KHX" $ vkGetDeviceProcAddr d
+pattern VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHX = VkStructureType 1000060009
+pattern VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHX = VkStructureType 1000060007
 
 data VkDeviceGroupPresentCapabilitiesKHX =
   VkDeviceGroupPresentCapabilitiesKHX{ vkSType :: VkStructureType 
@@ -362,10 +408,18 @@ instance Storable VkDeviceGroupPresentCapabilitiesKHX where
                 *> poke (ptr `plusPtr` 16) (vkPresentMask (poked :: VkDeviceGroupPresentCapabilitiesKHX))
                 *> poke (ptr `plusPtr` 144) (vkModes (poked :: VkDeviceGroupPresentCapabilitiesKHX))
 -- ** vkGetDeviceGroupPeerMemoryFeaturesKHX
-foreign import ccall "vkGetDeviceGroupPeerMemoryFeaturesKHX" vkGetDeviceGroupPeerMemoryFeaturesKHX ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkGetDeviceGroupPeerMemoryFeaturesKHX :: FunPtr (VkDevice ->
+  Word32 ->
+    Word32 -> Word32 -> Ptr VkPeerMemoryFeatureFlagsKHX -> IO ()) -> (VkDevice ->
+  Word32 ->
+    Word32 -> Word32 -> Ptr VkPeerMemoryFeatureFlagsKHX -> IO ())
+vkGetDeviceGroupPeerMemoryFeaturesKHX :: VkDevice ->
   Word32 ->
     Word32 -> Word32 -> Ptr VkPeerMemoryFeatureFlagsKHX -> IO ()
+vkGetDeviceGroupPeerMemoryFeaturesKHX d = (mkvkGetDeviceGroupPeerMemoryFeaturesKHX $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetDeviceGroupPeerMemoryFeaturesKHX" $ vkGetDeviceProcAddr d
+pattern VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_DEVICE_GROUP_INFO_KHX = VkStructureType 1000060014
+pattern VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHX = VkStructureType 1000060011
 
 data VkDeviceGroupPresentInfoKHX =
   VkDeviceGroupPresentInfoKHX{ vkSType :: VkStructureType 
@@ -389,9 +443,16 @@ instance Storable VkDeviceGroupPresentInfoKHX where
                 *> poke (ptr `plusPtr` 24) (vkPDeviceMasks (poked :: VkDeviceGroupPresentInfoKHX))
                 *> poke (ptr `plusPtr` 32) (vkMode (poked :: VkDeviceGroupPresentInfoKHX))
 -- ** vkGetDeviceGroupSurfacePresentModesKHX
-foreign import ccall "vkGetDeviceGroupSurfacePresentModesKHX" vkGetDeviceGroupSurfacePresentModesKHX ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkGetDeviceGroupSurfacePresentModesKHX :: FunPtr (VkDevice ->
+  VkSurfaceKHR -> Ptr VkDeviceGroupPresentModeFlagsKHX -> IO VkResult) -> (VkDevice ->
+  VkSurfaceKHR -> Ptr VkDeviceGroupPresentModeFlagsKHX -> IO VkResult)
+vkGetDeviceGroupSurfacePresentModesKHX :: VkDevice ->
   VkSurfaceKHR -> Ptr VkDeviceGroupPresentModeFlagsKHX -> IO VkResult
+vkGetDeviceGroupSurfacePresentModesKHX d = (mkvkGetDeviceGroupSurfacePresentModesKHX $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetDeviceGroupSurfacePresentModesKHX" $ vkGetDeviceProcAddr d
+pattern VK_SWAPCHAIN_CREATE_BIND_SFR_BIT_KHX = VkSwapchainCreateFlagBitsKHR 0x1
+pattern VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO_KHX = VkStructureType 1000060000
+pattern VK_KHX_DEVICE_GROUP_SPEC_VERSION =  0x2
 
 data VkDeviceGroupBindSparseInfoKHX =
   VkDeviceGroupBindSparseInfoKHX{ vkSType :: VkStructureType 
@@ -412,8 +473,12 @@ instance Storable VkDeviceGroupBindSparseInfoKHX where
                 *> poke (ptr `plusPtr` 16) (vkResourceDeviceIndex (poked :: VkDeviceGroupBindSparseInfoKHX))
                 *> poke (ptr `plusPtr` 20) (vkMemoryDeviceIndex (poked :: VkDeviceGroupBindSparseInfoKHX))
 -- ** vkGetDeviceGroupPresentCapabilitiesKHX
-foreign import ccall "vkGetDeviceGroupPresentCapabilitiesKHX" vkGetDeviceGroupPresentCapabilitiesKHX ::
-  VkDevice -> Ptr VkDeviceGroupPresentCapabilitiesKHX -> IO VkResult
+foreign import ccall "dynamic" mkvkGetDeviceGroupPresentCapabilitiesKHX :: FunPtr (VkDevice -> Ptr VkDeviceGroupPresentCapabilitiesKHX -> IO VkResult) -> (VkDevice -> Ptr VkDeviceGroupPresentCapabilitiesKHX -> IO VkResult)
+vkGetDeviceGroupPresentCapabilitiesKHX :: VkDevice -> Ptr VkDeviceGroupPresentCapabilitiesKHX -> IO VkResult
+vkGetDeviceGroupPresentCapabilitiesKHX d = (mkvkGetDeviceGroupPresentCapabilitiesKHX $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkGetDeviceGroupPresentCapabilitiesKHX" $ vkGetDeviceProcAddr d
+pattern VK_KHX_DEVICE_GROUP_EXTENSION_NAME =  "VK_KHX_device_group"
+pattern VK_STRUCTURE_TYPE_DEVICE_GROUP_SUBMIT_INFO_KHX = VkStructureType 1000060005
 
 data VkDeviceGroupCommandBufferBeginInfoKHX =
   VkDeviceGroupCommandBufferBeginInfoKHX{ vkSType :: VkStructureType 

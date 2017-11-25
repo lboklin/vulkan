@@ -10,19 +10,26 @@ import Graphics.Vulkan.Device( VkPhysicalDevice(..)
                              )
 import Graphics.Vulkan.Buffer( VkBuffer(..)
                              )
+import Graphics.Vulkan.Pass( VkAccessFlagBits(..)
+                           )
 import Text.Read.Lex( Lexeme(Ident)
                     )
 import GHC.Read( expectP
                , choose
                )
 import Graphics.Vulkan.Pipeline( VkPipelineBindPoint(..)
+                               , VkPipelineStageFlagBits(..)
                                , VkPipeline(..)
                                )
+import System.IO.Unsafe( unsafePerformIO
+                       )
 import Data.Word( Word32
                 , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
+                  , FunPtr
+                  , castFunPtr
                   )
 import Graphics.Vulkan.DescriptorSet( VkDescriptorSet(..)
                                     )
@@ -60,6 +67,14 @@ import Text.ParserCombinators.ReadPrec( (+++)
 import Graphics.Vulkan.Shader( VkShaderStageFlags(..)
                              , VkShaderStageFlagBits(..)
                              )
+import Graphics.Vulkan.OtherTypes( VkObjectType(..)
+                                 )
+import Graphics.Vulkan.DeviceInitialization( VkInstance
+                                           , vkGetDeviceProcAddr
+                                           , vkGetInstanceProcAddr
+                                           )
+import Foreign.C.String( withCString
+                       )
 import Graphics.Vulkan.Core( VkDeviceSize(..)
                            , VkBool32(..)
                            , VkFlags(..)
@@ -71,6 +86,10 @@ import Foreign.C.Types( CSize(..)
 
 newtype VkIndirectCommandsLayoutNVX = VkIndirectCommandsLayoutNVX Word64
   deriving (Eq, Ord, Storable, Show)
+pattern VK_STRUCTURE_TYPE_INDIRECT_COMMANDS_LAYOUT_CREATE_INFO_NVX = VkStructureType 1000086001
+pattern VK_NVX_DEVICE_GENERATED_COMMANDS_SPEC_VERSION =  0x3
+pattern VK_PIPELINE_STAGE_COMMAND_PROCESS_BIT_NVX = VkPipelineStageFlagBits 0x20000
+pattern VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX = VkObjectType 1000086001
 
 data VkObjectTablePushConstantEntryNVX =
   VkObjectTablePushConstantEntryNVX{ vkType :: VkObjectEntryTypeNVX 
@@ -91,17 +110,31 @@ instance Storable VkObjectTablePushConstantEntryNVX where
                 *> poke (ptr `plusPtr` 8) (vkPipelineLayout (poked :: VkObjectTablePushConstantEntryNVX))
                 *> poke (ptr `plusPtr` 16) (vkStageFlags (poked :: VkObjectTablePushConstantEntryNVX))
 -- ** vkCreateIndirectCommandsLayoutNVX
-foreign import ccall "vkCreateIndirectCommandsLayoutNVX" vkCreateIndirectCommandsLayoutNVX ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkCreateIndirectCommandsLayoutNVX :: FunPtr (VkDevice ->
+  Ptr VkIndirectCommandsLayoutCreateInfoNVX ->
+    Ptr VkAllocationCallbacks ->
+      Ptr VkIndirectCommandsLayoutNVX -> IO VkResult) -> (VkDevice ->
+  Ptr VkIndirectCommandsLayoutCreateInfoNVX ->
+    Ptr VkAllocationCallbacks ->
+      Ptr VkIndirectCommandsLayoutNVX -> IO VkResult)
+vkCreateIndirectCommandsLayoutNVX :: VkDevice ->
   Ptr VkIndirectCommandsLayoutCreateInfoNVX ->
     Ptr VkAllocationCallbacks ->
       Ptr VkIndirectCommandsLayoutNVX -> IO VkResult
+vkCreateIndirectCommandsLayoutNVX d = (mkvkCreateIndirectCommandsLayoutNVX $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkCreateIndirectCommandsLayoutNVX" $ vkGetDeviceProcAddr d
 -- ** vkCmdReserveSpaceForCommandsNVX
-foreign import ccall "vkCmdReserveSpaceForCommandsNVX" vkCmdReserveSpaceForCommandsNVX ::
+foreign import ccall "dynamic" mkvkCmdReserveSpaceForCommandsNVX :: FunPtr (VkCommandBuffer -> Ptr VkCmdReserveSpaceForCommandsInfoNVX -> IO ()) -> (VkCommandBuffer -> Ptr VkCmdReserveSpaceForCommandsInfoNVX -> IO ())
+vkCmdReserveSpaceForCommandsNVX :: VkInstance ->
   VkCommandBuffer -> Ptr VkCmdReserveSpaceForCommandsInfoNVX -> IO ()
+vkCmdReserveSpaceForCommandsNVX i = (mkvkCmdReserveSpaceForCommandsNVX $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkCmdReserveSpaceForCommandsNVX" $ vkGetInstanceProcAddr i
 -- ** vkDestroyObjectTableNVX
-foreign import ccall "vkDestroyObjectTableNVX" vkDestroyObjectTableNVX ::
-  VkDevice -> VkObjectTableNVX -> Ptr VkAllocationCallbacks -> IO ()
+foreign import ccall "dynamic" mkvkDestroyObjectTableNVX :: FunPtr (VkDevice -> VkObjectTableNVX -> Ptr VkAllocationCallbacks -> IO ()) -> (VkDevice -> VkObjectTableNVX -> Ptr VkAllocationCallbacks -> IO ())
+vkDestroyObjectTableNVX :: VkDevice -> VkObjectTableNVX -> Ptr VkAllocationCallbacks -> IO ()
+vkDestroyObjectTableNVX d = (mkvkDestroyObjectTableNVX $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkDestroyObjectTableNVX" $ vkGetDeviceProcAddr d
+pattern VK_STRUCTURE_TYPE_CMD_PROCESS_COMMANDS_INFO_NVX = VkStructureType 1000086002
 
 data VkCmdReserveSpaceForCommandsInfoNVX =
   VkCmdReserveSpaceForCommandsInfoNVX{ vkSType :: VkStructureType 
@@ -124,14 +157,24 @@ instance Storable VkCmdReserveSpaceForCommandsInfoNVX where
                 *> poke (ptr `plusPtr` 16) (vkObjectTable (poked :: VkCmdReserveSpaceForCommandsInfoNVX))
                 *> poke (ptr `plusPtr` 24) (vkIndirectCommandsLayout (poked :: VkCmdReserveSpaceForCommandsInfoNVX))
                 *> poke (ptr `plusPtr` 32) (vkMaxSequencesCount (poked :: VkCmdReserveSpaceForCommandsInfoNVX))
+pattern VK_NVX_DEVICE_GENERATED_COMMANDS_EXTENSION_NAME =  "VK_NVX_device_generated_commands"
 -- ** vkUnregisterObjectsNVX
-foreign import ccall "vkUnregisterObjectsNVX" vkUnregisterObjectsNVX ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkUnregisterObjectsNVX :: FunPtr (VkDevice ->
+  VkObjectTableNVX ->
+    Word32 -> Ptr VkObjectEntryTypeNVX -> Ptr Word32 -> IO VkResult) -> (VkDevice ->
+  VkObjectTableNVX ->
+    Word32 -> Ptr VkObjectEntryTypeNVX -> Ptr Word32 -> IO VkResult)
+vkUnregisterObjectsNVX :: VkDevice ->
   VkObjectTableNVX ->
     Word32 -> Ptr VkObjectEntryTypeNVX -> Ptr Word32 -> IO VkResult
+vkUnregisterObjectsNVX d = (mkvkUnregisterObjectsNVX $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkUnregisterObjectsNVX" $ vkGetDeviceProcAddr d
 -- ** vkCmdProcessCommandsNVX
-foreign import ccall "vkCmdProcessCommandsNVX" vkCmdProcessCommandsNVX ::
+foreign import ccall "dynamic" mkvkCmdProcessCommandsNVX :: FunPtr (VkCommandBuffer -> Ptr VkCmdProcessCommandsInfoNVX -> IO ()) -> (VkCommandBuffer -> Ptr VkCmdProcessCommandsInfoNVX -> IO ())
+vkCmdProcessCommandsNVX :: VkInstance ->
   VkCommandBuffer -> Ptr VkCmdProcessCommandsInfoNVX -> IO ()
+vkCmdProcessCommandsNVX i = (mkvkCmdProcessCommandsNVX $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkCmdProcessCommandsNVX" $ vkGetInstanceProcAddr i
 
 data VkCmdProcessCommandsInfoNVX =
   VkCmdProcessCommandsInfoNVX{ vkSType :: VkStructureType 
@@ -175,6 +218,7 @@ instance Storable VkCmdProcessCommandsInfoNVX where
                 *> poke (ptr `plusPtr` 72) (vkSequencesCountOffset (poked :: VkCmdProcessCommandsInfoNVX))
                 *> poke (ptr `plusPtr` 80) (vkSequencesIndexBuffer (poked :: VkCmdProcessCommandsInfoNVX))
                 *> poke (ptr `plusPtr` 88) (vkSequencesIndexOffset (poked :: VkCmdProcessCommandsInfoNVX))
+pattern VK_STRUCTURE_TYPE_OBJECT_TABLE_CREATE_INFO_NVX = VkStructureType 1000086000
 newtype VkObjectTableNVX = VkObjectTableNVX Word64
   deriving (Eq, Ord, Storable, Show)
 -- ** VkObjectEntryUsageFlagsNVX
@@ -217,6 +261,8 @@ instance Storable VkObjectTableEntryNVX where
                                    <*> peek (ptr `plusPtr` 4)
   poke ptr poked = poke (ptr `plusPtr` 0) (vkType (poked :: VkObjectTableEntryNVX))
                 *> poke (ptr `plusPtr` 4) (vkFlags (poked :: VkObjectTableEntryNVX))
+pattern VK_STRUCTURE_TYPE_CMD_RESERVE_SPACE_FOR_COMMANDS_INFO_NVX = VkStructureType 1000086003
+pattern VK_OBJECT_TYPE_OBJECT_TABLE_NVX = VkObjectType 1000086000
 
 data VkDeviceGeneratedCommandsLimitsNVX =
   VkDeviceGeneratedCommandsLimitsNVX{ vkSType :: VkStructureType 
@@ -345,6 +391,8 @@ instance Storable VkIndirectCommandsTokenNVX where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkTokenType (poked :: VkIndirectCommandsTokenNVX))
                 *> poke (ptr `plusPtr` 8) (vkBuffer (poked :: VkIndirectCommandsTokenNVX))
                 *> poke (ptr `plusPtr` 16) (vkOffset (poked :: VkIndirectCommandsTokenNVX))
+pattern VK_ACCESS_COMMAND_PROCESS_READ_BIT_NVX = VkAccessFlagBits 0x20000
+pattern VK_STRUCTURE_TYPE_DEVICE_GENERATED_COMMANDS_FEATURES_NVX = VkStructureType 1000086005
 -- ** VkIndirectCommandsLayoutUsageFlagsNVX
 newtype VkIndirectCommandsLayoutUsageFlagBitsNVX = VkIndirectCommandsLayoutUsageFlagBitsNVX VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
@@ -416,9 +464,13 @@ pattern VK_OBJECT_ENTRY_TYPE_VERTEX_BUFFER_NVX = VkObjectEntryTypeNVX 3
 
 pattern VK_OBJECT_ENTRY_TYPE_PUSH_CONSTANT_NVX = VkObjectEntryTypeNVX 4
 -- ** vkDestroyIndirectCommandsLayoutNVX
-foreign import ccall "vkDestroyIndirectCommandsLayoutNVX" vkDestroyIndirectCommandsLayoutNVX ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkDestroyIndirectCommandsLayoutNVX :: FunPtr (VkDevice ->
+  VkIndirectCommandsLayoutNVX -> Ptr VkAllocationCallbacks -> IO ()) -> (VkDevice ->
+  VkIndirectCommandsLayoutNVX -> Ptr VkAllocationCallbacks -> IO ())
+vkDestroyIndirectCommandsLayoutNVX :: VkDevice ->
   VkIndirectCommandsLayoutNVX -> Ptr VkAllocationCallbacks -> IO ()
+vkDestroyIndirectCommandsLayoutNVX d = (mkvkDestroyIndirectCommandsLayoutNVX $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkDestroyIndirectCommandsLayoutNVX" $ vkGetDeviceProcAddr d
 
 data VkDeviceGeneratedCommandsFeaturesNVX =
   VkDeviceGeneratedCommandsFeaturesNVX{ vkSType :: VkStructureType 
@@ -436,10 +488,17 @@ instance Storable VkDeviceGeneratedCommandsFeaturesNVX where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkDeviceGeneratedCommandsFeaturesNVX))
                 *> poke (ptr `plusPtr` 16) (vkComputeBindingPointSupport (poked :: VkDeviceGeneratedCommandsFeaturesNVX))
 -- ** vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX
-foreign import ccall "vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX" vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX ::
-  VkPhysicalDevice ->
+foreign import ccall "dynamic" mkvkGetPhysicalDeviceGeneratedCommandsPropertiesNVX :: FunPtr (VkPhysicalDevice ->
   Ptr VkDeviceGeneratedCommandsFeaturesNVX ->
-    Ptr VkDeviceGeneratedCommandsLimitsNVX -> IO ()
+    Ptr VkDeviceGeneratedCommandsLimitsNVX -> IO ()) -> (VkPhysicalDevice ->
+  Ptr VkDeviceGeneratedCommandsFeaturesNVX ->
+    Ptr VkDeviceGeneratedCommandsLimitsNVX -> IO ())
+vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX :: VkInstance ->
+  VkPhysicalDevice ->
+    Ptr VkDeviceGeneratedCommandsFeaturesNVX ->
+      Ptr VkDeviceGeneratedCommandsLimitsNVX -> IO ()
+vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX i = (mkvkGetPhysicalDeviceGeneratedCommandsPropertiesNVX $ castFunPtr $ procAddr) 
+  where procAddr = unsafePerformIO $ withCString "vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX" $ vkGetInstanceProcAddr i
 
 data VkObjectTableDescriptorSetEntryNVX =
   VkObjectTableDescriptorSetEntryNVX{ vkType :: VkObjectEntryTypeNVX 
@@ -476,10 +535,16 @@ instance Storable VkObjectTableVertexBufferEntryNVX where
                 *> poke (ptr `plusPtr` 4) (vkFlags (poked :: VkObjectTableVertexBufferEntryNVX))
                 *> poke (ptr `plusPtr` 8) (vkBuffer (poked :: VkObjectTableVertexBufferEntryNVX))
 -- ** vkCreateObjectTableNVX
-foreign import ccall "vkCreateObjectTableNVX" vkCreateObjectTableNVX ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkCreateObjectTableNVX :: FunPtr (VkDevice ->
+  Ptr VkObjectTableCreateInfoNVX ->
+    Ptr VkAllocationCallbacks -> Ptr VkObjectTableNVX -> IO VkResult) -> (VkDevice ->
+  Ptr VkObjectTableCreateInfoNVX ->
+    Ptr VkAllocationCallbacks -> Ptr VkObjectTableNVX -> IO VkResult)
+vkCreateObjectTableNVX :: VkDevice ->
   Ptr VkObjectTableCreateInfoNVX ->
     Ptr VkAllocationCallbacks -> Ptr VkObjectTableNVX -> IO VkResult
+vkCreateObjectTableNVX d = (mkvkCreateObjectTableNVX $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkCreateObjectTableNVX" $ vkGetDeviceProcAddr d
 -- ** VkIndirectCommandsTokenTypeNVX
 newtype VkIndirectCommandsTokenTypeNVX = VkIndirectCommandsTokenTypeNVX Int32
   deriving (Eq, Ord, Storable)
@@ -528,11 +593,19 @@ pattern VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_NVX = VkIndirectCommandsTokenTypeNV
 
 pattern VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_NVX = VkIndirectCommandsTokenTypeNVX 7
 -- ** vkRegisterObjectsNVX
-foreign import ccall "vkRegisterObjectsNVX" vkRegisterObjectsNVX ::
-  VkDevice ->
+foreign import ccall "dynamic" mkvkRegisterObjectsNVX :: FunPtr (VkDevice ->
+  VkObjectTableNVX ->
+    Word32 ->
+      Ptr (Ptr VkObjectTableEntryNVX) -> Ptr Word32 -> IO VkResult) -> (VkDevice ->
+  VkObjectTableNVX ->
+    Word32 ->
+      Ptr (Ptr VkObjectTableEntryNVX) -> Ptr Word32 -> IO VkResult)
+vkRegisterObjectsNVX :: VkDevice ->
   VkObjectTableNVX ->
     Word32 ->
       Ptr (Ptr VkObjectTableEntryNVX) -> Ptr Word32 -> IO VkResult
+vkRegisterObjectsNVX d = (mkvkRegisterObjectsNVX $ castFunPtr $ procAddr) d
+  where procAddr = unsafePerformIO $ withCString "vkRegisterObjectsNVX" $ vkGetDeviceProcAddr d
 
 data VkObjectTablePipelineEntryNVX =
   VkObjectTablePipelineEntryNVX{ vkType :: VkObjectEntryTypeNVX 
@@ -549,6 +622,8 @@ instance Storable VkObjectTablePipelineEntryNVX where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkType (poked :: VkObjectTablePipelineEntryNVX))
                 *> poke (ptr `plusPtr` 4) (vkFlags (poked :: VkObjectTablePipelineEntryNVX))
                 *> poke (ptr `plusPtr` 8) (vkPipeline (poked :: VkObjectTablePipelineEntryNVX))
+pattern VK_STRUCTURE_TYPE_DEVICE_GENERATED_COMMANDS_LIMITS_NVX = VkStructureType 1000086004
+pattern VK_ACCESS_COMMAND_PROCESS_WRITE_BIT_NVX = VkAccessFlagBits 0x40000
 
 data VkObjectTableIndexBufferEntryNVX =
   VkObjectTableIndexBufferEntryNVX{ vkType :: VkObjectEntryTypeNVX 

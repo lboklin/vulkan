@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.GetMemoryRequirements2 where
 
 import Graphics.Vulkan.Device( VkDevice(..)
@@ -49,11 +50,14 @@ instance Storable VkSparseImageMemoryRequirements2KHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkSparseImageMemoryRequirements2KHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkSparseImageMemoryRequirements2KHR))
                 *> poke (ptr `plusPtr` 16) (vkMemoryRequirements (poked :: VkSparseImageMemoryRequirements2KHR))
+pattern VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2_KHR = VkStructureType 1000146000
+pattern VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR = VkStructureType 1000146003
 -- ** vkGetImageMemoryRequirements2KHR
 foreign import ccall "vkGetImageMemoryRequirements2KHR" vkGetImageMemoryRequirements2KHR ::
   VkDevice ->
   Ptr VkImageMemoryRequirementsInfo2KHR ->
     Ptr VkMemoryRequirements2KHR -> IO ()
+pattern VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME =  "VK_KHR_get_memory_requirements2"
 
 data VkMemoryRequirements2KHR =
   VkMemoryRequirements2KHR{ vkSType :: VkStructureType 
@@ -86,6 +90,9 @@ instance Storable VkImageSparseMemoryRequirementsInfo2KHR where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkImageSparseMemoryRequirementsInfo2KHR))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkImageSparseMemoryRequirementsInfo2KHR))
                 *> poke (ptr `plusPtr` 16) (vkImage (poked :: VkImageSparseMemoryRequirementsInfo2KHR))
+pattern VK_KHR_GET_MEMORY_REQUIREMENTS_2_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2_KHR = VkStructureType 1000146001
+pattern VK_STRUCTURE_TYPE_SPARSE_IMAGE_MEMORY_REQUIREMENTS_2_KHR = VkStructureType 1000146004
 
 data VkImageMemoryRequirementsInfo2KHR =
   VkImageMemoryRequirementsInfo2KHR{ vkSType :: VkStructureType 
@@ -128,3 +135,4 @@ foreign import ccall "vkGetImageSparseMemoryRequirements2KHR" vkGetImageSparseMe
   VkDevice ->
   Ptr VkImageSparseMemoryRequirementsInfo2KHR ->
     Ptr Word32 -> Ptr VkSparseImageMemoryRequirements2KHR -> IO ()
+pattern VK_STRUCTURE_TYPE_IMAGE_SPARSE_MEMORY_REQUIREMENTS_INFO_2_KHR = VkStructureType 1000146002

@@ -1,5 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.NV.Win32KeyedMutex where
 
 import Data.Word( Word32
@@ -17,6 +18,9 @@ import Graphics.Vulkan.Memory( VkDeviceMemory(..)
 import Graphics.Vulkan.Core( VkStructureType(..)
                            )
 
+pattern VK_NV_WIN32_KEYED_MUTEX_SPEC_VERSION =  0x1
+pattern VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_NV = VkStructureType 1000058000
+pattern VK_NV_WIN32_KEYED_MUTEX_EXTENSION_NAME =  "VK_NV_win32_keyed_mutex"
 
 data VkWin32KeyedMutexAcquireReleaseInfoNV =
   VkWin32KeyedMutexAcquireReleaseInfoNV{ vkSType :: VkStructureType 
