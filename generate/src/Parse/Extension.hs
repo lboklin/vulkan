@@ -42,7 +42,7 @@ parseExtension = extractFields "Extension"
 
 parseEnumExtension :: IOStateArrow s XmlTree EnumExtension
 parseEnumExtension = extractFields "enum extension"
-                                   (hasName "enum" >>> hasAttr "extends")
+                                   (hasName "enum" >>> hasAttr "extends" >>> hasAttr "offset")
                                    extract
   where extract = proc enumExtension -> do
           eeName <- requiredAttrValue "name" -< enumExtension

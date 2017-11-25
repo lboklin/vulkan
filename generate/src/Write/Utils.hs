@@ -6,7 +6,7 @@ import           Data.Char                    (toLower, toUpper)
 import           Data.Hashable
 import           Data.HashMap.Strict          (HashMap)
 import           Data.List                    (find, foldl', intersperse,
-                                               isPrefixOf, isSuffixOf)
+                                               isPrefixOf, isSuffixOf, stripPrefix)
 import           Data.List.Split              (splitOn)
 import           Data.Maybe                   (fromMaybe)
 import           Numeric
@@ -107,6 +107,7 @@ breakNameTag tags name =
 -- uppercase.
 pascalCase :: String -> String
 pascalCase = concatMap upperFirst . words
+    
 
 -- | Concatenate words separated by underscores in the string and make the
 -- first letter of each one uppercase.
@@ -143,9 +144,14 @@ extensionNameToModuleName extensionName
   | "VK":category:n:ns <- splitOn "_" extensionName
   = ModuleName $ "Graphics.Vulkan." ++
                  pascalCase category ++ "." ++
-                 pascalCase (unwords (n:ns))
+                 pascalCase (unwords (fixed n:ns))
   | otherwise
   = error ("extension name in unexpected format: " ++ extensionName)
+  where
+    fixed n = case stripPrefix "16bit" n of
+      Just rem -> "SixteenBit" ++ rem
+      _ -> n
+  
 
 -- | From ghc Util
 transitiveClosure :: (a -> [a])         -- Successor function

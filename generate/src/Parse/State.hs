@@ -104,5 +104,6 @@ isReservedIdentifier i = i `elem` reservedIdentifiers
   where reservedIdentifiers = [ "void"
                               , "char"
                               , "float"
+                              , "int"
                               ]
 

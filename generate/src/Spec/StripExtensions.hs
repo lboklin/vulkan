@@ -12,6 +12,7 @@ import           Spec.Spec
 import           Spec.Type
 import           Write.TypeConverter (cTypeDependencyNames)
 import           Write.Utils
+import Debug.Trace
 
 -- | 'stripExtensions' removes everything that depends upon any unsupported types
 -- and extensions that aren't in the "vulkan" profile
@@ -30,7 +31,7 @@ stripExtensions spec =
       disallowedTypeNames = catMaybes . fmap typeDeclTypeName $ disallowedTypes
       isInDisallowed  = flip elem disallowedTypes
       allowedTypeDecls = filter (not . isInDisallowed) allTypes
-      isInDisallowedNames = flip elem disallowedTypeNames
+      isInDisallowedNames = flip elem (traceShowId disallowedTypeNames)
       (disallowedCommands, allowedCommands) = partition
                                                 (any isInDisallowedNames . commandDependencies)
                                                 allCommands
@@ -69,7 +70,7 @@ dependsOn _ _ = False
 
 -- | Is the type one which we can't supply
 isDisallowedTypeName :: String -> Bool
-isDisallowedTypeName = not . flip elem allowedTypes
+isDisallowedTypeName = not . flip elem allowedTypes 
 
 -- | A list of all types which are not part of any WSI extension
 allowedTypes :: [String]
@@ -81,6 +82,7 @@ allowedTypes = [ "void"
                , "uint64_t"
                , "int32_t"
                , "size_t"
+               , "int"
                ]
 
 typeDeclDependees :: TypeDecl -> [String]

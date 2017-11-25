@@ -19,6 +19,7 @@ import           Write.TypeConverter           (buildTypeEnvFromSpecGraph)
 import           Write.Utils
 import           Write.Vertex
 import           Write.WriteMonad
+import Debug.Trace
 
 writeModule :: SpecGraph
             -> NameLocations
@@ -65,6 +66,7 @@ nameToRequiredName graph name =
     "size_t"   -> ExternalName (ModuleName "Foreign.C.Types") "CSize(..)"
     "void"     -> ExternalName (ModuleName "Data.Void") "Void"
     "float"    -> ExternalName (ModuleName "Foreign.C.Types") "CFloat(..)"
+    "int"      -> ExternalName (ModuleName "Foreign.C.Types") "CInt(..)"
     _ -> if isTypeConstructor (requiredLookup graph name)
            then InternalName WildCard name
            else InternalName NoWildCard name

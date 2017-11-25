@@ -102,8 +102,6 @@ private version is maintained in the 1.0 branch of the member gitlab server.
         <type category="define">#define <name>VK_VERSION_MINOR</name>(version) (((uint32_t)(version) &gt;&gt; 12) &amp; 0x3ff)</type>
         <type category="define">#define <name>VK_VERSION_PATCH</name>(version) ((uint32_t)(version) &amp; 0xfff)</type>
 
-        <type category="define">// DEPRECATED: This define has been removed. Specific version defines (e.g. VK_API_VERSION_1_0), or the VK_MAKE_VERSION macro, should be used instead.
-//#define <name>VK_API_VERSION</name> <type>VK_MAKE_VERSION</type>(1, 0, 0) // Patch version should always be set to 0</type>
         <type category="define">// Vulkan 1.0 version number
 #define <name>VK_API_VERSION_1_0</name> <type>VK_MAKE_VERSION</type>(1, 0, 0)// Patch version should always be set to 0</type>
         <type category="define">// Version of this file
@@ -140,6 +138,7 @@ private version is maintained in the 1.0 branch of the member gitlab server.
         <type requires="vk_platform" name="uint64_t"/>
         <type requires="vk_platform" name="int32_t"/>
         <type requires="vk_platform" name="size_t"/>
+        <type requires="vk_platform" name="int"/>
 
             <comment>Bitmask types</comment>
         <type                                             category="bitmask">typedef <type>VkFlags</type> <name>VkFramebufferCreateFlags</name>;</type>
@@ -2665,7 +2664,7 @@ private version is maintained in the 1.0 branch of the member gitlab server.
         <enum value="1"     name="VK_TRUE"/>
         <enum value="0"     name="VK_FALSE"/>
         <enum value="(~0U)" name="VK_QUEUE_FAMILY_IGNORED"/>
-        <enum value="(~0U-1)" name="VK_QUEUE_FAMILY_EXTERNAL_KHR"/>
+        <enum value="4294967294U" name="VK_QUEUE_FAMILY_EXTERNAL_KHR"/>
         <enum value="(~0U)" name="VK_SUBPASS_EXTERNAL"/>
         <enum value="32"    name="VK_MAX_DEVICE_GROUP_SIZE_KHX"/>
     </enums>
@@ -5440,7 +5439,6 @@ private version is maintained in the 1.0 branch of the member gitlab server.
             <type name="vk_platform"/>
         </require>
         <require comment="API version">
-            <type name="VK_API_VERSION"/>
             <type name="VK_API_VERSION_1_0"/>
             <type name="VK_VERSION_MAJOR"/>
             <type name="VK_VERSION_MINOR"/>
@@ -5649,7 +5647,7 @@ private version is maintained in the 1.0 branch of the member gitlab server.
             <command name="vkCmdEndRenderPass"/>
             <command name="vkCmdExecuteCommands"/>
         </require>
-        <require comment="Types not directly used by the API. Include e.g. structs that are not parameter types of commands, but still defined by the API.">
+        <require comment="Types not directly used by the API">
             <type name="VkBufferMemoryBarrier"/>
             <type name="VkDispatchIndirectCommand"/>
             <type name="VkDrawIndexedIndirectCommand"/>
@@ -5667,7 +5665,7 @@ private version is maintained in the 1.0 branch of the member gitlab server.
                 <enum value="&quot;VK_KHR_surface&quot;"                name="VK_KHR_SURFACE_EXTENSION_NAME"/>
                 <enum offset="0" dir="-" extends="VkResult"             name="VK_ERROR_SURFACE_LOST_KHR"/>
                 <enum offset="1" dir="-" extends="VkResult"             name="VK_ERROR_NATIVE_WINDOW_IN_USE_KHR"/>
-                <enum value="VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"         name="VK_COLORSPACE_SRGB_NONLINEAR_KHR"/>
+                <enum value="0"         name="VK_COLORSPACE_SRGB_NONLINEAR_KHR"/>
                 <enum offset="0" extends="VkObjectType"                 name="VK_OBJECT_TYPE_SURFACE_KHR"                  comment="VkSurfaceKHR"/>
                 <command name="vkDestroySurfaceKHR"/>
                 <command name="vkGetPhysicalDeviceSurfaceSupportKHR"/>
@@ -5812,10 +5810,10 @@ private version is maintained in the 1.0 branch of the member gitlab server.
                 <enum value="&quot;VK_EXT_debug_report&quot;"           name="VK_EXT_DEBUG_REPORT_EXTENSION_NAME"/>
                 <enum offset="0" extends="VkStructureType"              name="VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT"/>
                 <enum offset="1" dir="-" extends="VkResult"             name="VK_ERROR_VALIDATION_FAILED_EXT"/>
-                <enum value="VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT" name="VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT"/>
+                <enum value="1000011000" name="VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT"/>
                 <enum offset="0" extends="VkObjectType"                 name="VK_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT"          comment="VkDebugReportCallbackEXT"/>
-                <enum value="VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT"         name="VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT"/>
-                <type name="VkDebugReportObjectTypeEXT"/>
+                <enum value="28"         name="VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT"/>
+                <type name="VkDebugReportObjectTypeEXT"/> 
                 <type name="VkDebugReportCallbackCreateInfoEXT"/>
                 <command name="vkCreateDebugReportCallbackEXT"/>
                 <command name="vkDestroyDebugReportCallbackEXT"/>
@@ -5896,7 +5894,6 @@ private version is maintained in the 1.0 branch of the member gitlab server.
                 <enum offset="0" extends="VkStructureType"              name="VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT"/>
                 <enum offset="1" extends="VkStructureType"              name="VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT"/>
                 <enum offset="2" extends="VkStructureType"              name="VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT"/>
-                <type name="VkDebugReportObjectTypeEXT"/>
                 <type name="VkDebugMarkerObjectNameInfoEXT"/>
                 <type name="VkDebugMarkerObjectTagInfoEXT"/>
                 <type name="VkDebugMarkerMarkerInfoEXT"/>
@@ -6227,15 +6224,11 @@ private version is maintained in the 1.0 branch of the member gitlab server.
                 <enum bitpos="3" extends="VkPipelineCreateFlagBits"  name="VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT_KHX"/>
                 <enum bitpos="4" extends="VkPipelineCreateFlagBits"  name="VK_PIPELINE_CREATE_DISPATCH_BASE_KHX"/>
                 <enum bitpos="2" extends="VkDependencyFlagBits"   name="VK_DEPENDENCY_DEVICE_GROUP_BIT_KHX"      comment="Dependency is across devices"/>
-            </require>
-            <require extension="VK_KHR_bind_memory2">
                 <enum offset="13" extends="VkStructureType"             name="VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_DEVICE_GROUP_INFO_KHX"/>
                 <enum offset="14" extends="VkStructureType"             name="VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_DEVICE_GROUP_INFO_KHX"/>
                 <type name="VkBindBufferMemoryDeviceGroupInfoKHX"/>
                 <type name="VkBindImageMemoryDeviceGroupInfoKHX"/>
                 <enum bitpos="6" extends="VkImageCreateFlagBits"  name="VK_IMAGE_CREATE_BIND_SFR_BIT_KHX"    comment="Allows using VkBindImageMemoryDeviceGroupInfoKHX::pSFRRects when binding memory to the image"/>
-            </require>
-            <require extension="VK_KHR_surface">
                 <enum offset="7" extends="VkStructureType"              name="VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHX"/>
                 <type name="VkDeviceGroupPresentModeFlagBitsKHX"/>
                 <type name="VkDeviceGroupPresentModeFlagsKHX"/>
@@ -6243,8 +6236,6 @@ private version is maintained in the 1.0 branch of the member gitlab server.
                 <command name="vkGetDeviceGroupPresentCapabilitiesKHX"/>
                 <command name="vkGetDeviceGroupSurfacePresentModesKHX"/>
                 <command name="vkGetPhysicalDevicePresentRectanglesKHX"/>
-            </require>
-            <require extension="VK_KHR_swapchain">
                 <enum offset="8" extends="VkStructureType"              name="VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHX"/>
                 <enum offset="9" extends="VkStructureType"              name="VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHX"/>
                 <enum offset="11" extends="VkStructureType"             name="VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHX"/>
@@ -6603,7 +6594,7 @@ private version is maintained in the 1.0 branch of the member gitlab server.
                 <enum value="1"                                         name="VK_EXT_DISPLAY_SURFACE_COUNTER_SPEC_VERSION"/>
                 <enum value="&quot;VK_EXT_display_surface_counter&quot;" name="VK_EXT_DISPLAY_SURFACE_COUNTER_EXTENSION_NAME"/>
                 <enum offset="0" extends="VkStructureType"              name="VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT"/>
-                <enum value="VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT" name="VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES2_EXT"/>
+                <enum value="1000090000" name="VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES2_EXT"/>
                 <type name="VkSurfaceCounterFlagsEXT"/>
                 <type name="VkSurfaceCounterFlagBitsEXT"/>
                 <type name="VkSurfaceCapabilities2EXT"/>

@@ -29,6 +29,7 @@ data Vertex = Vertex{ vName         :: String
                     , vDependencies :: [Vertex]
                     , vSourceEntity :: SourceEntity
                     }
+  deriving (Show)
 
 data SourceEntity = AnInclude Include
                   | ADefine Define
@@ -274,6 +275,8 @@ cTypeDependencyNames cType =
       -> ["char"]
     TypeSpecifier _ Float
       -> ["float"]
+    TypeSpecifier _ (Int Signed)
+      -> ["int"]
     TypeSpecifier _ (TypeName t)
       -> [unCIdentifier t]
     TypeSpecifier _ (Struct t)
