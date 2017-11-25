@@ -12,8 +12,8 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
-import Data.Word( Word64
-                , Word32
+import Data.Word( Word32
+                , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
@@ -27,32 +27,32 @@ import Foreign.Storable( Storable(..)
                        )
 import Data.Void( Void
                 )
-import Graphics.Vulkan.Memory( VkInternalAllocationType(..)
+import Graphics.Vulkan.Memory( VkSystemAllocationScope(..)
                              , PFN_vkAllocationFunction
                              , PFN_vkReallocationFunction
+                             , PFN_vkFreeFunction
                              , PFN_vkInternalAllocationNotification
                              , VkAllocationCallbacks(..)
-                             , VkSystemAllocationScope(..)
-                             , PFN_vkFreeFunction
+                             , VkInternalAllocationType(..)
                              , PFN_vkInternalFreeNotification
                              )
 import Text.Read( Read(..)
                 , parens
                 )
-import Text.ParserCombinators.ReadPrec( prec
-                                      , (+++)
+import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
+                                      , prec
                                       )
-import Graphics.Vulkan.Image( VkImageUsageFlags(..)
-                            , VkImageUsageFlagBits(..)
+import Graphics.Vulkan.Image( VkImageUsageFlagBits(..)
+                            , VkImageUsageFlags(..)
                             )
 import Graphics.Vulkan.DeviceInitialization( VkInstance(..)
                                            )
-import Graphics.Vulkan.Core( VkResult(..)
-                           , VkBool32(..)
-                           , VkExtent2D(..)
-                           , VkFlags(..)
+import Graphics.Vulkan.Core( VkExtent2D(..)
                            , VkFormat(..)
+                           , VkBool32(..)
+                           , VkFlags(..)
+                           , VkResult(..)
                            )
 import Foreign.C.Types( CSize(..)
                       )
@@ -63,15 +63,16 @@ pattern VK_COLORSPACE_SRGB_NONLINEAR_KHR =  VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
 foreign import ccall "vkGetPhysicalDeviceSurfaceFormatsKHR" vkGetPhysicalDeviceSurfaceFormatsKHR ::
   VkPhysicalDevice ->
   VkSurfaceKHR -> Ptr Word32 -> Ptr VkSurfaceFormatKHR -> IO VkResult
+<<<<<<< HEAD
 
 pattern VK_KHR_SURFACE_SPEC_VERSION =  0x19
+=======
+>>>>>>> Update vulkan api
 -- ** vkGetPhysicalDeviceSurfaceCapabilitiesKHR
 foreign import ccall "vkGetPhysicalDeviceSurfaceCapabilitiesKHR" vkGetPhysicalDeviceSurfaceCapabilitiesKHR ::
   VkPhysicalDevice ->
   VkSurfaceKHR -> Ptr VkSurfaceCapabilitiesKHR -> IO VkResult
-
 -- ** VkCompositeAlphaFlagsKHR
-
 newtype VkCompositeAlphaFlagBitsKHR = VkCompositeAlphaFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
 
@@ -99,7 +100,6 @@ instance Read VkCompositeAlphaFlagBitsKHR where
                         )
                     )
 
-
 pattern VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR = VkCompositeAlphaFlagBitsKHR 0x1
 
 pattern VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR = VkCompositeAlphaFlagBitsKHR 0x2
@@ -107,10 +107,7 @@ pattern VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR = VkCompositeAlphaFlagBitsKHR 
 pattern VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR = VkCompositeAlphaFlagBitsKHR 0x4
 
 pattern VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR = VkCompositeAlphaFlagBitsKHR 0x8
-
-
 -- ** VkPresentModeKHR
-
 newtype VkPresentModeKHR = VkPresentModeKHR Int32
   deriving (Eq, Ord, Storable)
 
@@ -134,7 +131,6 @@ instance Read VkPresentModeKHR where
                         )
                     )
 
-
 pattern VK_PRESENT_MODE_IMMEDIATE_KHR = VkPresentModeKHR 0
 
 pattern VK_PRESENT_MODE_MAILBOX_KHR = VkPresentModeKHR 1
@@ -142,24 +138,28 @@ pattern VK_PRESENT_MODE_MAILBOX_KHR = VkPresentModeKHR 1
 pattern VK_PRESENT_MODE_FIFO_KHR = VkPresentModeKHR 2
 
 pattern VK_PRESENT_MODE_FIFO_RELAXED_KHR = VkPresentModeKHR 3
+<<<<<<< HEAD
 
 pattern VK_ERROR_NATIVE_WINDOW_IN_USE_KHR = VkResult (-1000000001)
+=======
+>>>>>>> Update vulkan api
 newtype VkSurfaceKHR = VkSurfaceKHR Word64
   deriving (Eq, Ord, Storable, Show)
-
 -- ** vkGetPhysicalDeviceSurfaceSupportKHR
 foreign import ccall "vkGetPhysicalDeviceSurfaceSupportKHR" vkGetPhysicalDeviceSurfaceSupportKHR ::
   VkPhysicalDevice ->
   Word32 -> VkSurfaceKHR -> Ptr VkBool32 -> IO VkResult
 
+<<<<<<< HEAD
 pattern VK_ERROR_SURFACE_LOST_KHR = VkResult (-1000000000)
 
+=======
+>>>>>>> Update vulkan api
 data VkSurfaceFormatKHR =
   VkSurfaceFormatKHR{ vkFormat :: VkFormat 
                     , vkColorSpace :: VkColorSpaceKHR 
                     }
   deriving (Eq, Ord, Show)
-
 instance Storable VkSurfaceFormatKHR where
   sizeOf ~_ = 8
   alignment ~_ = 4
@@ -167,14 +167,10 @@ instance Storable VkSurfaceFormatKHR where
                                 <*> peek (ptr `plusPtr` 4)
   poke ptr poked = poke (ptr `plusPtr` 0) (vkFormat (poked :: VkSurfaceFormatKHR))
                 *> poke (ptr `plusPtr` 4) (vkColorSpace (poked :: VkSurfaceFormatKHR))
-
-
 -- ** vkDestroySurfaceKHR
 foreign import ccall "vkDestroySurfaceKHR" vkDestroySurfaceKHR ::
   VkInstance -> VkSurfaceKHR -> Ptr VkAllocationCallbacks -> IO ()
-
 -- ** VkColorSpaceKHR
-
 newtype VkColorSpaceKHR = VkColorSpaceKHR Int32
   deriving (Eq, Ord, Storable)
 
@@ -192,16 +188,18 @@ instance Read VkColorSpaceKHR where
                         )
                     )
 
+<<<<<<< HEAD
 
 pattern VK_COLOR_SPACE_SRGB_NONLINEAR_KHR = VkColorSpaceKHR 0
 
+=======
+pattern VK_COLOR_SPACE_SRGB_NONLINEAR_KHR = VkColorSpaceKHR 0
+>>>>>>> Update vulkan api
 -- ** vkGetPhysicalDeviceSurfacePresentModesKHR
 foreign import ccall "vkGetPhysicalDeviceSurfacePresentModesKHR" vkGetPhysicalDeviceSurfacePresentModesKHR ::
   VkPhysicalDevice ->
   VkSurfaceKHR -> Ptr Word32 -> Ptr VkPresentModeKHR -> IO VkResult
-
 -- ** VkSurfaceTransformFlagsKHR
-
 newtype VkSurfaceTransformFlagBitsKHR = VkSurfaceTransformFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
 
@@ -239,7 +237,6 @@ instance Read VkSurfaceTransformFlagBitsKHR where
                         )
                     )
 
-
 pattern VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR = VkSurfaceTransformFlagBitsKHR 0x1
 
 pattern VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR = VkSurfaceTransformFlagBitsKHR 0x2
@@ -258,8 +255,6 @@ pattern VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR = VkSurfaceTra
 
 pattern VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR = VkSurfaceTransformFlagBitsKHR 0x100
 
-
-
 data VkSurfaceCapabilitiesKHR =
   VkSurfaceCapabilitiesKHR{ vkMinImageCount :: Word32 
                           , vkMaxImageCount :: Word32 
@@ -273,7 +268,6 @@ data VkSurfaceCapabilitiesKHR =
                           , vkSupportedUsageFlags :: VkImageUsageFlags 
                           }
   deriving (Eq, Ord, Show)
-
 instance Storable VkSurfaceCapabilitiesKHR where
   sizeOf ~_ = 52
   alignment ~_ = 4
@@ -297,5 +291,3 @@ instance Storable VkSurfaceCapabilitiesKHR where
                 *> poke (ptr `plusPtr` 40) (vkCurrentTransform (poked :: VkSurfaceCapabilitiesKHR))
                 *> poke (ptr `plusPtr` 44) (vkSupportedCompositeAlpha (poked :: VkSurfaceCapabilitiesKHR))
                 *> poke (ptr `plusPtr` 48) (vkSupportedUsageFlags (poked :: VkSurfaceCapabilitiesKHR))
-
-

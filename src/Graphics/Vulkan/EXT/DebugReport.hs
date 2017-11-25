@@ -10,15 +10,23 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
+<<<<<<< HEAD
 import System.IO.Unsafe( unsafePerformIO
                        )
 import Data.Word( Word64
                 , Word32
+=======
+import Data.Word( Word32
+                , Word64
+>>>>>>> Update vulkan api
                 )
 import Foreign.Ptr( Ptr
-                  , FunPtr
                   , plusPtr
+<<<<<<< HEAD
                   , castFunPtr
+=======
+                  , FunPtr
+>>>>>>> Update vulkan api
                   )
 import Data.Int( Int32
                )
@@ -29,31 +37,36 @@ import Foreign.Storable( Storable(..)
                        )
 import Data.Void( Void
                 )
-import Graphics.Vulkan.Memory( VkInternalAllocationType(..)
+import Graphics.Vulkan.Memory( VkSystemAllocationScope(..)
                              , PFN_vkAllocationFunction
                              , PFN_vkReallocationFunction
+                             , PFN_vkFreeFunction
                              , PFN_vkInternalAllocationNotification
                              , VkAllocationCallbacks(..)
-                             , VkSystemAllocationScope(..)
-                             , PFN_vkFreeFunction
+                             , VkInternalAllocationType(..)
                              , PFN_vkInternalFreeNotification
                              )
 import Text.Read( Read(..)
                 , parens
                 )
-import Text.ParserCombinators.ReadPrec( prec
-                                      , (+++)
+import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
+                                      , prec
                                       )
 import Graphics.Vulkan.DeviceInitialization( VkInstance(..)
                                            , vkGetInstanceProcAddr
                                            )
+<<<<<<< HEAD
 import Foreign.C.String( withCString
                        )
 import Graphics.Vulkan.Core( VkResult(..)
                            , VkBool32(..)
+=======
+import Graphics.Vulkan.Core( VkBool32(..)
+>>>>>>> Update vulkan api
                            , VkFlags(..)
                            , VkStructureType(..)
+                           , VkResult(..)
                            )
 import Foreign.C.Types( CSize
                       , CChar
@@ -73,6 +86,7 @@ vkDebugReportMessageEXT :: VkInstance ->
   VkDebugReportFlagsEXT ->
     VkDebugReportObjectTypeEXT ->
       Word64 -> CSize -> Int32 -> Ptr CChar -> Ptr CChar -> IO ()
+<<<<<<< HEAD
 vkDebugReportMessageEXT i = (mkvkDebugReportMessageEXT $ castFunPtr $ procAddr) i
   where procAddr = unsafePerformIO $ withCString "vkDebugReportMessageEXT" $ vkGetInstanceProcAddr i
 
@@ -80,8 +94,11 @@ newtype VkDebugReportCallbackEXT = VkDebugReportCallbackEXT Word64
   deriving (Eq, Ord, Storable, Show)
 
 pattern VK_EXT_DEBUG_REPORT_SPEC_VERSION =  0x2
+=======
+newtype VkDebugReportCallbackEXT = VkDebugReportCallbackEXT Word64
+  deriving (Eq, Ord, Storable, Show)
+>>>>>>> Update vulkan api
 -- ** VkDebugReportObjectTypeEXT
-
 newtype VkDebugReportObjectTypeEXT = VkDebugReportObjectTypeEXT Int32
   deriving (Eq, Ord, Storable)
 
@@ -114,7 +131,12 @@ instance Show VkDebugReportObjectTypeEXT where
   showsPrec _ VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT = showString "VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT"
   showsPrec _ VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT = showString "VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT"
   showsPrec _ VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT = showString "VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT"
-  showsPrec _ VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT = showString "VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT"
+  showsPrec _ VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT = showString "VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT"
+  showsPrec _ VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT = showString "VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT"
+  showsPrec _ VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT = showString "VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT"
+  showsPrec _ VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT = showString "VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT"
+  showsPrec _ VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT = showString "VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT"
+  showsPrec _ VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT = showString "VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT"
   showsPrec p (VkDebugReportObjectTypeEXT x) = showParen (p >= 11) (showString "VkDebugReportObjectTypeEXT " . showsPrec 11 x)
 
 instance Read VkDebugReportObjectTypeEXT where
@@ -146,7 +168,12 @@ instance Read VkDebugReportObjectTypeEXT where
                              , ("VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT", pure VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT)
                              , ("VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT", pure VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT)
                              , ("VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT", pure VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT)
-                             , ("VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT", pure VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT)
+                             , ("VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT", pure VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT)
+                             , ("VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT", pure VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT)
+                             , ("VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT", pure VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT)
+                             , ("VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT", pure VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT)
+                             , ("VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT", pure VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT)
+                             , ("VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT", pure VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT)
                              ] +++
                       prec 10 (do
                         expectP (Ident "VkDebugReportObjectTypeEXT")
@@ -154,7 +181,6 @@ instance Read VkDebugReportObjectTypeEXT where
                         pure (VkDebugReportObjectTypeEXT v)
                         )
                     )
-
 
 pattern VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT = VkDebugReportObjectTypeEXT 0
 
@@ -212,34 +238,17 @@ pattern VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT = VkDebugReportObjectTypeEXT
 
 pattern VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT = VkDebugReportObjectTypeEXT 27
 
-pattern VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT = VkDebugReportObjectTypeEXT 28
+pattern VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT = VkDebugReportObjectTypeEXT 28
 
--- ** VkDebugReportErrorEXT
+pattern VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT = VkDebugReportObjectTypeEXT 29
 
-newtype VkDebugReportErrorEXT = VkDebugReportErrorEXT Int32
-  deriving (Eq, Ord, Storable)
+pattern VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT = VkDebugReportObjectTypeEXT 30
 
-instance Show VkDebugReportErrorEXT where
-  showsPrec _ VK_DEBUG_REPORT_ERROR_NONE_EXT = showString "VK_DEBUG_REPORT_ERROR_NONE_EXT"
-  showsPrec _ VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT = showString "VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT"
-  showsPrec p (VkDebugReportErrorEXT x) = showParen (p >= 11) (showString "VkDebugReportErrorEXT " . showsPrec 11 x)
+pattern VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT = VkDebugReportObjectTypeEXT 31
 
-instance Read VkDebugReportErrorEXT where
-  readPrec = parens ( choose [ ("VK_DEBUG_REPORT_ERROR_NONE_EXT", pure VK_DEBUG_REPORT_ERROR_NONE_EXT)
-                             , ("VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT", pure VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT)
-                             ] +++
-                      prec 10 (do
-                        expectP (Ident "VkDebugReportErrorEXT")
-                        v <- step readPrec
-                        pure (VkDebugReportErrorEXT v)
-                        )
-                    )
+pattern VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT = VkDebugReportObjectTypeEXT 32
 
-
-pattern VK_DEBUG_REPORT_ERROR_NONE_EXT = VkDebugReportErrorEXT 0
-
-pattern VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT = VkDebugReportErrorEXT 1
-
+pattern VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT = VkDebugReportObjectTypeEXT 33
 
 data VkDebugReportCallbackCreateInfoEXT =
   VkDebugReportCallbackCreateInfoEXT{ vkSType :: VkStructureType 
@@ -249,7 +258,6 @@ data VkDebugReportCallbackCreateInfoEXT =
                                     , vkPUserData :: Ptr Void 
                                     }
   deriving (Eq, Ord, Show)
-
 instance Storable VkDebugReportCallbackCreateInfoEXT where
   sizeOf ~_ = 40
   alignment ~_ = 8
@@ -263,20 +271,25 @@ instance Storable VkDebugReportCallbackCreateInfoEXT where
                 *> poke (ptr `plusPtr` 16) (vkFlags (poked :: VkDebugReportCallbackCreateInfoEXT))
                 *> poke (ptr `plusPtr` 24) (vkPfnCallback (poked :: VkDebugReportCallbackCreateInfoEXT))
                 *> poke (ptr `plusPtr` 32) (vkPUserData (poked :: VkDebugReportCallbackCreateInfoEXT))
+<<<<<<< HEAD
 
 
 pattern VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT =  VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT
+=======
+>>>>>>> Update vulkan api
 -- ** vkDestroyDebugReportCallbackEXT
 foreign import ccall "dynamic" mkvkDestroyDebugReportCallbackEXT :: FunPtr (VkInstance ->
   VkDebugReportCallbackEXT -> Ptr VkAllocationCallbacks -> IO ()) -> (VkInstance ->
   VkDebugReportCallbackEXT -> Ptr VkAllocationCallbacks -> IO ())
 vkDestroyDebugReportCallbackEXT :: VkInstance ->
   VkDebugReportCallbackEXT -> Ptr VkAllocationCallbacks -> IO ()
+<<<<<<< HEAD
 vkDestroyDebugReportCallbackEXT i = (mkvkDestroyDebugReportCallbackEXT $ castFunPtr $ procAddr) i
   where procAddr = unsafePerformIO $ withCString "vkDestroyDebugReportCallbackEXT" $ vkGetInstanceProcAddr i
 
+=======
+>>>>>>> Update vulkan api
 -- ** VkDebugReportFlagsEXT
-
 newtype VkDebugReportFlagBitsEXT = VkDebugReportFlagBitsEXT VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
 
@@ -306,7 +319,6 @@ instance Read VkDebugReportFlagBitsEXT where
                         )
                     )
 
-
 pattern VK_DEBUG_REPORT_INFORMATION_BIT_EXT = VkDebugReportFlagBitsEXT 0x1
 
 pattern VK_DEBUG_REPORT_WARNING_BIT_EXT = VkDebugReportFlagBitsEXT 0x2
@@ -316,17 +328,18 @@ pattern VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT = VkDebugReportFlagBitsEXT 0
 pattern VK_DEBUG_REPORT_ERROR_BIT_EXT = VkDebugReportFlagBitsEXT 0x8
 
 pattern VK_DEBUG_REPORT_DEBUG_BIT_EXT = VkDebugReportFlagBitsEXT 0x10
-
-
 type PFN_vkDebugReportCallbackEXT = FunPtr
   (VkDebugReportFlagsEXT ->
      VkDebugReportObjectTypeEXT ->
        Word64 ->
          CSize ->
            Int32 -> Ptr CChar -> Ptr CChar -> Ptr Void -> IO VkBool32)
+<<<<<<< HEAD
 
 pattern VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT = VkStructureType 1000011000
 pattern VK_ERROR_VALIDATION_FAILED_EXT = VkResult (-1000011001)
+=======
+>>>>>>> Update vulkan api
 -- ** vkCreateDebugReportCallbackEXT
 foreign import ccall "dynamic" mkvkCreateDebugReportCallbackEXT :: FunPtr (VkInstance ->
   Ptr VkDebugReportCallbackCreateInfoEXT ->
@@ -339,6 +352,9 @@ vkCreateDebugReportCallbackEXT :: VkInstance ->
   Ptr VkDebugReportCallbackCreateInfoEXT ->
     Ptr VkAllocationCallbacks ->
       Ptr VkDebugReportCallbackEXT -> IO VkResult
+<<<<<<< HEAD
 vkCreateDebugReportCallbackEXT i = (mkvkCreateDebugReportCallbackEXT $ castFunPtr $ procAddr) i
   where procAddr = unsafePerformIO $ withCString "vkCreateDebugReportCallbackEXT" $ vkGetInstanceProcAddr i
 
+=======
+>>>>>>> Update vulkan api

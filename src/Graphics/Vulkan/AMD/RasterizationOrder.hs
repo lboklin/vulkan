@@ -21,16 +21,26 @@ import Data.Void( Void
 import Text.Read( Read(..)
                 , parens
                 )
+<<<<<<< HEAD
 import Text.ParserCombinators.ReadPrec( prec
                                       , (+++)
                                       , step
+=======
+import Text.ParserCombinators.ReadPrec( (+++)
+                                      , step
+                                      , prec
+>>>>>>> Update vulkan api
                                       )
 import Graphics.Vulkan.Core( VkStructureType(..)
                            )
 
+<<<<<<< HEAD
 pattern VK_AMD_RASTERIZATION_ORDER_EXTENSION_NAME =  "VK_AMD_rasterization_order"
 -- ** VkRasterizationOrderAMD
 
+=======
+-- ** VkRasterizationOrderAMD
+>>>>>>> Update vulkan api
 newtype VkRasterizationOrderAMD = VkRasterizationOrderAMD Int32
   deriving (Eq, Ord, Storable)
 
@@ -50,21 +60,30 @@ instance Read VkRasterizationOrderAMD where
                         )
                     )
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> Update vulkan api
 pattern VK_RASTERIZATION_ORDER_STRICT_AMD = VkRasterizationOrderAMD 0
 
 pattern VK_RASTERIZATION_ORDER_RELAXED_AMD = VkRasterizationOrderAMD 1
 
+<<<<<<< HEAD
 pattern VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD = VkStructureType 1000018000
 pattern VK_AMD_RASTERIZATION_ORDER_SPEC_VERSION =  0x1
 
+=======
+>>>>>>> Update vulkan api
 data VkPipelineRasterizationStateRasterizationOrderAMD =
   VkPipelineRasterizationStateRasterizationOrderAMD{ vkSType :: VkStructureType 
                                                    , vkPNext :: Ptr Void 
                                                    , vkRasterizationOrder :: VkRasterizationOrderAMD 
                                                    }
   deriving (Eq, Ord, Show)
+<<<<<<< HEAD
 
+=======
+>>>>>>> Update vulkan api
 instance Storable VkPipelineRasterizationStateRasterizationOrderAMD where
   sizeOf ~_ = 24
   alignment ~_ = 8
@@ -74,5 +93,8 @@ instance Storable VkPipelineRasterizationStateRasterizationOrderAMD where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkSType (poked :: VkPipelineRasterizationStateRasterizationOrderAMD))
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkPipelineRasterizationStateRasterizationOrderAMD))
                 *> poke (ptr `plusPtr` 16) (vkRasterizationOrder (poked :: VkPipelineRasterizationStateRasterizationOrderAMD))
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> Update vulkan api

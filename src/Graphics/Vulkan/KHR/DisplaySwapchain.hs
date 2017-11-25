@@ -8,17 +8,18 @@ import Graphics.Vulkan.Device( VkDevice(..)
 import Graphics.Vulkan.KHR.Swapchain( VkSwapchainKHR(..)
                                     , VkSwapchainCreateInfoKHR(..)
                                     , VkSwapchainCreateFlagsKHR(..)
+                                    , VkSwapchainCreateFlagBitsKHR(..)
                                     )
-import Data.Word( Word64
-                , Word32
+import Data.Word( Word32
+                , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
                   )
-import Graphics.Vulkan.KHR.Surface( VkColorSpaceKHR(..)
-                                  , VkSurfaceTransformFlagBitsKHR(..)
+import Graphics.Vulkan.KHR.Surface( VkCompositeAlphaFlagBitsKHR(..)
+                                  , VkColorSpaceKHR(..)
                                   , VkPresentModeKHR(..)
-                                  , VkCompositeAlphaFlagBitsKHR(..)
+                                  , VkSurfaceTransformFlagBitsKHR(..)
                                   , VkSurfaceKHR(..)
                                   )
 import Data.Int( Int32
@@ -27,27 +28,27 @@ import Foreign.Storable( Storable(..)
                        )
 import Data.Void( Void
                 )
-import Graphics.Vulkan.Memory( VkInternalAllocationType(..)
+import Graphics.Vulkan.Memory( VkSystemAllocationScope(..)
                              , PFN_vkAllocationFunction
                              , PFN_vkReallocationFunction
+                             , PFN_vkFreeFunction
                              , PFN_vkInternalAllocationNotification
                              , VkAllocationCallbacks(..)
-                             , VkSystemAllocationScope(..)
-                             , PFN_vkFreeFunction
+                             , VkInternalAllocationType(..)
                              , PFN_vkInternalFreeNotification
                              )
-import Graphics.Vulkan.Image( VkImageUsageFlags(..)
-                            , VkImageUsageFlagBits(..)
+import Graphics.Vulkan.Image( VkImageUsageFlagBits(..)
+                            , VkImageUsageFlags(..)
                             )
-import Graphics.Vulkan.Core( VkResult(..)
-                           , VkBool32(..)
+import Graphics.Vulkan.Core( VkOffset2D(..)
                            , VkExtent2D(..)
-                           , VkFlags(..)
                            , VkFormat(..)
-                           , VkOffset2D(..)
+                           , VkBool32(..)
                            , VkRect2D(..)
+                           , VkFlags(..)
                            , VkStructureType(..)
                            , VkSharingMode(..)
+                           , VkResult(..)
                            )
 import Foreign.C.Types( CSize(..)
                       )
@@ -61,7 +62,6 @@ data VkDisplayPresentInfoKHR =
                          , vkPersistent :: VkBool32 
                          }
   deriving (Eq, Ord, Show)
-
 instance Storable VkDisplayPresentInfoKHR where
   sizeOf ~_ = 56
   alignment ~_ = 8
@@ -75,16 +75,17 @@ instance Storable VkDisplayPresentInfoKHR where
                 *> poke (ptr `plusPtr` 16) (vkSrcRect (poked :: VkDisplayPresentInfoKHR))
                 *> poke (ptr `plusPtr` 32) (vkDstRect (poked :: VkDisplayPresentInfoKHR))
                 *> poke (ptr `plusPtr` 48) (vkPersistent (poked :: VkDisplayPresentInfoKHR))
-
-
 -- ** vkCreateSharedSwapchainsKHR
 foreign import ccall "vkCreateSharedSwapchainsKHR" vkCreateSharedSwapchainsKHR ::
   VkDevice ->
   Word32 ->
     Ptr VkSwapchainCreateInfoKHR ->
       Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR -> IO VkResult
+<<<<<<< HEAD
 
 pattern VK_KHR_DISPLAY_SWAPCHAIN_SPEC_VERSION =  0x9
 pattern VK_KHR_DISPLAY_SWAPCHAIN_EXTENSION_NAME =  "VK_KHR_display_swapchain"
 pattern VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR = VkStructureType 1000003000
 pattern VK_ERROR_INCOMPATIBLE_DISPLAY_KHR = VkResult (-1000003001)
+=======
+>>>>>>> Update vulkan api

@@ -15,8 +15,8 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
-import Data.Word( Word64
-                , Word32
+import Data.Word( Word32
+                , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
@@ -39,30 +39,30 @@ import Graphics.Vulkan.Memory( VkDeviceMemory(..)
 import Text.Read( Read(..)
                 , parens
                 )
-import Text.ParserCombinators.ReadPrec( prec
-                                      , (+++)
+import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
+                                      , prec
                                       )
 import Graphics.Vulkan.Sampler( VkSampleCountFlagBits(..)
                               )
-import Graphics.Vulkan.Image( VkImageUsageFlags(..)
-                            , VkImage(..)
-                            , VkImageSubresource(..)
-                            , VkImageType(..)
-                            , VkImageAspectFlagBits(..)
-                            , VkImageUsageFlagBits(..)
+import Graphics.Vulkan.Image( VkImageSubresource(..)
                             , VkImageTiling(..)
+                            , VkImageType(..)
+                            , VkImageUsageFlagBits(..)
+                            , VkImage(..)
+                            , VkImageAspectFlagBits(..)
                             , VkImageAspectFlags(..)
+                            , VkImageUsageFlags(..)
                             )
 import Graphics.Vulkan.QueueSemaphore( VkSemaphore(..)
                                      )
-import Graphics.Vulkan.Core( VkExtent3D(..)
-                           , VkResult(..)
-                           , VkDeviceSize(..)
-                           , VkFlags(..)
+import Graphics.Vulkan.Core( VkDeviceSize(..)
+                           , VkExtent3D(..)
                            , VkFormat(..)
                            , VkOffset3D(..)
+                           , VkFlags(..)
                            , VkStructureType(..)
+                           , VkResult(..)
                            )
 
 
@@ -74,7 +74,6 @@ data VkSparseImageMemoryRequirements =
                                  , vkImageMipTailStride :: VkDeviceSize 
                                  }
   deriving (Eq, Ord, Show)
-
 instance Storable VkSparseImageMemoryRequirements where
   sizeOf ~_ = 48
   alignment ~_ = 8
@@ -89,8 +88,6 @@ instance Storable VkSparseImageMemoryRequirements where
                 *> poke (ptr `plusPtr` 32) (vkImageMipTailOffset (poked :: VkSparseImageMemoryRequirements))
                 *> poke (ptr `plusPtr` 40) (vkImageMipTailStride (poked :: VkSparseImageMemoryRequirements))
 
-
-
 data VkSparseMemoryBind =
   VkSparseMemoryBind{ vkResourceOffset :: VkDeviceSize 
                     , vkSize :: VkDeviceSize 
@@ -99,7 +96,6 @@ data VkSparseMemoryBind =
                     , vkFlags :: VkSparseMemoryBindFlags 
                     }
   deriving (Eq, Ord, Show)
-
 instance Storable VkSparseMemoryBind where
   sizeOf ~_ = 40
   alignment ~_ = 8
@@ -114,8 +110,6 @@ instance Storable VkSparseMemoryBind where
                 *> poke (ptr `plusPtr` 24) (vkMemoryOffset (poked :: VkSparseMemoryBind))
                 *> poke (ptr `plusPtr` 32) (vkFlags (poked :: VkSparseMemoryBind))
 
-
-
 data VkSparseImageMemoryBind =
   VkSparseImageMemoryBind{ vkSubresource :: VkImageSubresource 
                          , vkOffset :: VkOffset3D 
@@ -125,7 +119,6 @@ data VkSparseImageMemoryBind =
                          , vkFlags :: VkSparseMemoryBindFlags 
                          }
   deriving (Eq, Ord, Show)
-
 instance Storable VkSparseImageMemoryBind where
   sizeOf ~_ = 64
   alignment ~_ = 8
@@ -142,15 +135,12 @@ instance Storable VkSparseImageMemoryBind where
                 *> poke (ptr `plusPtr` 48) (vkMemoryOffset (poked :: VkSparseImageMemoryBind))
                 *> poke (ptr `plusPtr` 56) (vkFlags (poked :: VkSparseImageMemoryBind))
 
-
-
 data VkSparseImageMemoryBindInfo =
   VkSparseImageMemoryBindInfo{ vkImage :: VkImage 
                              , vkBindCount :: Word32 
                              , vkPBinds :: Ptr VkSparseImageMemoryBind 
                              }
   deriving (Eq, Ord, Show)
-
 instance Storable VkSparseImageMemoryBindInfo where
   sizeOf ~_ = 24
   alignment ~_ = 8
@@ -160,18 +150,14 @@ instance Storable VkSparseImageMemoryBindInfo where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkImage (poked :: VkSparseImageMemoryBindInfo))
                 *> poke (ptr `plusPtr` 8) (vkBindCount (poked :: VkSparseImageMemoryBindInfo))
                 *> poke (ptr `plusPtr` 16) (vkPBinds (poked :: VkSparseImageMemoryBindInfo))
-
-
 -- ** vkGetImageSparseMemoryRequirements
 foreign import ccall "vkGetImageSparseMemoryRequirements" vkGetImageSparseMemoryRequirements ::
   VkDevice ->
   VkImage ->
     Ptr Word32 -> Ptr VkSparseImageMemoryRequirements -> IO ()
-
 -- ** vkQueueBindSparse
 foreign import ccall "vkQueueBindSparse" vkQueueBindSparse ::
   VkQueue -> Word32 -> Ptr VkBindSparseInfo -> VkFence -> IO VkResult
-
 
 data VkBindSparseInfo =
   VkBindSparseInfo{ vkSType :: VkStructureType 
@@ -188,7 +174,6 @@ data VkBindSparseInfo =
                   , vkPSignalSemaphores :: Ptr VkSemaphore 
                   }
   deriving (Eq, Ord, Show)
-
 instance Storable VkBindSparseInfo where
   sizeOf ~_ = 96
   alignment ~_ = 8
@@ -217,15 +202,12 @@ instance Storable VkBindSparseInfo where
                 *> poke (ptr `plusPtr` 80) (vkSignalSemaphoreCount (poked :: VkBindSparseInfo))
                 *> poke (ptr `plusPtr` 88) (vkPSignalSemaphores (poked :: VkBindSparseInfo))
 
-
-
 data VkSparseBufferMemoryBindInfo =
   VkSparseBufferMemoryBindInfo{ vkBuffer :: VkBuffer 
                               , vkBindCount :: Word32 
                               , vkPBinds :: Ptr VkSparseMemoryBind 
                               }
   deriving (Eq, Ord, Show)
-
 instance Storable VkSparseBufferMemoryBindInfo where
   sizeOf ~_ = 24
   alignment ~_ = 8
@@ -235,10 +217,7 @@ instance Storable VkSparseBufferMemoryBindInfo where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkBuffer (poked :: VkSparseBufferMemoryBindInfo))
                 *> poke (ptr `plusPtr` 8) (vkBindCount (poked :: VkSparseBufferMemoryBindInfo))
                 *> poke (ptr `plusPtr` 16) (vkPBinds (poked :: VkSparseBufferMemoryBindInfo))
-
-
 -- ** VkSparseImageFormatFlags
-
 newtype VkSparseImageFormatFlagBits = VkSparseImageFormatFlagBits VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
 
@@ -263,15 +242,16 @@ instance Read VkSparseImageFormatFlagBits where
                         pure (VkSparseImageFormatFlagBits v)
                         )
                     )
-
--- | Image uses a single miptail region for all array layers
+-- | Image uses a single mip tail region for all array layers
 pattern VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT = VkSparseImageFormatFlagBits 0x1
+<<<<<<< HEAD
 -- | Image requires mip level dimensions to be an integer multiple of the sparse image block dimensions for non-miptail levels.
+=======
+-- | Image requires mip level dimensions to be an integer multiple of the sparse image block dimensions for non-tail mip levels.
+>>>>>>> Update vulkan api
 pattern VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT = VkSparseImageFormatFlagBits 0x2
 -- | Image uses a non-standard sparse image block dimensions
 pattern VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT = VkSparseImageFormatFlagBits 0x4
-
-
 -- ** vkGetPhysicalDeviceSparseImageFormatProperties
 foreign import ccall "vkGetPhysicalDeviceSparseImageFormatProperties" vkGetPhysicalDeviceSparseImageFormatProperties ::
   VkPhysicalDevice ->
@@ -281,9 +261,7 @@ foreign import ccall "vkGetPhysicalDeviceSparseImageFormatProperties" vkGetPhysi
         VkImageUsageFlags ->
           VkImageTiling ->
             Ptr Word32 -> Ptr VkSparseImageFormatProperties -> IO ()
-
 -- ** VkSparseMemoryBindFlags
-
 newtype VkSparseMemoryBindFlagBits = VkSparseMemoryBindFlagBits VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
 
@@ -304,11 +282,8 @@ instance Read VkSparseMemoryBindFlagBits where
                         pure (VkSparseMemoryBindFlagBits v)
                         )
                     )
-
 -- | Operation binds resource metadata to memory
 pattern VK_SPARSE_MEMORY_BIND_METADATA_BIT = VkSparseMemoryBindFlagBits 0x1
-
-
 
 data VkSparseImageOpaqueMemoryBindInfo =
   VkSparseImageOpaqueMemoryBindInfo{ vkImage :: VkImage 
@@ -316,7 +291,6 @@ data VkSparseImageOpaqueMemoryBindInfo =
                                    , vkPBinds :: Ptr VkSparseMemoryBind 
                                    }
   deriving (Eq, Ord, Show)
-
 instance Storable VkSparseImageOpaqueMemoryBindInfo where
   sizeOf ~_ = 24
   alignment ~_ = 8
@@ -327,15 +301,12 @@ instance Storable VkSparseImageOpaqueMemoryBindInfo where
                 *> poke (ptr `plusPtr` 8) (vkBindCount (poked :: VkSparseImageOpaqueMemoryBindInfo))
                 *> poke (ptr `plusPtr` 16) (vkPBinds (poked :: VkSparseImageOpaqueMemoryBindInfo))
 
-
-
 data VkSparseImageFormatProperties =
   VkSparseImageFormatProperties{ vkAspectMask :: VkImageAspectFlags 
                                , vkImageGranularity :: VkExtent3D 
                                , vkFlags :: VkSparseImageFormatFlags 
                                }
   deriving (Eq, Ord, Show)
-
 instance Storable VkSparseImageFormatProperties where
   sizeOf ~_ = 20
   alignment ~_ = 4
@@ -345,5 +316,3 @@ instance Storable VkSparseImageFormatProperties where
   poke ptr poked = poke (ptr `plusPtr` 0) (vkAspectMask (poked :: VkSparseImageFormatProperties))
                 *> poke (ptr `plusPtr` 4) (vkImageGranularity (poked :: VkSparseImageFormatProperties))
                 *> poke (ptr `plusPtr` 16) (vkFlags (poked :: VkSparseImageFormatProperties))
-
-

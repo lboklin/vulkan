@@ -1,0 +1,20 @@
+name: vulkan
+version: '1.8.0.0'
+synopsis: Bindings to the Vulkan graphics API.
+description: Please see readme.md
+category: Graphics
+author: Joe Hermaszewski
+maintainer: live.long.and.prosper@monoid.al
+copyright: 2016 Joe Hermaszewski
+license: BSD3
+github: KaneTW/vulkan
+homepage: http://github.com/KaneTW/vulkan#readme
+extra-source-files:
+- readme.md
+- changelog.md
+dependencies:
+- base >=4.9 && <5
+- vector-sized >=0.1 && <0.7
+library:
+  source-dirs: src
+  extra-libraries: vulkan

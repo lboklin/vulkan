@@ -12,14 +12,14 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
-import Data.Word( Word64
-                , Word32
+import Data.Word( Word32
+                , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
                   )
-import Graphics.Vulkan.KHR.Surface( VkSurfaceTransformFlagBitsKHR(..)
-                                  , VkSurfaceTransformFlagsKHR(..)
+import Graphics.Vulkan.KHR.Surface( VkSurfaceTransformFlagsKHR(..)
+                                  , VkSurfaceTransformFlagBitsKHR(..)
                                   , VkSurfaceKHR(..)
                                   )
 import Data.Int( Int32
@@ -31,33 +31,33 @@ import Foreign.Storable( Storable(..)
                        )
 import Data.Void( Void
                 )
-import Graphics.Vulkan.Memory( VkInternalAllocationType(..)
+import Graphics.Vulkan.Memory( VkSystemAllocationScope(..)
                              , PFN_vkAllocationFunction
                              , PFN_vkReallocationFunction
+                             , PFN_vkFreeFunction
                              , PFN_vkInternalAllocationNotification
                              , VkAllocationCallbacks(..)
-                             , VkSystemAllocationScope(..)
-                             , PFN_vkFreeFunction
+                             , VkInternalAllocationType(..)
                              , PFN_vkInternalFreeNotification
                              )
 import Text.Read( Read(..)
                 , parens
                 )
-import Text.ParserCombinators.ReadPrec( prec
-                                      , (+++)
+import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
+                                      , prec
                                       )
 import Graphics.Vulkan.DeviceInitialization( VkInstance(..)
                                            )
-import Graphics.Vulkan.Core( VkResult(..)
-                           , VkBool32(..)
+import Graphics.Vulkan.Core( VkOffset2D(..)
                            , VkExtent2D(..)
+                           , VkBool32(..)
                            , VkFlags(..)
-                           , VkOffset2D(..)
                            , VkStructureType(..)
+                           , VkResult(..)
                            )
-import Foreign.C.Types( CFloat
-                      , CFloat(..)
+import Foreign.C.Types( CFloat(..)
+                      , CFloat
                       , CChar
                       , CSize(..)
                       )
@@ -76,7 +76,6 @@ data VkDisplaySurfaceCreateInfoKHR =
                                , vkImageExtent :: VkExtent2D 
                                }
   deriving (Eq, Ord, Show)
-
 instance Storable VkDisplaySurfaceCreateInfoKHR where
   sizeOf ~_ = 64
   alignment ~_ = 8
@@ -101,9 +100,12 @@ instance Storable VkDisplaySurfaceCreateInfoKHR where
                 *> poke (ptr `plusPtr` 48) (vkAlphaMode (poked :: VkDisplaySurfaceCreateInfoKHR))
                 *> poke (ptr `plusPtr` 52) (vkImageExtent (poked :: VkDisplaySurfaceCreateInfoKHR))
 
+<<<<<<< HEAD
 
 pattern VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR = VkStructureType 1000002001
 
+=======
+>>>>>>> Update vulkan api
 data VkDisplayPlaneCapabilitiesKHR =
   VkDisplayPlaneCapabilitiesKHR{ vkSupportedAlpha :: VkDisplayPlaneAlphaFlagsKHR 
                                , vkMinSrcPosition :: VkOffset2D 
@@ -116,7 +118,6 @@ data VkDisplayPlaneCapabilitiesKHR =
                                , vkMaxDstExtent :: VkExtent2D 
                                }
   deriving (Eq, Ord, Show)
-
 instance Storable VkDisplayPlaneCapabilitiesKHR where
   sizeOf ~_ = 68
   alignment ~_ = 4
@@ -138,15 +139,17 @@ instance Storable VkDisplayPlaneCapabilitiesKHR where
                 *> poke (ptr `plusPtr` 44) (vkMaxDstPosition (poked :: VkDisplayPlaneCapabilitiesKHR))
                 *> poke (ptr `plusPtr` 52) (vkMinDstExtent (poked :: VkDisplayPlaneCapabilitiesKHR))
                 *> poke (ptr `plusPtr` 60) (vkMaxDstExtent (poked :: VkDisplayPlaneCapabilitiesKHR))
+<<<<<<< HEAD
 
 
 pattern VK_KHR_DISPLAY_EXTENSION_NAME =  "VK_KHR_display"
+=======
+>>>>>>> Update vulkan api
 -- ** vkGetDisplayModePropertiesKHR
 foreign import ccall "vkGetDisplayModePropertiesKHR" vkGetDisplayModePropertiesKHR ::
   VkPhysicalDevice ->
   VkDisplayKHR ->
     Ptr Word32 -> Ptr VkDisplayModePropertiesKHR -> IO VkResult
-
 
 data VkDisplayPropertiesKHR =
   VkDisplayPropertiesKHR{ vkDisplay :: VkDisplayKHR 
@@ -158,7 +161,6 @@ data VkDisplayPropertiesKHR =
                         , vkPersistentContent :: VkBool32 
                         }
   deriving (Eq, Ord, Show)
-
 instance Storable VkDisplayPropertiesKHR where
   sizeOf ~_ = 48
   alignment ~_ = 8
@@ -176,14 +178,15 @@ instance Storable VkDisplayPropertiesKHR where
                 *> poke (ptr `plusPtr` 32) (vkSupportedTransforms (poked :: VkDisplayPropertiesKHR))
                 *> poke (ptr `plusPtr` 36) (vkPlaneReorderPossible (poked :: VkDisplayPropertiesKHR))
                 *> poke (ptr `plusPtr` 40) (vkPersistentContent (poked :: VkDisplayPropertiesKHR))
-
-
 -- ** vkGetDisplayPlaneSupportedDisplaysKHR
 foreign import ccall "vkGetDisplayPlaneSupportedDisplaysKHR" vkGetDisplayPlaneSupportedDisplaysKHR ::
   VkPhysicalDevice ->
   Word32 -> Ptr Word32 -> Ptr VkDisplayKHR -> IO VkResult
+<<<<<<< HEAD
 
 pattern VK_KHR_DISPLAY_SPEC_VERSION =  0x15
+=======
+>>>>>>> Update vulkan api
 -- ** vkCreateDisplayModeKHR
 foreign import ccall "vkCreateDisplayModeKHR" vkCreateDisplayModeKHR ::
   VkPhysicalDevice ->
@@ -191,13 +194,11 @@ foreign import ccall "vkCreateDisplayModeKHR" vkCreateDisplayModeKHR ::
     Ptr VkDisplayModeCreateInfoKHR ->
       Ptr VkAllocationCallbacks -> Ptr VkDisplayModeKHR -> IO VkResult
 
-
 data VkDisplayPlanePropertiesKHR =
   VkDisplayPlanePropertiesKHR{ vkCurrentDisplay :: VkDisplayKHR 
                              , vkCurrentStackIndex :: Word32 
                              }
   deriving (Eq, Ord, Show)
-
 instance Storable VkDisplayPlanePropertiesKHR where
   sizeOf ~_ = 16
   alignment ~_ = 8
@@ -205,21 +206,17 @@ instance Storable VkDisplayPlanePropertiesKHR where
                                          <*> peek (ptr `plusPtr` 8)
   poke ptr poked = poke (ptr `plusPtr` 0) (vkCurrentDisplay (poked :: VkDisplayPlanePropertiesKHR))
                 *> poke (ptr `plusPtr` 8) (vkCurrentStackIndex (poked :: VkDisplayPlanePropertiesKHR))
-
-
 -- ** vkGetDisplayPlaneCapabilitiesKHR
 foreign import ccall "vkGetDisplayPlaneCapabilitiesKHR" vkGetDisplayPlaneCapabilitiesKHR ::
   VkPhysicalDevice ->
   VkDisplayModeKHR ->
     Word32 -> Ptr VkDisplayPlaneCapabilitiesKHR -> IO VkResult
 
-
 data VkDisplayModePropertiesKHR =
   VkDisplayModePropertiesKHR{ vkDisplayMode :: VkDisplayModeKHR 
                             , vkParameters :: VkDisplayModeParametersKHR 
                             }
   deriving (Eq, Ord, Show)
-
 instance Storable VkDisplayModePropertiesKHR where
   sizeOf ~_ = 24
   alignment ~_ = 8
@@ -227,11 +224,13 @@ instance Storable VkDisplayModePropertiesKHR where
                                         <*> peek (ptr `plusPtr` 8)
   poke ptr poked = poke (ptr `plusPtr` 0) (vkDisplayMode (poked :: VkDisplayModePropertiesKHR))
                 *> poke (ptr `plusPtr` 8) (vkParameters (poked :: VkDisplayModePropertiesKHR))
+<<<<<<< HEAD
 
 
 pattern VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR = VkStructureType 1000002000
+=======
+>>>>>>> Update vulkan api
 -- ** VkDisplayPlaneAlphaFlagsKHR
-
 newtype VkDisplayPlaneAlphaFlagBitsKHR = VkDisplayPlaneAlphaFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
 
@@ -259,7 +258,6 @@ instance Read VkDisplayPlaneAlphaFlagBitsKHR where
                         )
                     )
 
-
 pattern VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR 0x1
 
 pattern VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR 0x2
@@ -267,13 +265,9 @@ pattern VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR 0
 pattern VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR 0x4
 
 pattern VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR 0x8
-
-
--- ** VkDisplayModeCreateFlagsKHR
--- | Opaque flag
+-- ** VkDisplayModeCreateFlagsKHR-- | Opaque flag
 newtype VkDisplayModeCreateFlagsKHR = VkDisplayModeCreateFlagsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits, Show)
-
 
 data VkDisplayModeCreateInfoKHR =
   VkDisplayModeCreateInfoKHR{ vkSType :: VkStructureType 
@@ -282,7 +276,6 @@ data VkDisplayModeCreateInfoKHR =
                             , vkParameters :: VkDisplayModeParametersKHR 
                             }
   deriving (Eq, Ord, Show)
-
 instance Storable VkDisplayModeCreateInfoKHR where
   sizeOf ~_ = 32
   alignment ~_ = 8
@@ -294,23 +287,18 @@ instance Storable VkDisplayModeCreateInfoKHR where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkDisplayModeCreateInfoKHR))
                 *> poke (ptr `plusPtr` 16) (vkFlags (poked :: VkDisplayModeCreateInfoKHR))
                 *> poke (ptr `plusPtr` 20) (vkParameters (poked :: VkDisplayModeCreateInfoKHR))
-
-
 -- ** vkGetPhysicalDeviceDisplayPlanePropertiesKHR
 foreign import ccall "vkGetPhysicalDeviceDisplayPlanePropertiesKHR" vkGetPhysicalDeviceDisplayPlanePropertiesKHR ::
   VkPhysicalDevice ->
   Ptr Word32 -> Ptr VkDisplayPlanePropertiesKHR -> IO VkResult
-
 newtype VkDisplayModeKHR = VkDisplayModeKHR Word64
   deriving (Eq, Ord, Storable, Show)
-
 
 data VkDisplayModeParametersKHR =
   VkDisplayModeParametersKHR{ vkVisibleRegion :: VkExtent2D 
                             , vkRefreshRate :: Word32 
                             }
   deriving (Eq, Ord, Show)
-
 instance Storable VkDisplayModeParametersKHR where
   sizeOf ~_ = 12
   alignment ~_ = 4
@@ -318,24 +306,17 @@ instance Storable VkDisplayModeParametersKHR where
                                         <*> peek (ptr `plusPtr` 8)
   poke ptr poked = poke (ptr `plusPtr` 0) (vkVisibleRegion (poked :: VkDisplayModeParametersKHR))
                 *> poke (ptr `plusPtr` 8) (vkRefreshRate (poked :: VkDisplayModeParametersKHR))
-
-
--- ** VkDisplaySurfaceCreateFlagsKHR
--- | Opaque flag
+-- ** VkDisplaySurfaceCreateFlagsKHR-- | Opaque flag
 newtype VkDisplaySurfaceCreateFlagsKHR = VkDisplaySurfaceCreateFlagsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits, Show)
-
 newtype VkDisplayKHR = VkDisplayKHR Word64
   deriving (Eq, Ord, Storable, Show)
-
 -- ** vkGetPhysicalDeviceDisplayPropertiesKHR
 foreign import ccall "vkGetPhysicalDeviceDisplayPropertiesKHR" vkGetPhysicalDeviceDisplayPropertiesKHR ::
   VkPhysicalDevice ->
   Ptr Word32 -> Ptr VkDisplayPropertiesKHR -> IO VkResult
-
 -- ** vkCreateDisplayPlaneSurfaceKHR
 foreign import ccall "vkCreateDisplayPlaneSurfaceKHR" vkCreateDisplayPlaneSurfaceKHR ::
   VkInstance ->
   Ptr VkDisplaySurfaceCreateInfoKHR ->
     Ptr VkAllocationCallbacks -> Ptr VkSurfaceKHR -> IO VkResult
-

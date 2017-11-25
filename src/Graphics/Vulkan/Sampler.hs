@@ -12,8 +12,8 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
-import Data.Word( Word64
-                , Word32
+import Data.Word( Word32
+                , Word64
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
@@ -27,34 +27,33 @@ import Foreign.Storable( Storable(..)
                        )
 import Data.Void( Void
                 )
-import Graphics.Vulkan.Memory( VkInternalAllocationType(..)
+import Graphics.Vulkan.Memory( VkSystemAllocationScope(..)
                              , PFN_vkAllocationFunction
                              , PFN_vkReallocationFunction
+                             , PFN_vkFreeFunction
                              , PFN_vkInternalAllocationNotification
                              , VkAllocationCallbacks(..)
-                             , VkSystemAllocationScope(..)
-                             , PFN_vkFreeFunction
+                             , VkInternalAllocationType(..)
                              , PFN_vkInternalFreeNotification
                              )
 import Text.Read( Read(..)
                 , parens
                 )
-import Text.ParserCombinators.ReadPrec( prec
-                                      , (+++)
+import Text.ParserCombinators.ReadPrec( (+++)
                                       , step
+                                      , prec
                                       )
-import Graphics.Vulkan.Core( VkResult(..)
-                           , VkBool32(..)
+import Graphics.Vulkan.Core( VkBool32(..)
                            , VkFlags(..)
                            , VkStructureType(..)
+                           , VkResult(..)
                            )
-import Foreign.C.Types( CFloat
-                      , CFloat(..)
+import Foreign.C.Types( CFloat(..)
+                      , CFloat
                       , CSize(..)
                       )
 
 -- ** VkSamplerAddressMode
-
 newtype VkSamplerAddressMode = VkSamplerAddressMode Int32
   deriving (Eq, Ord, Storable)
 
@@ -78,7 +77,6 @@ instance Read VkSamplerAddressMode where
                         )
                     )
 
-
 pattern VK_SAMPLER_ADDRESS_MODE_REPEAT = VkSamplerAddressMode 0
 
 pattern VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT = VkSamplerAddressMode 1
@@ -86,9 +84,11 @@ pattern VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT = VkSamplerAddressMode 1
 pattern VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE = VkSamplerAddressMode 2
 
 pattern VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER = VkSamplerAddressMode 3
+<<<<<<< HEAD
 
+=======
+>>>>>>> Update vulkan api
 -- ** VkFilter
-
 newtype VkFilter = VkFilter Int32
   deriving (Eq, Ord, Storable)
 
@@ -108,13 +108,10 @@ instance Read VkFilter where
                         )
                     )
 
-
 pattern VK_FILTER_NEAREST = VkFilter 0
 
 pattern VK_FILTER_LINEAR = VkFilter 1
-
 -- ** VkBorderColor
-
 newtype VkBorderColor = VkBorderColor Int32
   deriving (Eq, Ord, Storable)
 
@@ -142,7 +139,6 @@ instance Read VkBorderColor where
                         )
                     )
 
-
 pattern VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK = VkBorderColor 0
 
 pattern VK_BORDER_COLOR_INT_TRANSPARENT_BLACK = VkBorderColor 1
@@ -154,9 +150,7 @@ pattern VK_BORDER_COLOR_INT_OPAQUE_BLACK = VkBorderColor 3
 pattern VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE = VkBorderColor 4
 
 pattern VK_BORDER_COLOR_INT_OPAQUE_WHITE = VkBorderColor 5
-
 -- ** VkCompareOp
-
 newtype VkCompareOp = VkCompareOp Int32
   deriving (Eq, Ord, Storable)
 
@@ -188,7 +182,6 @@ instance Read VkCompareOp where
                         )
                     )
 
-
 pattern VK_COMPARE_OP_NEVER = VkCompareOp 0
 
 pattern VK_COMPARE_OP_LESS = VkCompareOp 1
@@ -204,10 +197,8 @@ pattern VK_COMPARE_OP_NOT_EQUAL = VkCompareOp 5
 pattern VK_COMPARE_OP_GREATER_OR_EQUAL = VkCompareOp 6
 
 pattern VK_COMPARE_OP_ALWAYS = VkCompareOp 7
-
 newtype VkSampler = VkSampler Word64
   deriving (Eq, Ord, Storable, Show)
-
 
 data VkSamplerCreateInfo =
   VkSamplerCreateInfo{ vkSType :: VkStructureType 
@@ -230,7 +221,6 @@ data VkSamplerCreateInfo =
                      , vkUnnormalizedCoordinates :: VkBool32 
                      }
   deriving (Eq, Ord, Show)
-
 instance Storable VkSamplerCreateInfo where
   sizeOf ~_ = 80
   alignment ~_ = 8
@@ -270,15 +260,10 @@ instance Storable VkSamplerCreateInfo where
                 *> poke (ptr `plusPtr` 68) (vkMaxLod (poked :: VkSamplerCreateInfo))
                 *> poke (ptr `plusPtr` 72) (vkBorderColor (poked :: VkSamplerCreateInfo))
                 *> poke (ptr `plusPtr` 76) (vkUnnormalizedCoordinates (poked :: VkSamplerCreateInfo))
-
-
--- ** VkSamplerCreateFlags
--- | Opaque flag
+-- ** VkSamplerCreateFlags-- | Opaque flag
 newtype VkSamplerCreateFlags = VkSamplerCreateFlags VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits, Show)
-
 -- ** VkSamplerMipmapMode
-
 newtype VkSamplerMipmapMode = VkSamplerMipmapMode Int32
   deriving (Eq, Ord, Storable)
 
@@ -297,20 +282,16 @@ instance Read VkSamplerMipmapMode where
                         pure (VkSamplerMipmapMode v)
                         )
                     )
-
 -- | Choose nearest mip level
 pattern VK_SAMPLER_MIPMAP_MODE_NEAREST = VkSamplerMipmapMode 0
 -- | Linear filter between mip levels
 pattern VK_SAMPLER_MIPMAP_MODE_LINEAR = VkSamplerMipmapMode 1
-
 -- ** vkCreateSampler
 foreign import ccall "vkCreateSampler" vkCreateSampler ::
   VkDevice ->
   Ptr VkSamplerCreateInfo ->
     Ptr VkAllocationCallbacks -> Ptr VkSampler -> IO VkResult
-
 -- ** VkSampleCountFlags
-
 newtype VkSampleCountFlagBits = VkSampleCountFlagBits VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
 
@@ -343,7 +324,6 @@ instance Read VkSampleCountFlagBits where
                         pure (VkSampleCountFlagBits v)
                         )
                     )
-
 -- | Sample count 1 supported
 pattern VK_SAMPLE_COUNT_1_BIT = VkSampleCountFlagBits 0x1
 -- | Sample count 2 supported
@@ -358,9 +338,6 @@ pattern VK_SAMPLE_COUNT_16_BIT = VkSampleCountFlagBits 0x10
 pattern VK_SAMPLE_COUNT_32_BIT = VkSampleCountFlagBits 0x20
 -- | Sample count 64 supported
 pattern VK_SAMPLE_COUNT_64_BIT = VkSampleCountFlagBits 0x40
-
-
 -- ** vkDestroySampler
 foreign import ccall "vkDestroySampler" vkDestroySampler ::
   VkDevice -> VkSampler -> Ptr VkAllocationCallbacks -> IO ()
-

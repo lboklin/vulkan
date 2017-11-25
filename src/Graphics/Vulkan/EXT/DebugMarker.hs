@@ -1,11 +1,15 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE Strict #-}
+<<<<<<< HEAD
 {-# LANGUAGE PatternSynonyms #-}
+=======
+>>>>>>> Update vulkan api
 module Graphics.Vulkan.EXT.DebugMarker where
 
 import Data.Vector.Storable.Sized( Vector
                                  )
+<<<<<<< HEAD
 import Graphics.Vulkan.Device( VkDevice
                              , VkDevice(..)
                              )
@@ -17,6 +21,14 @@ import Foreign.Ptr( Ptr
                   , FunPtr
                   , plusPtr
                   , castFunPtr
+=======
+import Graphics.Vulkan.Device( VkDevice(..)
+                             )
+import Data.Word( Word64
+                )
+import Foreign.Ptr( Ptr
+                  , plusPtr
+>>>>>>> Update vulkan api
                   )
 import Graphics.Vulkan.CommandBuffer( VkCommandBuffer(..)
                                     )
@@ -26,6 +38,7 @@ import Foreign.Storable( Storable(..)
                        )
 import Data.Void( Void
                 )
+<<<<<<< HEAD
 import Graphics.Vulkan.DeviceInitialization( vkGetDeviceProcAddr
                                            )
 import Foreign.C.String( withCString
@@ -36,6 +49,14 @@ import Graphics.Vulkan.Core( VkResult(..)
 import Foreign.C.Types( CSize
                       , CFloat
                       , CFloat(..)
+=======
+import Graphics.Vulkan.Core( VkStructureType(..)
+                           , VkResult(..)
+                           )
+import Foreign.C.Types( CSize
+                      , CFloat(..)
+                      , CFloat
+>>>>>>> Update vulkan api
                       , CChar
                       , CSize(..)
                       )
@@ -49,7 +70,10 @@ data VkDebugMarkerObjectNameInfoEXT =
                                 , vkPObjectName :: Ptr CChar 
                                 }
   deriving (Eq, Ord, Show)
+<<<<<<< HEAD
 
+=======
+>>>>>>> Update vulkan api
 instance Storable VkDebugMarkerObjectNameInfoEXT where
   sizeOf ~_ = 40
   alignment ~_ = 8
@@ -64,9 +88,12 @@ instance Storable VkDebugMarkerObjectNameInfoEXT where
                 *> poke (ptr `plusPtr` 24) (vkObject (poked :: VkDebugMarkerObjectNameInfoEXT))
                 *> poke (ptr `plusPtr` 32) (vkPObjectName (poked :: VkDebugMarkerObjectNameInfoEXT))
 
+<<<<<<< HEAD
 
 pattern VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT = VkStructureType 1000022000
 
+=======
+>>>>>>> Update vulkan api
 data VkDebugMarkerMarkerInfoEXT =
   VkDebugMarkerMarkerInfoEXT{ vkSType :: VkStructureType 
                             , vkPNext :: Ptr Void 
@@ -74,7 +101,10 @@ data VkDebugMarkerMarkerInfoEXT =
                             , vkColor :: Vector 4 CFloat 
                             }
   deriving (Eq, Ord, Show)
+<<<<<<< HEAD
 
+=======
+>>>>>>> Update vulkan api
 instance Storable VkDebugMarkerMarkerInfoEXT where
   sizeOf ~_ = 40
   alignment ~_ = 8
@@ -86,6 +116,7 @@ instance Storable VkDebugMarkerMarkerInfoEXT where
                 *> poke (ptr `plusPtr` 8) (vkPNext (poked :: VkDebugMarkerMarkerInfoEXT))
                 *> poke (ptr `plusPtr` 16) (vkPMarkerName (poked :: VkDebugMarkerMarkerInfoEXT))
                 *> poke (ptr `plusPtr` 24) (vkColor (poked :: VkDebugMarkerMarkerInfoEXT))
+<<<<<<< HEAD
 
 
 -- ** vkCmdDebugMarkerInsertEXT
@@ -117,6 +148,20 @@ vkCmdDebugMarkerEndEXT :: VkDevice -> VkCommandBuffer -> IO ()
 vkCmdDebugMarkerEndEXT d = (mkvkCmdDebugMarkerEndEXT $ castFunPtr $ procAddr) 
   where procAddr = unsafePerformIO $ withCString "vkCmdDebugMarkerEndEXT" $ vkGetDeviceProcAddr d
 
+=======
+-- ** vkCmdDebugMarkerInsertEXT
+foreign import ccall "vkCmdDebugMarkerInsertEXT" vkCmdDebugMarkerInsertEXT ::
+  VkCommandBuffer -> Ptr VkDebugMarkerMarkerInfoEXT -> IO ()
+-- ** vkCmdDebugMarkerBeginEXT
+foreign import ccall "vkCmdDebugMarkerBeginEXT" vkCmdDebugMarkerBeginEXT ::
+  VkCommandBuffer -> Ptr VkDebugMarkerMarkerInfoEXT -> IO ()
+-- ** vkDebugMarkerSetObjectTagEXT
+foreign import ccall "vkDebugMarkerSetObjectTagEXT" vkDebugMarkerSetObjectTagEXT ::
+  VkDevice -> Ptr VkDebugMarkerObjectTagInfoEXT -> IO VkResult
+-- ** vkCmdDebugMarkerEndEXT
+foreign import ccall "vkCmdDebugMarkerEndEXT" vkCmdDebugMarkerEndEXT ::
+  VkCommandBuffer -> IO ()
+>>>>>>> Update vulkan api
 
 data VkDebugMarkerObjectTagInfoEXT =
   VkDebugMarkerObjectTagInfoEXT{ vkSType :: VkStructureType 
@@ -128,7 +173,10 @@ data VkDebugMarkerObjectTagInfoEXT =
                                , vkPTag :: Ptr Void 
                                }
   deriving (Eq, Ord, Show)
+<<<<<<< HEAD
 
+=======
+>>>>>>> Update vulkan api
 instance Storable VkDebugMarkerObjectTagInfoEXT where
   sizeOf ~_ = 56
   alignment ~_ = 8
@@ -146,6 +194,7 @@ instance Storable VkDebugMarkerObjectTagInfoEXT where
                 *> poke (ptr `plusPtr` 32) (vkTagName (poked :: VkDebugMarkerObjectTagInfoEXT))
                 *> poke (ptr `plusPtr` 40) (vkTagSize (poked :: VkDebugMarkerObjectTagInfoEXT))
                 *> poke (ptr `plusPtr` 48) (vkPTag (poked :: VkDebugMarkerObjectTagInfoEXT))
+<<<<<<< HEAD
 
 
 -- ** vkDebugMarkerSetObjectNameEXT
@@ -155,3 +204,8 @@ vkDebugMarkerSetObjectNameEXT d = (mkvkDebugMarkerSetObjectNameEXT $ castFunPtr 
   where procAddr = unsafePerformIO $ withCString "vkDebugMarkerSetObjectNameEXT" $ vkGetDeviceProcAddr d
 
 pattern VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT = VkStructureType 1000022002
+=======
+-- ** vkDebugMarkerSetObjectNameEXT
+foreign import ccall "vkDebugMarkerSetObjectNameEXT" vkDebugMarkerSetObjectNameEXT ::
+  VkDevice -> Ptr VkDebugMarkerObjectNameInfoEXT -> IO VkResult
+>>>>>>> Update vulkan api
