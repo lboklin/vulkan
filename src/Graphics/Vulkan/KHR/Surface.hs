@@ -57,17 +57,10 @@ import Graphics.Vulkan.Core( VkExtent2D(..)
 import Foreign.C.Types( CSize(..)
                       )
 
-pattern VK_KHR_SURFACE_EXTENSION_NAME =  "VK_KHR_surface"
-pattern VK_COLORSPACE_SRGB_NONLINEAR_KHR =  VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
 -- ** vkGetPhysicalDeviceSurfaceFormatsKHR
 foreign import ccall "vkGetPhysicalDeviceSurfaceFormatsKHR" vkGetPhysicalDeviceSurfaceFormatsKHR ::
   VkPhysicalDevice ->
   VkSurfaceKHR -> Ptr Word32 -> Ptr VkSurfaceFormatKHR -> IO VkResult
-<<<<<<< HEAD
-
-pattern VK_KHR_SURFACE_SPEC_VERSION =  0x19
-=======
->>>>>>> Update vulkan api
 -- ** vkGetPhysicalDeviceSurfaceCapabilitiesKHR
 foreign import ccall "vkGetPhysicalDeviceSurfaceCapabilitiesKHR" vkGetPhysicalDeviceSurfaceCapabilitiesKHR ::
   VkPhysicalDevice ->
@@ -138,11 +131,6 @@ pattern VK_PRESENT_MODE_MAILBOX_KHR = VkPresentModeKHR 1
 pattern VK_PRESENT_MODE_FIFO_KHR = VkPresentModeKHR 2
 
 pattern VK_PRESENT_MODE_FIFO_RELAXED_KHR = VkPresentModeKHR 3
-<<<<<<< HEAD
-
-pattern VK_ERROR_NATIVE_WINDOW_IN_USE_KHR = VkResult (-1000000001)
-=======
->>>>>>> Update vulkan api
 newtype VkSurfaceKHR = VkSurfaceKHR Word64
   deriving (Eq, Ord, Storable, Show)
 -- ** vkGetPhysicalDeviceSurfaceSupportKHR
@@ -150,11 +138,6 @@ foreign import ccall "vkGetPhysicalDeviceSurfaceSupportKHR" vkGetPhysicalDeviceS
   VkPhysicalDevice ->
   Word32 -> VkSurfaceKHR -> Ptr VkBool32 -> IO VkResult
 
-<<<<<<< HEAD
-pattern VK_ERROR_SURFACE_LOST_KHR = VkResult (-1000000000)
-
-=======
->>>>>>> Update vulkan api
 data VkSurfaceFormatKHR =
   VkSurfaceFormatKHR{ vkFormat :: VkFormat 
                     , vkColorSpace :: VkColorSpaceKHR 
@@ -188,13 +171,7 @@ instance Read VkColorSpaceKHR where
                         )
                     )
 
-<<<<<<< HEAD
-
 pattern VK_COLOR_SPACE_SRGB_NONLINEAR_KHR = VkColorSpaceKHR 0
-
-=======
-pattern VK_COLOR_SPACE_SRGB_NONLINEAR_KHR = VkColorSpaceKHR 0
->>>>>>> Update vulkan api
 -- ** vkGetPhysicalDeviceSurfacePresentModesKHR
 foreign import ccall "vkGetPhysicalDeviceSurfacePresentModesKHR" vkGetPhysicalDeviceSurfacePresentModesKHR ::
   VkPhysicalDevice ->

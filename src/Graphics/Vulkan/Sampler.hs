@@ -84,10 +84,6 @@ pattern VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT = VkSamplerAddressMode 1
 pattern VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE = VkSamplerAddressMode 2
 
 pattern VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER = VkSamplerAddressMode 3
-<<<<<<< HEAD
-
-=======
->>>>>>> Update vulkan api
 -- ** VkFilter
 newtype VkFilter = VkFilter Int32
   deriving (Eq, Ord, Storable)

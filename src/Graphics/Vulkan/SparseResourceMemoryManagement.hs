@@ -244,11 +244,7 @@ instance Read VkSparseImageFormatFlagBits where
                     )
 -- | Image uses a single mip tail region for all array layers
 pattern VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT = VkSparseImageFormatFlagBits 0x1
-<<<<<<< HEAD
--- | Image requires mip level dimensions to be an integer multiple of the sparse image block dimensions for non-miptail levels.
-=======
 -- | Image requires mip level dimensions to be an integer multiple of the sparse image block dimensions for non-tail mip levels.
->>>>>>> Update vulkan api
 pattern VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT = VkSparseImageFormatFlagBits 0x2
 -- | Image uses a non-standard sparse image block dimensions
 pattern VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT = VkSparseImageFormatFlagBits 0x4

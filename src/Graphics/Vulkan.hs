@@ -1,10 +1,4 @@
 module Graphics.Vulkan
-<<<<<<< HEAD
-  ( module Graphics.Vulkan.AMD.GcnShader
-  , module Graphics.Vulkan.AMD.RasterizationOrder
-  , module Graphics.Vulkan.AMD.ShaderExplicitVertexParameter
-  , module Graphics.Vulkan.AMD.ShaderTrinaryMinmax
-=======
   ( module Graphics.Vulkan.AMD.DrawIndirectCount
   , module Graphics.Vulkan.AMD.GcnShader
   , module Graphics.Vulkan.AMD.GpuShaderHalfFloat
@@ -19,7 +13,6 @@ module Graphics.Vulkan
   , module Graphics.Vulkan.AMD.ShaderInfo
   , module Graphics.Vulkan.AMD.ShaderTrinaryMinmax
   , module Graphics.Vulkan.AMD.TextureGatherBiasLod
->>>>>>> Update vulkan api
   , module Graphics.Vulkan.Buffer
   , module Graphics.Vulkan.BufferView
   , module Graphics.Vulkan.CommandBuffer
@@ -30,10 +23,7 @@ module Graphics.Vulkan
   , module Graphics.Vulkan.DescriptorSet
   , module Graphics.Vulkan.Device
   , module Graphics.Vulkan.DeviceInitialization
-<<<<<<< HEAD
-=======
   , module Graphics.Vulkan.EXT.BlendOperationAdvanced
->>>>>>> Update vulkan api
   , module Graphics.Vulkan.EXT.DebugMarker
   , module Graphics.Vulkan.EXT.DebugReport
   , module Graphics.Vulkan.EXT.DepthRangeUnrestricted
@@ -56,13 +46,9 @@ module Graphics.Vulkan
   , module Graphics.Vulkan.Event
   , module Graphics.Vulkan.ExtensionDiscovery
   , module Graphics.Vulkan.Fence
-<<<<<<< HEAD
-  , module Graphics.Vulkan.IMG.FilterCubic
-=======
   , module Graphics.Vulkan.GOOGLE.DisplayTiming
   , module Graphics.Vulkan.IMG.FilterCubic
   , module Graphics.Vulkan.IMG.FormatPvrtc
->>>>>>> Update vulkan api
   , module Graphics.Vulkan.Image
   , module Graphics.Vulkan.ImageView
   , module Graphics.Vulkan.KHR.BindMemory2
@@ -70,9 +56,6 @@ module Graphics.Vulkan
   , module Graphics.Vulkan.KHR.DescriptorUpdateTemplate
   , module Graphics.Vulkan.KHR.Display
   , module Graphics.Vulkan.KHR.DisplaySwapchain
-<<<<<<< HEAD
-  , module Graphics.Vulkan.KHR.SamplerMirrorClampToEdge
-=======
   , module Graphics.Vulkan.KHR.ExternalFence
   , module Graphics.Vulkan.KHR.ExternalFenceCapabilities
   , module Graphics.Vulkan.KHR.ExternalFenceFd
@@ -97,7 +80,6 @@ module Graphics.Vulkan
   , module Graphics.Vulkan.KHR.SharedPresentableImage
   , module Graphics.Vulkan.KHR.SixteenBitStorage
   , module Graphics.Vulkan.KHR.StorageBufferStorageClass
->>>>>>> Update vulkan api
   , module Graphics.Vulkan.KHR.Surface
   , module Graphics.Vulkan.KHR.Swapchain
   , module Graphics.Vulkan.KHR.VariablePointers
@@ -110,9 +92,6 @@ module Graphics.Vulkan
   , module Graphics.Vulkan.MVK.MacosSurface
   , module Graphics.Vulkan.Memory
   , module Graphics.Vulkan.MemoryManagement
-<<<<<<< HEAD
-  , module Graphics.Vulkan.NV.GlslShader
-=======
   , module Graphics.Vulkan.NN.ViSurface
   , module Graphics.Vulkan.NV.ClipSpaceWScaling
   , module Graphics.Vulkan.NV.DedicatedAllocation
@@ -129,7 +108,6 @@ module Graphics.Vulkan
   , module Graphics.Vulkan.NV.Win32KeyedMutex
   , module Graphics.Vulkan.NVX.DeviceGeneratedCommands
   , module Graphics.Vulkan.NVX.MultiviewPerViewAttributes
->>>>>>> Update vulkan api
   , module Graphics.Vulkan.OtherTypes
   , module Graphics.Vulkan.Pass
   , module Graphics.Vulkan.Pipeline
@@ -143,13 +121,6 @@ module Graphics.Vulkan
   , module Graphics.Vulkan.SparseResourceMemoryManagement
   , module Graphics.Vulkan.Version
   ) where
-<<<<<<< HEAD
-
-import Graphics.Vulkan.AMD.GcnShader
-import Graphics.Vulkan.AMD.RasterizationOrder
-import Graphics.Vulkan.AMD.ShaderExplicitVertexParameter
-import Graphics.Vulkan.AMD.ShaderTrinaryMinmax
-=======
 import Graphics.Vulkan.AMD.DrawIndirectCount
 import Graphics.Vulkan.AMD.GcnShader
 import Graphics.Vulkan.AMD.GpuShaderHalfFloat
@@ -164,7 +135,6 @@ import Graphics.Vulkan.AMD.ShaderImageLoadStoreLod
 import Graphics.Vulkan.AMD.ShaderInfo
 import Graphics.Vulkan.AMD.ShaderTrinaryMinmax
 import Graphics.Vulkan.AMD.TextureGatherBiasLod
->>>>>>> Update vulkan api
 import Graphics.Vulkan.Buffer
 import Graphics.Vulkan.BufferView
 import Graphics.Vulkan.CommandBuffer
@@ -175,10 +145,7 @@ import Graphics.Vulkan.Core
 import Graphics.Vulkan.DescriptorSet
 import Graphics.Vulkan.Device
 import Graphics.Vulkan.DeviceInitialization
-<<<<<<< HEAD
-=======
 import Graphics.Vulkan.EXT.BlendOperationAdvanced
->>>>>>> Update vulkan api
 import Graphics.Vulkan.EXT.DebugMarker
 import Graphics.Vulkan.EXT.DebugReport
 import Graphics.Vulkan.EXT.DepthRangeUnrestricted
@@ -201,13 +168,9 @@ import Graphics.Vulkan.EXT.ValidationFlags
 import Graphics.Vulkan.Event
 import Graphics.Vulkan.ExtensionDiscovery
 import Graphics.Vulkan.Fence
-<<<<<<< HEAD
-import Graphics.Vulkan.IMG.FilterCubic
-=======
 import Graphics.Vulkan.GOOGLE.DisplayTiming
 import Graphics.Vulkan.IMG.FilterCubic
 import Graphics.Vulkan.IMG.FormatPvrtc
->>>>>>> Update vulkan api
 import Graphics.Vulkan.Image
 import Graphics.Vulkan.ImageView
 import Graphics.Vulkan.KHR.BindMemory2
@@ -215,9 +178,6 @@ import Graphics.Vulkan.KHR.DedicatedAllocation
 import Graphics.Vulkan.KHR.DescriptorUpdateTemplate
 import Graphics.Vulkan.KHR.Display
 import Graphics.Vulkan.KHR.DisplaySwapchain
-<<<<<<< HEAD
-import Graphics.Vulkan.KHR.SamplerMirrorClampToEdge
-=======
 import Graphics.Vulkan.KHR.ExternalFence
 import Graphics.Vulkan.KHR.ExternalFenceCapabilities
 import Graphics.Vulkan.KHR.ExternalFenceFd
@@ -242,7 +202,6 @@ import Graphics.Vulkan.KHR.ShaderDrawParameters
 import Graphics.Vulkan.KHR.SharedPresentableImage
 import Graphics.Vulkan.KHR.SixteenBitStorage
 import Graphics.Vulkan.KHR.StorageBufferStorageClass
->>>>>>> Update vulkan api
 import Graphics.Vulkan.KHR.Surface
 import Graphics.Vulkan.KHR.Swapchain
 import Graphics.Vulkan.KHR.VariablePointers
@@ -255,9 +214,6 @@ import Graphics.Vulkan.MVK.IosSurface
 import Graphics.Vulkan.MVK.MacosSurface
 import Graphics.Vulkan.Memory
 import Graphics.Vulkan.MemoryManagement
-<<<<<<< HEAD
-import Graphics.Vulkan.NV.GlslShader
-=======
 import Graphics.Vulkan.NN.ViSurface
 import Graphics.Vulkan.NV.ClipSpaceWScaling
 import Graphics.Vulkan.NV.DedicatedAllocation
@@ -274,7 +230,6 @@ import Graphics.Vulkan.NV.ViewportSwizzle
 import Graphics.Vulkan.NV.Win32KeyedMutex
 import Graphics.Vulkan.NVX.DeviceGeneratedCommands
 import Graphics.Vulkan.NVX.MultiviewPerViewAttributes
->>>>>>> Update vulkan api
 import Graphics.Vulkan.OtherTypes
 import Graphics.Vulkan.Pass
 import Graphics.Vulkan.Pipeline

@@ -100,12 +100,6 @@ instance Storable VkDisplaySurfaceCreateInfoKHR where
                 *> poke (ptr `plusPtr` 48) (vkAlphaMode (poked :: VkDisplaySurfaceCreateInfoKHR))
                 *> poke (ptr `plusPtr` 52) (vkImageExtent (poked :: VkDisplaySurfaceCreateInfoKHR))
 
-<<<<<<< HEAD
-
-pattern VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR = VkStructureType 1000002001
-
-=======
->>>>>>> Update vulkan api
 data VkDisplayPlaneCapabilitiesKHR =
   VkDisplayPlaneCapabilitiesKHR{ vkSupportedAlpha :: VkDisplayPlaneAlphaFlagsKHR 
                                , vkMinSrcPosition :: VkOffset2D 
@@ -139,12 +133,6 @@ instance Storable VkDisplayPlaneCapabilitiesKHR where
                 *> poke (ptr `plusPtr` 44) (vkMaxDstPosition (poked :: VkDisplayPlaneCapabilitiesKHR))
                 *> poke (ptr `plusPtr` 52) (vkMinDstExtent (poked :: VkDisplayPlaneCapabilitiesKHR))
                 *> poke (ptr `plusPtr` 60) (vkMaxDstExtent (poked :: VkDisplayPlaneCapabilitiesKHR))
-<<<<<<< HEAD
-
-
-pattern VK_KHR_DISPLAY_EXTENSION_NAME =  "VK_KHR_display"
-=======
->>>>>>> Update vulkan api
 -- ** vkGetDisplayModePropertiesKHR
 foreign import ccall "vkGetDisplayModePropertiesKHR" vkGetDisplayModePropertiesKHR ::
   VkPhysicalDevice ->
@@ -182,11 +170,6 @@ instance Storable VkDisplayPropertiesKHR where
 foreign import ccall "vkGetDisplayPlaneSupportedDisplaysKHR" vkGetDisplayPlaneSupportedDisplaysKHR ::
   VkPhysicalDevice ->
   Word32 -> Ptr Word32 -> Ptr VkDisplayKHR -> IO VkResult
-<<<<<<< HEAD
-
-pattern VK_KHR_DISPLAY_SPEC_VERSION =  0x15
-=======
->>>>>>> Update vulkan api
 -- ** vkCreateDisplayModeKHR
 foreign import ccall "vkCreateDisplayModeKHR" vkCreateDisplayModeKHR ::
   VkPhysicalDevice ->
@@ -224,12 +207,6 @@ instance Storable VkDisplayModePropertiesKHR where
                                         <*> peek (ptr `plusPtr` 8)
   poke ptr poked = poke (ptr `plusPtr` 0) (vkDisplayMode (poked :: VkDisplayModePropertiesKHR))
                 *> poke (ptr `plusPtr` 8) (vkParameters (poked :: VkDisplayModePropertiesKHR))
-<<<<<<< HEAD
-
-
-pattern VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR = VkStructureType 1000002000
-=======
->>>>>>> Update vulkan api
 -- ** VkDisplayPlaneAlphaFlagsKHR
 newtype VkDisplayPlaneAlphaFlagBitsKHR = VkDisplayPlaneAlphaFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)

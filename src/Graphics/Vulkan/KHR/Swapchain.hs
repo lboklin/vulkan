@@ -53,12 +53,7 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       )
 import Graphics.Vulkan.Image( VkImageUsageFlagBits(..)
                             , VkImage(..)
-<<<<<<< HEAD
-                            , VkImageLayout(..)
-                            , VkImageUsageFlagBits(..)
-=======
                             , VkImageUsageFlags(..)
->>>>>>> Update vulkan api
                             )
 import Graphics.Vulkan.QueueSemaphore( VkSemaphore(..)
                                      )
@@ -73,7 +68,6 @@ import Graphics.Vulkan.Core( VkExtent2D(..)
 import Foreign.C.Types( CSize(..)
                       )
 
-pattern VK_ERROR_OUT_OF_DATE_KHR = VkResult (-1000001004)
 
 data VkSwapchainCreateInfoKHR =
   VkSwapchainCreateInfoKHR{ vkSType :: VkStructureType 
@@ -135,12 +129,6 @@ instance Storable VkSwapchainCreateInfoKHR where
                 *> poke (ptr `plusPtr` 88) (vkPresentMode (poked :: VkSwapchainCreateInfoKHR))
                 *> poke (ptr `plusPtr` 92) (vkClipped (poked :: VkSwapchainCreateInfoKHR))
                 *> poke (ptr `plusPtr` 96) (vkOldSwapchain (poked :: VkSwapchainCreateInfoKHR))
-<<<<<<< HEAD
-
-
-pattern VK_IMAGE_LAYOUT_PRESENT_SRC_KHR = VkImageLayout 1000001002
-=======
->>>>>>> Update vulkan api
 -- ** vkGetSwapchainImagesKHR
 foreign import ccall "vkGetSwapchainImagesKHR" vkGetSwapchainImagesKHR ::
   VkDevice ->
@@ -148,19 +136,9 @@ foreign import ccall "vkGetSwapchainImagesKHR" vkGetSwapchainImagesKHR ::
 -- ** vkDestroySwapchainKHR
 foreign import ccall "vkDestroySwapchainKHR" vkDestroySwapchainKHR ::
   VkDevice -> VkSwapchainKHR -> Ptr VkAllocationCallbacks -> IO ()
-<<<<<<< HEAD
-
-pattern VK_STRUCTURE_TYPE_PRESENT_INFO_KHR = VkStructureType 1000001001
 -- ** vkQueuePresentKHR
 foreign import ccall "vkQueuePresentKHR" vkQueuePresentKHR ::
   VkQueue -> Ptr VkPresentInfoKHR -> IO VkResult
-
-pattern VK_SUBOPTIMAL_KHR = VkResult 1000001003
-=======
--- ** vkQueuePresentKHR
-foreign import ccall "vkQueuePresentKHR" vkQueuePresentKHR ::
-  VkQueue -> Ptr VkPresentInfoKHR -> IO VkResult
->>>>>>> Update vulkan api
 -- ** VkSwapchainCreateFlagsKHR
 newtype VkSwapchainCreateFlagBitsKHR = VkSwapchainCreateFlagBitsKHR VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
@@ -183,17 +161,11 @@ instance Read VkSwapchainCreateFlagBitsKHR where
                         )
                     )
 
-pattern VK_KHR_SWAPCHAIN_SPEC_VERSION =  0x44
 -- ** vkCreateSwapchainKHR
 foreign import ccall "vkCreateSwapchainKHR" vkCreateSwapchainKHR ::
   VkDevice ->
   Ptr VkSwapchainCreateInfoKHR ->
     Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR -> IO VkResult
-<<<<<<< HEAD
-
-pattern VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR = VkStructureType 1000001000
-=======
->>>>>>> Update vulkan api
 -- ** vkAcquireNextImageKHR
 foreign import ccall "vkAcquireNextImageKHR" vkAcquireNextImageKHR ::
   VkDevice ->
@@ -232,8 +204,3 @@ instance Storable VkPresentInfoKHR where
                 *> poke (ptr `plusPtr` 56) (vkPResults (poked :: VkPresentInfoKHR))
 newtype VkSwapchainKHR = VkSwapchainKHR Word64
   deriving (Eq, Ord, Storable, Show)
-<<<<<<< HEAD
-
-pattern VK_KHR_SWAPCHAIN_EXTENSION_NAME =  "VK_KHR_swapchain"
-=======
->>>>>>> Update vulkan api

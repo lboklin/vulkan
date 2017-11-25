@@ -10,23 +10,12 @@ import Text.Read.Lex( Lexeme(Ident)
 import GHC.Read( expectP
                , choose
                )
-<<<<<<< HEAD
-import System.IO.Unsafe( unsafePerformIO
-                       )
-import Data.Word( Word64
-                , Word32
-=======
 import Data.Word( Word32
                 , Word64
->>>>>>> Update vulkan api
                 )
 import Foreign.Ptr( Ptr
                   , plusPtr
-<<<<<<< HEAD
-                  , castFunPtr
-=======
                   , FunPtr
->>>>>>> Update vulkan api
                   )
 import Data.Int( Int32
                )
@@ -54,16 +43,8 @@ import Text.ParserCombinators.ReadPrec( (+++)
                                       , prec
                                       )
 import Graphics.Vulkan.DeviceInitialization( VkInstance(..)
-                                           , vkGetInstanceProcAddr
                                            )
-<<<<<<< HEAD
-import Foreign.C.String( withCString
-                       )
-import Graphics.Vulkan.Core( VkResult(..)
-                           , VkBool32(..)
-=======
 import Graphics.Vulkan.Core( VkBool32(..)
->>>>>>> Update vulkan api
                            , VkFlags(..)
                            , VkStructureType(..)
                            , VkResult(..)
@@ -73,31 +54,14 @@ import Foreign.C.Types( CSize
                       , CSize(..)
                       )
 
-pattern VK_EXT_DEBUG_REPORT_EXTENSION_NAME =  "VK_EXT_debug_report"
 -- ** vkDebugReportMessageEXT
-foreign import ccall "dynamic" mkvkDebugReportMessageEXT :: FunPtr (VkInstance ->
-  VkDebugReportFlagsEXT ->
-    VkDebugReportObjectTypeEXT ->
-      Word64 -> CSize -> Int32 -> Ptr CChar -> Ptr CChar -> IO ()) -> (VkInstance ->
-  VkDebugReportFlagsEXT ->
-    VkDebugReportObjectTypeEXT ->
-      Word64 -> CSize -> Int32 -> Ptr CChar -> Ptr CChar -> IO ())
-vkDebugReportMessageEXT :: VkInstance ->
+foreign import ccall "vkDebugReportMessageEXT" vkDebugReportMessageEXT ::
+  VkInstance ->
   VkDebugReportFlagsEXT ->
     VkDebugReportObjectTypeEXT ->
       Word64 -> CSize -> Int32 -> Ptr CChar -> Ptr CChar -> IO ()
-<<<<<<< HEAD
-vkDebugReportMessageEXT i = (mkvkDebugReportMessageEXT $ castFunPtr $ procAddr) i
-  where procAddr = unsafePerformIO $ withCString "vkDebugReportMessageEXT" $ vkGetInstanceProcAddr i
-
 newtype VkDebugReportCallbackEXT = VkDebugReportCallbackEXT Word64
   deriving (Eq, Ord, Storable, Show)
-
-pattern VK_EXT_DEBUG_REPORT_SPEC_VERSION =  0x2
-=======
-newtype VkDebugReportCallbackEXT = VkDebugReportCallbackEXT Word64
-  deriving (Eq, Ord, Storable, Show)
->>>>>>> Update vulkan api
 -- ** VkDebugReportObjectTypeEXT
 newtype VkDebugReportObjectTypeEXT = VkDebugReportObjectTypeEXT Int32
   deriving (Eq, Ord, Storable)
@@ -271,24 +235,10 @@ instance Storable VkDebugReportCallbackCreateInfoEXT where
                 *> poke (ptr `plusPtr` 16) (vkFlags (poked :: VkDebugReportCallbackCreateInfoEXT))
                 *> poke (ptr `plusPtr` 24) (vkPfnCallback (poked :: VkDebugReportCallbackCreateInfoEXT))
                 *> poke (ptr `plusPtr` 32) (vkPUserData (poked :: VkDebugReportCallbackCreateInfoEXT))
-<<<<<<< HEAD
-
-
-pattern VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT =  VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT
-=======
->>>>>>> Update vulkan api
 -- ** vkDestroyDebugReportCallbackEXT
-foreign import ccall "dynamic" mkvkDestroyDebugReportCallbackEXT :: FunPtr (VkInstance ->
-  VkDebugReportCallbackEXT -> Ptr VkAllocationCallbacks -> IO ()) -> (VkInstance ->
-  VkDebugReportCallbackEXT -> Ptr VkAllocationCallbacks -> IO ())
-vkDestroyDebugReportCallbackEXT :: VkInstance ->
+foreign import ccall "vkDestroyDebugReportCallbackEXT" vkDestroyDebugReportCallbackEXT ::
+  VkInstance ->
   VkDebugReportCallbackEXT -> Ptr VkAllocationCallbacks -> IO ()
-<<<<<<< HEAD
-vkDestroyDebugReportCallbackEXT i = (mkvkDestroyDebugReportCallbackEXT $ castFunPtr $ procAddr) i
-  where procAddr = unsafePerformIO $ withCString "vkDestroyDebugReportCallbackEXT" $ vkGetInstanceProcAddr i
-
-=======
->>>>>>> Update vulkan api
 -- ** VkDebugReportFlagsEXT
 newtype VkDebugReportFlagBitsEXT = VkDebugReportFlagBitsEXT VkFlags
   deriving (Eq, Ord, Storable, Bits, FiniteBits)
@@ -334,27 +284,9 @@ type PFN_vkDebugReportCallbackEXT = FunPtr
        Word64 ->
          CSize ->
            Int32 -> Ptr CChar -> Ptr CChar -> Ptr Void -> IO VkBool32)
-<<<<<<< HEAD
-
-pattern VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT = VkStructureType 1000011000
-pattern VK_ERROR_VALIDATION_FAILED_EXT = VkResult (-1000011001)
-=======
->>>>>>> Update vulkan api
 -- ** vkCreateDebugReportCallbackEXT
-foreign import ccall "dynamic" mkvkCreateDebugReportCallbackEXT :: FunPtr (VkInstance ->
-  Ptr VkDebugReportCallbackCreateInfoEXT ->
-    Ptr VkAllocationCallbacks ->
-      Ptr VkDebugReportCallbackEXT -> IO VkResult) -> (VkInstance ->
-  Ptr VkDebugReportCallbackCreateInfoEXT ->
-    Ptr VkAllocationCallbacks ->
-      Ptr VkDebugReportCallbackEXT -> IO VkResult)
-vkCreateDebugReportCallbackEXT :: VkInstance ->
+foreign import ccall "vkCreateDebugReportCallbackEXT" vkCreateDebugReportCallbackEXT ::
+  VkInstance ->
   Ptr VkDebugReportCallbackCreateInfoEXT ->
     Ptr VkAllocationCallbacks ->
       Ptr VkDebugReportCallbackEXT -> IO VkResult
-<<<<<<< HEAD
-vkCreateDebugReportCallbackEXT i = (mkvkCreateDebugReportCallbackEXT $ castFunPtr $ procAddr) i
-  where procAddr = unsafePerformIO $ withCString "vkCreateDebugReportCallbackEXT" $ vkGetInstanceProcAddr i
-
-=======
->>>>>>> Update vulkan api

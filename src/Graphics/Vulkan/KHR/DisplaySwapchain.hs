@@ -1,6 +1,5 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
-{-# LANGUAGE PatternSynonyms #-}
 module Graphics.Vulkan.KHR.DisplaySwapchain where
 
 import Graphics.Vulkan.Device( VkDevice(..)
@@ -81,11 +80,3 @@ foreign import ccall "vkCreateSharedSwapchainsKHR" vkCreateSharedSwapchainsKHR :
   Word32 ->
     Ptr VkSwapchainCreateInfoKHR ->
       Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR -> IO VkResult
-<<<<<<< HEAD
-
-pattern VK_KHR_DISPLAY_SWAPCHAIN_SPEC_VERSION =  0x9
-pattern VK_KHR_DISPLAY_SWAPCHAIN_EXTENSION_NAME =  "VK_KHR_display_swapchain"
-pattern VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR = VkStructureType 1000003000
-pattern VK_ERROR_INCOMPATIBLE_DISPLAY_KHR = VkResult (-1000003001)
-=======
->>>>>>> Update vulkan api
