@@ -476,7 +476,8 @@ instance Read VkStencilFaceFlagBits where
 -- | Front face
 pattern VK_STENCIL_FACE_FRONT_BIT = VkStencilFaceFlagBits 0x1
 -- | Back face
-pattern VK_STENCIL_FACE_BACK_BIT = VkStencilFaceFlagBits 0x2-- | Front and back faces
+pattern VK_STENCIL_FACE_BACK_BIT = VkStencilFaceFlagBits 0x2
+-- | Front and back faces
 pattern VK_STENCIL_FRONT_AND_BACK = VkStencilFaceFlagBits 0x3
 -- | // Union allowing specification of floating point, integer, or unsigned integer color data. Actual value selected is based on image/attachment being cleared.
 data VkClearColorValue = VkFloat32 (Vector 4 CFloat) 
